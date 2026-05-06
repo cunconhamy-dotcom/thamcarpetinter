@@ -1,0 +1,509 @@
+{
+  "collections": [
+    {
+      "id": "foundation",
+      "name": "Foundation",
+      "tagline": "Breaking Ground — thiết kế tinh tế bắt nguồn từ cam kết bền vững, nâng tầm không gian từ những nền tảng vững chắc nhất.",
+      "summary": "Foundation thêm vào không gian sức mạnh của cá tính, chất lượng thiết kế tự nhiên và vật liệu bền vững. Dù bạn đang định hình thương hiệu hay kiến tạo môi trường, Foundation mang lại sự gắn kết, tự tin và chiều sâu.",
+      "detail": "Mỗi thành công bền vững đều bắt đầu từ một nền móng vững chắc. Foundation là bộ sưu tập thảm tile được chắt lọc từ cam kết với môi trường và sự bền vững — nơi tính thẩm mỹ hòa quyện với trách nhiệm. Phù hợp cho văn phòng, sảnh đón tiếp, khu vực hospitality cao cấp.",
+      "heroImage": "https://carpetsinter.com/wp-content/uploads/2025/09/FD01-Root-1.jpg",
+      "gallery": [
+        "https://carpetsinter.com/wp-content/uploads/2025/09/FD-04-01-scaled.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/09/shutterstock_331925027-scaled.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/09/IMG_6573-scaled.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/09/Capture.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/09/FD01-Root-1.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/09/FD02-Origin-1.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/09/FD04-Anchor-1.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/09/FD06-Rebar-1.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/09/FD05-Core-1.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/10/FD06.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/09/FD01-Root.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/09/FD02-Origin.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/09/FD03-Base.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/09/FD04-Anchor.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/09/FD05-Core.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/09/FD06-Rebar.jpg"
+      ],
+      "accent": "#f2a94b",
+      "quickFacts": [
+        "Bề mặt thảm tile cao cấp",
+        "Tạo nền thẩm mỹ ổn định cho không gian hiện đại",
+        "Phù hợp khu vực làm việc, meeting lounge, showroom"
+      ],
+      "applications": [
+        "Sảnh tiếp khách",
+        "Văn phòng điều hành",
+        "Không gian hospitality cao cấp"
+      ],
+      "products": [
+        { "code": "FD01", "name": "Root", "highlights": ["Tạo cảm giác nền tảng vững chắc", "Texture mềm, sang và dễ phối vật liệu"], "colors": ["Nâu đất", "Xám ấm"] },
+        { "code": "FD02", "name": "Origin", "highlights": ["Ngôn ngữ thiết kế tinh gọn", "Lý tưởng cho layout chuyên nghiệp, cao cấp"] },
+        { "code": "FD03", "name": "Base", "highlights": ["Giữ nền không gian sâu và sạch", "Tăng cảm giác giá trị cho nội thất xung quanh"] },
+        { "code": "FD04", "name": "Anchor", "highlights": ["Hiệu ứng bề mặt mạnh mẽ", "Tạo điểm tựa thị giác cho toàn bộ concept"] },
+        { "code": "FD05", "name": "Core", "highlights": ["Tạo cảm giác chắc chắn", "Nhấn mạnh hình ảnh đầu tư bền vững"] },
+        { "code": "FD06", "name": "Rebar", "highlights": ["Cá tính rõ nét hơn", "Giữ vẻ sang trọng trong không gian hiện đại"] }
+      ],
+      "resources": [
+        { "label": "Brochure Foundation", "type": "brochure", "url": "https://carpetsinter.com/wp-content/uploads/2025/09/Foundation-Collection-by-Carpets-Inter.pdf" },
+        { "label": "Spec Sheet Foundation", "type": "spec", "url": "https://carpetsinter.com/wp-content/uploads/2025/10/Foundation-Spec-Sheet.pdf" },
+        { "label": "Hướng dẫn lắp đặt EcoSoft", "type": "guide", "url": "https://carpetsinter.com/wp-content/uploads/2023/08/EcoSoft-Carpet-Tile-Installation-Guideline-Nov-2023-AL.pdf" },
+        { "label": "Hướng dẫn lắp đặt EcoSquare", "type": "guide", "url": "https://carpetsinter.com/wp-content/uploads/2023/08/EcoSquare-Carpet-Tile-Installation-Guideline-July-2023.pdf" }
+      ],
+      "metadata": {
+        "lastUpdated": "2026-05-04",
+        "sourceVerified": true
+      }
+    },
+    {
+      "id": "groundwork",
+      "name": "Groundwork",
+      "tagline": "Nền tảng hữu cơ vượt thời gian — nơi sức mạnh của thiết kế và tính bền vững cùng kiến tạo tương lai.",
+      "summary": "Groundwork giới thiệu nền tảng cấu trúc hữu cơ tinh tế, vượt thời gian — nơi bạn xây dựng và kiến tạo một tương lai thành công. Đầu tư vào Groundwork là đầu tư vào cốt lõi của tương lai.",
+      "detail": "Bộ sưu tập tile 50×50 cm được xây dựng để mang lại sức mạnh của cá tính, chất lượng thiết kế tự nhiên và vật liệu bền vững — hỗ trợ doanh nghiệp vươn tới tầm cao mới. Groundwork là lựa chọn lý tưởng khi bạn sẵn sàng mở đầu kỷ nguyên mới cho không gian của mình.",
+      "heroImage": "https://carpetsinter.com/wp-content/uploads/2026/01/GW08.jpg",
+      "gallery": [
+        "https://carpetsinter.com/wp-content/uploads/2025/03/GW03-SC-Rev-copy-lr.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/03/gw0.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/03/gw-1.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/04/shutterstock_578214211-crop-scaled.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2026/01/GW08.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/10/GW07.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/03/gw05.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/03/gw06.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/03/gw04.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/03/gw0123.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/03/gw0406.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/03/GW01.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/03/GW02.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/03/GW03.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/03/GW04.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/03/GW05.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/03/GW06.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/03/GW07.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/03/GW08.jpg"
+      ],
+      "accent": "#f3a746",
+      "quickFacts": [
+        "Tile size 50x50 cm",
+        "Dễ tiếp cận cho dự án diện tích lớn",
+        "Tăng hiệu quả thi công và bảo trì"
+      ],
+      "applications": [
+        "Open office",
+        "Hành lang doanh nghiệp",
+        "Khu vực vận hành linh hoạt"
+      ],
+      "products": [
+        { "code": "GW01", "name": "Contour", "highlights": ["Bề mặt mạch lạc", "Thể hiện tinh thần chuyên nghiệp vững vàng"] },
+        { "code": "GW02", "name": "Linework", "highlights": ["Gọn gàng, cân bằng", "Tạo cảm giác đồng nhất cao cấp"] },
+        { "code": "GW03", "name": "Transit", "highlights": ["Phù hợp các khu vực lưu thông", "Cho cảm giác vận hành trơn tru"] },
+        { "code": "GW04", "name": "Strata", "highlights": ["Nhịp điệu bề mặt tự nhiên", "Tạo chiều sâu cho khu vực làm việc"] },
+        { "code": "GW05", "name": "Frame", "highlights": ["Tăng độ chỉn chu cho bố cục", "Hỗ trợ phân vùng nhẹ nhàng"] },
+        { "code": "GW06", "name": "Layer", "highlights": ["Bề mặt mềm nhưng chắc", "Phù hợp nhiều phong cách nội thất"] },
+        { "code": "GW07", "name": "Axis", "highlights": ["Tính ứng dụng cao", "Nhấn mạnh sự gọn gàng và cao cấp"] },
+        { "code": "GW08", "name": "Terrain", "highlights": ["Gợi chuyển động nhẹ", "Giúp mặt sàn giàu cảm xúc hơn"] }
+      ],
+      "resources": [
+        { "label": "Brochure Groundwork", "type": "brochure", "url": "https://carpetsinter.com/wp-content/uploads/2025/07/Groundwork-Brochure-22-07-2025-Ebook.pdf" },
+        { "label": "Spec Sheet Groundwork", "type": "spec", "url": "https://carpetsinter.com/wp-content/uploads/2025/07/v25-Groundwork.pdf" },
+        { "label": "Hướng dẫn lắp đặt EcoSoft", "type": "guide", "url": "https://carpetsinter.com/wp-content/uploads/2023/08/EcoSoft-Carpet-Tile-Installation-Guideline-Nov-2023-AL.pdf" },
+        { "label": "Hướng dẫn lắp đặt EcoSquare", "type": "guide", "url": "https://carpetsinter.com/wp-content/uploads/2023/08/EcoSquare-Carpet-Tile-Installation-Guideline-July-2023.pdf" }
+      ],
+      "metadata": {
+        "lastUpdated": "2026-05-04",
+        "sourceVerified": true
+      }
+    },
+    {
+      "id": "aspekt-insight",
+      "name": "Aspekt: Insight",
+      "tagline": "Insight đào sâu — một góc nhìn trầm tư khuyến khích sự chiêm nghiệm và những lựa chọn thiết kế có chiều sâu thực sự.",
+      "summary": "Aspekt: Insight được thiết kế để mang lại nhiều hơn vẻ đẹp thị giác — đó là trải nghiệm xa xỉ, tiện nghi và có mục đích. Chế tác từ vật liệu cao cấp, bền vững, Insight không chỉ nâng cao sức khỏe không gian mà còn phản ánh cam kết giảm carbon của một thương hiệu có trách nhiệm.",
+      "detail": "Bước đi trên thảm Aspekt là tuyên ngôn về sự tự tin và tinh tế, nơi tiện nghi gặp gỡ sự đổi mới. Mỗi bước chân là phản chiếu của tầm nhìn, di sản và xuất sắc — kiến tạo những không gian truyền cảm hứng thành công trong khi hướng tới tương lai xanh hơn.",
+      "heroImage": "https://carpetsinter.com/wp-content/uploads/2024/10/Insight-1-scaled.jpg",
+      "gallery": [
+        "https://carpetsinter.com/wp-content/uploads/2024/10/Insight-1-scaled.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/10/Aspekt-1.png",
+        "https://carpetsinter.com/wp-content/uploads/2024/10/Untitled-2-e1728363599398.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/10/Insight-2.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/10/Untitled-4.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/10/Untitled-2-1.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/10/AKI08.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/10/01.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/10/05-1.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/10/04.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/10/01-1.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/10/04-1.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/10/07.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/10/AKI01.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/10/AKI02.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/10/AKI03.jpg"
+      ],
+      "accent": "#f6b85b",
+      "quickFacts": [
+        "Thiết kế mang tính đương đại",
+        "Đề cao chiều sâu ánh nhìn",
+        "Phù hợp không gian cần bản sắc mạnh"
+      ],
+      "applications": [
+        "Showroom vật liệu",
+        "Khu vực reception cao cấp",
+        "Studio thiết kế & sales gallery"
+      ],
+      "products": [
+        { "code": "AKI01", "name": "Insight One", "highlights": ["Tông màu tinh tế", "Tạo độ sang trọng tự nhiên cho mặt sàn"] },
+        { "code": "AKI02", "name": "Insight Two", "highlights": ["Hiệu ứng bề mặt giàu lớp lang", "Làm nổi bật nội thất cao cấp"] },
+        { "code": "AKI03", "name": "Insight Three", "highlights": ["Tăng chiều sâu không gian", "Phù hợp phối cùng ánh sáng ấm"] },
+        { "code": "AKI08", "name": "Insight Eight", "highlights": ["Điểm nhấn mạnh hơn", "Tăng cá tính cho khu vực trưng bày"] }
+      ],
+      "resources": [
+        { "label": "Brochure Aspekt: Insight", "type": "brochure", "url": "https://carpetsinter.com/wp-content/uploads/2024/10/Aspekt-Insight-by-Carpets-Inter.pdf" },
+        { "label": "Spec Sheet Aspekt: Insight", "type": "spec", "url": "https://carpetsinter.com/wp-content/uploads/2025/07/v25-Aspekt-Insight.pdf" },
+        { "label": "Hướng dẫn lắp đặt EcoSoft", "type": "guide", "url": "https://carpetsinter.com/wp-content/uploads/2023/08/EcoSoft-Carpet-Tile-Installation-Guideline-Nov-2023-AL.pdf" },
+        { "label": "Hướng dẫn lắp đặt EcoSquare", "type": "guide", "url": "https://carpetsinter.com/wp-content/uploads/2023/08/EcoSquare-Carpet-Tile-Installation-Guideline-July-2023.pdf" }
+      ],
+      "metadata": {
+        "lastUpdated": "2026-05-04",
+        "sourceVerified": true
+      }
+    },
+    {
+      "id": "waterloo",
+      "name": "Waterloo",
+      "tagline": "Cảm hứng từ ga Waterloo London — nhịp điệu đến và đi, kết nối các thế giới trong tinh thần đô thị hiện đại.",
+      "summary": "Những họa tiết hình học tinh tế và bảng màu minimalist hiện đại phản chiếu khả năng kết nối các thế giới của ga Waterloo, đồng thời giữ nguyên vẻ đẹp thuần khiết của cuộc sống đô thị.",
+      "detail": "Waterloo không chỉ mang đến thiết kế đẹp lấy cảm hứng từ dòng chảy liền mạch — bộ sưu tập còn cung cấp hiệu suất vượt trội khi cần thiết. Được xây dựng cho môi trường lưu lượng cao, những tile thảm này mang lại độ bền và linh hoạt tối ưu cho các không gian năng động ngày nay.",
+      "heroImage": "https://carpetsinter.com/wp-content/uploads/2025/11/Waterloo-WL201-adjust-scaled.jpg",
+      "gallery": [
+        "https://carpetsinter.com/wp-content/uploads/2025/11/Waterloo-WL201-adjust-scaled.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/10/2.jpeg",
+        "https://carpetsinter.com/wp-content/uploads/2025/10/Waterloo.WL203.Random-scaled-e1760409033712.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/10/5.jpeg",
+        "https://carpetsinter.com/wp-content/uploads/2025/10/WL204.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/10/WL202.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/11/WL201.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/10/WL205.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/11/WL201-ADJUST-COLOR.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/10/WL202-1.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/10/WL203.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/10/WL204-1.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/10/WL205-1.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/10/WL206.jpg"
+      ],
+      "accent": "#f0ac48",
+      "quickFacts": [
+        "Phong vị urban contemporary",
+        "6 mã tiêu biểu dễ triển khai",
+        "Tạo hình ảnh năng động nhưng vẫn sang trọng"
+      ],
+      "applications": [
+        "Trụ sở công ty",
+        "Coworking premium",
+        "Không gian thương mại hiện đại"
+      ],
+      "products": [
+        { "code": "WL201", "name": "Waterloo 201", "highlights": ["Tạo nền sắc sảo", "Dễ kết hợp vật liệu kim loại và gỗ tối"] },
+        { "code": "WL202", "name": "Waterloo 202", "highlights": ["Đem lại cảm giác sáng rõ hơn", "Phù hợp khu vực tiếp xúc cao"] },
+        { "code": "WL203", "name": "Waterloo 203", "highlights": ["Nhịp texture đô thị", "Tăng cảm giác chiều sâu"] },
+        { "code": "WL204", "name": "Waterloo 204", "highlights": ["Mạnh mẽ, cao cấp", "Phù hợp làm lựa chọn chủ đạo"] },
+        { "code": "WL205", "name": "Waterloo 205", "highlights": ["Tinh chỉnh ánh sáng nền", "Tạo trải nghiệm cao cấp trực tiếp"] },
+        { "code": "WL206", "name": "Waterloo 206", "highlights": ["Nhấn chất hiện đại", "Tăng độ chuyên nghiệp cho không gian"] }
+      ],
+      "resources": [
+        { "label": "Brochure Waterloo", "type": "brochure", "url": "https://carpetsinter.com/wp-content/uploads/2025/10/Waterloo-BLBC-by-Carpets-Inter.pdf" },
+        { "label": "Spec Sheet Waterloo", "type": "spec", "url": "https://carpetsinter.com/wp-content/uploads/2025/10/v25-BLBC-London-Waterloo-EcoSoftEcoSquare.pdf" },
+        { "label": "Hướng dẫn lắp đặt EcoSoft", "type": "guide", "url": "https://carpetsinter.com/wp-content/uploads/2023/08/EcoSoft-Carpet-Tile-Installation-Guideline-Nov-2023-AL.pdf" },
+        { "label": "Hướng dẫn lắp đặt EcoSquare", "type": "guide", "url": "https://carpetsinter.com/wp-content/uploads/2023/08/EcoSquare-Carpet-Tile-Installation-Guideline-July-2023.pdf" }
+      ],
+      "metadata": {
+        "lastUpdated": "2026-05-04",
+        "sourceVerified": true
+      }
+    },
+    {
+      "id": "architexture-connect",
+      "name": "Architexture Connect",
+      "tagline": "Kiến trúc là người kể chuyện — cầu nối văn minh nhân loại xuyên thời gian, từ những tòa nhà chọc trời đến di tích cổ xưa.",
+      "summary": "Architexture Connect là sự tiến hóa của mẫu thảm kinh điển vượt thời gian, được thiết kế để bổ sung cho những nhu cầu không ngừng thay đổi của không gian nội thất. Những nơi chúng ta làm việc, nghỉ ngơi, vui chơi, học tập và chữa lành — tất cả đều đang tiến hóa và kết nối theo những cách chưa từng có.",
+      "detail": "Được thiết kế để kết nối các không gian một cách liền mạch — Carpets Inter mang đến Architexture Connect để giúp bạn kết nối những không gian sẽ định hình tương lai của chúng ta. Carpets Inter: making connections.",
+      "heroImage": "https://carpetsinter.com/wp-content/uploads/2024/04/AC05-Bangkok-AC51-Silom-2-scaled-e1713320553884.jpg",
+      "gallery": [
+        "https://carpetsinter.com/wp-content/uploads/2024/04/1-scaled-e1713861484631.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/04/AC05-Bangkok-AC51-Silom-2-scaled-e1713320553884.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/04/AC03-AC04-AC-41-1-scaled-e1713322583733.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/04/dreamstime_l_88475857-Copy-scaled.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/04/AC07-AC71-FL36-scaled-e1713322322463.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/04/AC05-FL2738-1-scaled.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/04/AC06-AC61-1-scaled-e1713321299486.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/04/AC01-Baku.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/04/AC02-Malabar.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/04/AC03-Bucharest.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/04/AC04-Shanghai.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/04/AC05-Bangkok-2-m-x-97-cm.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/04/AC06-Istanbul.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/04/AC07-Paris.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/04/AC41-JingAn.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/04/AC51-Silom.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/04/AC61-Taksim.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/04/AC71-Montmartre.jpg"
+      ],
+      "accent": "#f3b55c",
+      "quickFacts": [
+        "Tập trung vào tính kết nối thiết kế",
+        "Thích hợp không gian thương hiệu mạnh",
+        "Kết hợp tốt với concept cao cấp hiện đại"
+      ],
+      "applications": [
+        "Sales gallery",
+        "Không gian trưng bày",
+        "Văn phòng sáng tạo"
+      ],
+      "products": [
+        { "code": "AC01", "name": "Baku", "highlights": ["Cân bằng giữa texture và sự gọn gàng", "Dễ sử dụng trên nhiều mặt bằng"] },
+        { "code": "AC02", "name": "Malabar", "highlights": ["Gợi cảm giác tự nhiên", "Tăng độ ấm cho không gian"] },
+        { "code": "AC03", "name": "Bucharest", "highlights": ["Cá tính rõ rệt", "Thích hợp khu vực điểm nhấn"] },
+        { "code": "AC04", "name": "Shanghai", "highlights": ["Hiện đại và tinh vi", "Tạo độ sang cho khu vực giao tiếp"] },
+        { "code": "AC05", "name": "Bangkok", "highlights": ["Tính đô thị tinh tế", "Tạo nhịp điệu sang trọng cho mặt sàn"] },
+        { "code": "AC06", "name": "Istanbul", "highlights": ["Đậm chất thiết kế", "Tăng tính nhận diện thương hiệu"] },
+        { "code": "AC07", "name": "Paris", "highlights": ["Kết nối các vùng chức năng", "Giúp layout liền mạch hơn"] },
+        { "code": "AC51", "name": "Silom", "highlights": ["Bề mặt giàu cá tính", "Nổi bật trong các khu vực điểm nhấn"] }
+      ],
+      "resources": [
+        { "label": "Brochure Architexture Connect", "type": "brochure", "url": "https://carpetsinter.com/wp-content/uploads/2025/07/Architexture-Connect-Collection-by-Carpets-Inter.pdf" },
+        { "label": "Spec Sheet Architexture Connect", "type": "spec", "url": "https://carpetsinter.com/wp-content/uploads/2025/07/v25-Architexture-Connect.pdf" },
+        { "label": "Hướng dẫn lắp đặt EcoSoft", "type": "guide", "url": "https://carpetsinter.com/wp-content/uploads/2023/08/EcoSoft-Carpet-Tile-Installation-Guideline-Nov-2023-AL.pdf" },
+        { "label": "Hướng dẫn lắp đặt EcoSquare", "type": "guide", "url": "https://carpetsinter.com/wp-content/uploads/2023/08/EcoSquare-Carpet-Tile-Installation-Guideline-July-2023.pdf" }
+      ],
+      "metadata": {
+        "lastUpdated": "2026-05-04",
+        "sourceVerified": true
+      }
+    },
+    {
+      "id": "ebb-retreat",
+      "name": "EBB Retreat",
+      "tagline": "Upstream EBB & Flow — nhịp thủy triều của đại dương, hành trình tái chế 1 tỷ chai nhựa thành những thảm tile cao cấp.",
+      "summary": "Dòng chảy của biển là chuyển động không ngừng từ những con suối nhỏ đến sông rộng và đại dương bao la. EBB Retreat được thiết kế để nêu bật hơn 10 năm Carpets Inter đã ngăn chặn rác thải nhựa từ đại dương trở thành một phần của vòng tuần hoàn thiên nhiên quý giá này.",
+      "detail": "Hiệu ứng gợn sóng từ tư duy thiết kế bền vững dài hạn có thể tạo ra tác động lớn nhất đến môi trường và sức khỏe hành tinh. 1 tỷ chai nhựa đã được thu gom và tái chế — ngăn chúng rơi vào bãi chôn lấp và ô nhiễm đại dương.",
+      "heroImage": "https://carpetsinter.com/wp-content/uploads/2025/12/EBR04-42-Herringbone-roomscene-1.jpg",
+      "gallery": [
+        "https://carpetsinter.com/wp-content/uploads/2022/08/EB01_EB02.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2026/04/EB04_EB05.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2026/04/Blue-scaled.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/01/EBR31-lr.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/12/EBR04-42-Herringbone-roomscene-1.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/12/EBR001-05-Random-brick-lr.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/01/EBR22-lr.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2022/08/EB03EB04andSM01-e1669097682284.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/01/EBR21-lr.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/01/Mangrove-Herringbone-lr.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2022/08/20160901_141152-e1669097741564.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/12/EBR01-Brook-1.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/12/EBR02-Billabong-1.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/12/EBR03-Mangrove-1.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/12/EBR04-Loch-1.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2025/12/EBR05-Reef-1.jpg"
+      ],
+      "accent": "#e0a04e",
+      "quickFacts": [
+        "Ngôn ngữ mềm mại, thư giãn",
+        "Phù hợp hospitality & lounge",
+        "Giàu giá trị cảm xúc cho người xem"
+      ],
+      "applications": [
+        "Lounge cao cấp",
+        "Phòng chờ",
+        "Resort office & hospitality"
+      ],
+      "products": [
+        { "code": "EBR01", "name": "Brook", "highlights": ["Êm dịu và cân bằng", "Phù hợp khu vực đón tiếp sang trọng"] },
+        { "code": "EBR02", "name": "Billabong", "highlights": ["Hiệu ứng mềm", "Tạo cảm giác nghỉ dưỡng tinh tế"] },
+        { "code": "EBR03", "name": "Mangrove", "highlights": ["Chuyển động tự nhiên", "Cho mặt sàn chiều sâu giàu cảm xúc"] },
+        { "code": "EBR04", "name": "Loch", "highlights": ["Tăng độ ấm và chiều sâu", "Phù hợp không gian hospitality"] },
+        { "code": "EBR05", "name": "Reef", "highlights": ["Tạo cá tính nhẹ nhàng", "Làm giàu trải nghiệm thị giác"] },
+        { "code": "EBR21", "name": "Retreat 21", "highlights": ["Màu sắc dịu", "Phù hợp không gian nghỉ và tiếp khách"] },
+        { "code": "EBR22", "name": "Retreat 22", "highlights": ["Tinh chỉnh chiều sâu ánh sáng", "Mang lại sự ấm áp tinh tế"] },
+        { "code": "EBR31", "name": "Flow 31", "highlights": ["Nhịp bề mặt tự nhiên", "Tăng cảm giác sang trọng mềm"] }
+      ],
+      "resources": [
+        { "label": "Spec Sheet Upstream EBB & Flow", "type": "spec", "url": "https://carpetsinter.com/wp-content/uploads/2025/07/v25-Upstream-EBB-Flow.pdf" },
+        { "label": "Hướng dẫn lắp đặt EcoSoft", "type": "guide", "url": "https://carpetsinter.com/wp-content/uploads/2023/03/EcoSoftCarpetTileInstallationGuideline-11.pdf" },
+        { "label": "Brochure EcoSoft", "type": "brochure", "url": "https://carpetsinter.com/wp-content/uploads/2023/03/EcoSoftBrochurebyCarpetsInter-4.pdf" }
+      ],
+      "metadata": {
+        "lastUpdated": "2026-05-04",
+        "sourceVerified": true
+      }
+    },
+    {
+      "id": "discover",
+      "name": "Discover",
+      "tagline": "Qua dòng lịch sử, các nhà thám hiểm đã khai quật ký ức, khám phá vẻ đẹp từ quá khứ — mỗi góc trái đất ẩn chứa một câu chuyện chờ được tìm thấy.",
+      "summary": "Discover là bộ sưu tập thảm tile modular lấy cảm hứng từ lịch sử và những câu chuyện được hé lộ qua sự khác biệt về văn hóa, truyền thống khắp thế giới. Các công trình lịch sử và nghề thủ công địa phương định hình quá khứ và giúp chúng ta xác định tương lai.",
+      "detail": "Từ hang động tự nhiên đến nghệ thuật thư pháp, từ đỉnh núi đến dòng thác — Discover kể câu chuyện của mỗi vùng đất qua ngôn ngữ bề mặt thảm. Người thợ thủ công địa phương dệt nên tấm thảm phong phú mà chúng ta được khám phá qua từng mẫu thiết kế độc đáo.",
+      "heroImage": "https://carpetsinter.com/wp-content/uploads/2023/05/DV200_202-e1684310233612.jpg",
+      "gallery": [
+        "https://carpetsinter.com/wp-content/uploads/2023/04/DV300-DV201.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2023/05/DV100_DV102.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2023/04/shutterstock_1101171464-ใหม่-2.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2023/05/DV200_202-e1684310233612.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2022/08/WATERFALL-DV-900.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2022/08/CAVE-DV100-and-CALLIGRAPHY-DV102.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2022/08/MOUNTAIN-DV200-and-MOSAIC-DV202.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2022/09/DV100CAVE..jpg",
+        "https://carpetsinter.com/wp-content/uploads/2022/09/DV102..jpg",
+        "https://carpetsinter.com/wp-content/uploads/2022/09/DV103..jpg",
+        "https://carpetsinter.com/wp-content/uploads/2022/09/DV104..jpg",
+        "https://carpetsinter.com/wp-content/uploads/2022/09/DV200MOUNTAIN..jpg",
+        "https://carpetsinter.com/wp-content/uploads/2022/09/DV201..jpg",
+        "https://carpetsinter.com/wp-content/uploads/2022/09/DV202..jpg",
+        "https://carpetsinter.com/wp-content/uploads/2022/09/DV300..jpg",
+        "https://carpetsinter.com/wp-content/uploads/2022/09/DV900..jpg"
+      ],
+      "accent": "#ffb049",
+      "quickFacts": [
+        "Danh mục phong phú, dễ lựa chọn nhanh",
+        "Nhiều mã thiết kế cho từng câu chuyện không gian",
+        "Phù hợp tư vấn bán hàng trực tiếp"
+      ],
+      "applications": [
+        "Văn phòng sáng tạo",
+        "Không gian bán lẻ",
+        "Khu vực trải nghiệm thương hiệu"
+      ],
+      "products": [
+        { "code": "DV100", "name": "Cave", "highlights": ["Cảm hứng tự nhiên", "Mang lại nền sang trọng và ấm"] },
+        { "code": "DV102", "name": "Calligraphy", "highlights": ["Nhịp nét mềm như thư pháp", "Tăng tính nghệ thuật cho mặt sàn"] },
+        { "code": "DV103", "name": "Tattoo", "highlights": ["Cá tính rõ nét", "Phù hợp không gian muốn tạo dấu ấn"] },
+        { "code": "DV104", "name": "Henna", "highlights": ["Chi tiết tinh tế", "Mang sắc thái thủ công cao cấp"] },
+        { "code": "DV200", "name": "Mountain", "highlights": ["Tạo chiều sâu địa hình", "Giúp không gian vững và sang"] },
+        { "code": "DV201", "name": "Batik", "highlights": ["Chất cảm văn hoá đương đại", "Gia tăng độ độc đáo cho dự án"] },
+        { "code": "DV202", "name": "Mosaic", "highlights": ["Nhịp điệu trang trí mạnh", "Tăng sức hút ở khu vực trưng bày"] },
+        { "code": "DV300", "name": "Storyline", "highlights": ["Tạo cảm giác kể chuyện", "Phù hợp điểm chạm thương hiệu"] },
+        { "code": "DV900", "name": "Waterfall", "highlights": ["Mềm mại như dòng chảy", "Tạo cảm giác thư giãn cao cấp"] }
+      ],
+      "resources": [
+        { "label": "Brochure Discover", "type": "brochure", "url": "https://carpetsinter.com/wp-content/uploads/2025/07/Discover-Collection-by-Carpets-Inter-Sept-2025.pdf" },
+        { "label": "Spec Sheet Discover", "type": "spec", "url": "https://carpetsinter.com/wp-content/uploads/2025/07/v25-Discover.pdf" },
+        { "label": "Hướng dẫn lắp đặt EcoSoft", "type": "guide", "url": "https://carpetsinter.com/wp-content/uploads/2023/08/EcoSoft-Carpet-Tile-Installation-Guideline-Nov-2023-AL.pdf" },
+        { "label": "Hướng dẫn lắp đặt EcoSquare", "type": "guide", "url": "https://carpetsinter.com/wp-content/uploads/2023/08/EcoSquare-Carpet-Tile-Installation-Guideline-July-2023.pdf" }
+      ],
+      "metadata": {
+        "lastUpdated": "2026-05-04",
+        "sourceVerified": true
+      }
+    },
+    {
+      "id": "flatlands",
+      "name": "Flatlands",
+      "tagline": "Đặt tên theo những vùng đồng bằng rộng lớn bao phủ trái đất — texture đơn sắc lý tưởng để tạo nên diện mạo tổng thể thống nhất cho không gian.",
+      "summary": "Flatlands cung cấp nền tảng chức năng hiệu suất cao cho các không gian. Có thể sử dụng độc lập hoặc phối hợp cùng các collection Mesa, Over the Ocean và Across the Sea như một tọa độ màu sắc hoàn hảo.",
+      "detail": "Texture đồng nhất của Flatlands lý tưởng để tạo nên vẻ ngoài tổng thể cho mặt sàn. Với đa dạng màu sắc — bao gồm cả Limited Stock và Made-to-Order — Flatlands là nền tảng thẩm mỹ linh hoạt nhất trong danh mục Carpets Inter. Có sẵn kích thước 50×50 cm và 25×100 cm.",
+      "heroImage": "https://carpetsinter.com/wp-content/uploads/2023/04/FL0104242528333738-scaled.jpg",
+      "gallery": [
+        "https://carpetsinter.com/wp-content/uploads/2023/04/FL0104242528333738-scaled.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2023/01/FL0104363839-scaled.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2022/11/Flatlands-scaled.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2023/06/FL0110242837.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2022/08/FL11-with-Breaking-Waves-Collection.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2022/08/Flatlands-is-an-overall-texture-that-is-ideal-for-a-monotone-look-on-the-floor.-Flatlands-can-be-used-by-itself-or-coordinate-it-with-the-other-patterns..jpg",
+        "https://carpetsinter.com/wp-content/uploads/2022/08/FL02-FL11-and-FL15-e1668747237702.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2022/09/FL27YilanReplaceFL23NM005-2150x50cm-3.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2022/09/FL28StoraReplaceFL06NM007-2150x50cm-3.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2022/09/FL30MessaraNM009-2250X50CM-1.jpeg",
+        "https://carpetsinter.com/wp-content/uploads/2022/09/FL04Omo-2.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2022/09/FL29NurraReplaceFL09NM020-2150X50CM-1.jpeg",
+        "https://carpetsinter.com/wp-content/uploads/2022/09/FL01Gola-2.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2022/09/FL25ManitotoReplacePH02NM014-2150x50cm-1.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2022/09/FL02Ganges-2.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2022/09/FL11Lena-2.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2022/09/FL15Yukon-2.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2022/09/FL36Niger-1.jpg"
+      ],
+      "accent": "#f0b25b",
+      "quickFacts": [
+        "Thiết kế tinh giản, thanh lịch",
+        "Có tùy chọn Limited Stock/Made to Order Colors",
+        "Rất phù hợp không gian cao cấp tiết chế"
+      ],
+      "applications": [
+        "Office suite",
+        "Không gian điều hành",
+        "Boutique showroom"
+      ],
+      "products": [
+        { "code": "FL01", "name": "Gola", "highlights": ["Tông nền sạch và sâu", "Nâng giá trị trực quan cho nội thất"] },
+        { "code": "FL02", "name": "Ganges", "highlights": ["Tối giản nhưng không đơn điệu", "Tạo cảm giác trưởng thành"] },
+        { "code": "FL04", "name": "Omo", "highlights": ["Texture mảnh và tinh tế", "Phù hợp nhiều không gian hiện đại"] },
+        { "code": "FL11", "name": "Lena", "highlights": ["Dễ phối đa vật liệu", "Phù hợp nhiều diện tích"] },
+        { "code": "FL15", "name": "Yukon", "highlights": ["Giữ nền sâu và êm", "Tăng cảm giác sang trọng nền tảng"] },
+        { "code": "FL27", "name": "Yilan", "highlights": ["Tạo cá tính nhẹ", "Phù hợp khu vực muốn điểm nhấn tiết chế"] },
+        { "code": "FL28", "name": "Stora", "highlights": ["Cân bằng tốt giữa sáng và tối", "Dễ dùng trong bố cục cao cấp"] },
+        { "code": "FL29", "name": "Nurra", "highlights": ["Gọn gàng, sâu sắc", "Tạo sự chỉn chu rõ rệt"] },
+        { "code": "FL30", "name": "Messara", "highlights": ["Nét tối giản mạnh", "Thích hợp concept trưởng thành"] },
+        { "code": "FL36", "name": "Niger", "highlights": ["Nhấn nhẹ texture", "Đem lại sự sang trọng tinh vi"] }
+      ],
+      "resources": [
+        { "label": "Brochure Flatlands", "type": "brochure", "url": "https://carpetsinter.com/wp-content/uploads/2024/02/Flatlands-by-Carpets-Inter.pdf" },
+        { "label": "Spec Sheet Flatlands", "type": "spec", "url": "https://carpetsinter.com/wp-content/uploads/2025/07/v25-Flatlands.pdf" },
+        { "label": "Hướng dẫn lắp đặt EcoSoft", "type": "guide", "url": "https://carpetsinter.com/wp-content/uploads/2023/08/EcoSoft-Carpet-Tile-Installation-Guideline-Nov-2023-AL.pdf" },
+        { "label": "Hướng dẫn lắp đặt EcoSquare", "type": "guide", "url": "https://carpetsinter.com/wp-content/uploads/2023/08/EcoSquare-Carpet-Tile-Installation-Guideline-July-2023.pdf" },
+        { "label": "Lưu ý mối nối Modular Carpet Tile", "type": "guide", "url": "https://carpetsinter.com/wp-content/uploads/2023/06/Visibility-of-Modular-Carpet-Tile-Joints.pdf" }
+      ],
+      "metadata": {
+        "lastUpdated": "2026-05-04",
+        "sourceVerified": true
+      }
+    },
+    {
+      "id": "aspekt-vue",
+      "name": "Aspekt: Vue",
+      "tagline": "Vue mang đến góc nhìn mới mẻ, nắm bắt tinh thần hiện đại với phong cách táo bạo và tầm nhìn tiên phong.",
+      "summary": "Aspekt: Vue là sự hòa quyện giữa chất lượng cao cấp và thiết kế hướng đến tương lai, dành cho những người lãnh đạo muốn tạo dấu ấn lâu dài. Mỗi tile được thiết kế để truyền cảm hứng — phản chiếu tầm nhìn táo bạo và động lực của người kế nhiệm sẵn sàng dẫn dắt.",
+      "detail": "Collection không chỉ nâng cao sức khỏe qua tiện nghi và khả năng cách âm mà còn hỗ trợ bền vững với vật liệu tập trung vào giảm carbon. Bước đi trên Aspekt-Vue là trải nghiệm của sự lãnh đạo, tự tin và mục đích — nơi đổi mới nảy sinh và trách nhiệm môi trường gặp gỡ xuất sắc.",
+      "heroImage": "https://carpetsinter.com/wp-content/uploads/2024/10/Vue-e1728381708911.jpg",
+      "gallery": [
+        "https://carpetsinter.com/wp-content/uploads/2024/10/Vue-e1728381708911.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/10/vue-1-e1730109126599.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/10/vue-2-2.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/10/vue-2.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/10/vue-5.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/10/vue-6.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/10/AKV02-Imagine-1.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/10/AKV03-Clarity-1.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/10/AKV01-Ambition-1.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/10/AKV02-Imagine-2.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/10/AKV01-AMBITION.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/10/AKV02-IMAGINE.jpg",
+        "https://carpetsinter.com/wp-content/uploads/2024/10/AKV03-CLARITY.jpg"
+      ],
+      "accent": "#ffc169",
+      "quickFacts": [
+        "Hiện đại, thanh mảnh, giàu chiều sâu",
+        "Tạo ấn tượng trực tiếp cho người xem",
+        "Rất hợp phong cách luxury tối giản"
+      ],
+      "applications": [
+        "Sảnh tiếp đón",
+        "Showroom thương hiệu",
+        "Không gian tư vấn cao cấp"
+      ],
+      "products": [
+        { "code": "AKV01", "name": "Ambition", "highlights": ["Đường nét tinh tế", "Tăng độ thanh lịch cho toàn bộ không gian"] },
+        { "code": "AKV02", "name": "Imagine", "highlights": ["Gợi chiều sâu nhẹ", "Mang lại cảm giác cao cấp dễ nhận thấy"] },
+        { "code": "AKV03", "name": "Clarity", "highlights": ["Phù hợp các dự án cần điểm nhấn thẩm mỹ", "Giữ được tính ứng dụng cao"] }
+      ],
+      "resources": [
+        { "label": "Brochure Aspekt: Vue", "type": "brochure", "url": "https://carpetsinter.com/wp-content/uploads/2024/10/Aspekt-Vue-by-Carpets-Inter.pdf" },
+        { "label": "Spec Sheet Aspekt: Vue", "type": "spec", "url": "https://carpetsinter.com/wp-content/uploads/2025/07/v25-Aspekt-Vue.pdf" },
+        { "label": "Hướng dẫn lắp đặt EcoSoft", "type": "guide", "url": "https://carpetsinter.com/wp-content/uploads/2023/08/EcoSoft-Carpet-Tile-Installation-Guideline-Nov-2023-AL.pdf" },
+        { "label": "Hướng dẫn lắp đặt EcoSquare", "type": "guide", "url": "https://carpetsinter.com/wp-content/uploads/2023/08/EcoSquare-Carpet-Tile-Installation-Guideline-July-2023.pdf" }
+      ],
+      "metadata": {
+        "lastUpdated": "2026-05-04",
+        "sourceVerified": true
+      }
+    }
+  ]
+}

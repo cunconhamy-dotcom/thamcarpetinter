@@ -1,0 +1,43 @@
+---
+description: "Quy tắc tổng quan dự án website thảm sàn Carpets Inter Vietnam"
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Dự Án: Website Thảm Sàn Carpets Inter Vietnam
+
+## Tổng Quan
+Website trưng bày và bán hàng thảm sàn cao cấp Carpets Inter cho thị trường Việt Nam.
+- **Stack:** React 19 + TypeScript + Vite + TailwindCSS 4 + Framer Motion + React Router 7
+- **Data Layer:** JSON files trong `src/data/` — type-safe, dễ chỉnh sửa, dễ migrate
+- **Ngôn ngữ UI:** Tiếng Việt (nội dung) + tiếng Anh (code, comments)
+
+## Nguyên Tắc Thiết Kế
+- **Dark luxury aesthetic:** nền `#120b08`, accent `#f29d38` / `#ffbe63`
+- **Glassmorphism:** `backdrop-blur`, `bg-white/6`, `border-white/10`
+- **Serif headings + sans body:** dùng Google Fonts Inter + Playfair Display
+- **Framer Motion** cho tất cả animations — không dùng CSS transitions thuần
+
+## Cấu Trúc Thư Mục Quan Trọng
+- `src/data/` — JSON data, chỉnh sửa nội dung TẠI ĐÂY
+- `src/types/` — TypeScript interfaces, source of truth
+- `src/components/` — Reusable components
+- `src/pages/` — Route-level components
+- `.cursor/rules/` — Cursor rules cho từng agent
+
+## Brand Guidelines
+- Tên thương hiệu: **Carpets Inter** (không viết tắt)
+- Màu chính: `#f29d38` (amber), `#ffbe63` (gold light)
+- Tone: Sang trọng, chuyên nghiệp, có chiều sâu — KHÔNG bình dân hóa
+- Tagline nguồn: "Elevate Spaces, Empower Living"
+
+## Quy Tắc Code
+- Luôn dùng TypeScript strict mode
+- Import paths: dùng alias `@/` cho `src/`
+- Component files: PascalCase (`CollectionCard.tsx`)
+- Data files: camelCase (`collections.json`)
+- Không dùng `any` type — luôn khai báo type rõ ràng
+- Mọi component phải có JSDoc comment ngắn
+
+## Thông Tin Liên Hệ (Website VN — KHÔNG thay đổi)
+Phần `contactInfo` trong data là thông tin của đại lý Việt Nam — KHÔNG dùng thông tin trụ sở Thái Lan.

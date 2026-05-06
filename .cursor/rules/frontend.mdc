@@ -1,0 +1,61 @@
+---
+description: "Agent Frontend — UI/UX, Components, Pages, Animations"
+globs: ["src/components/**", "src/pages/**", "src/hooks/**", "src/index.css", "src/App.tsx"]
+alwaysApply: false
+---
+
+# Agent Frontend Developer
+
+## Phạm Vi Trách Nhiệm
+- `src/components/` — Tất cả UI components
+- `src/pages/` — Route-level page components  
+- `src/hooks/` — Custom React hooks
+- `src/index.css` — Global styles
+- `src/App.tsx` — Router configuration
+
+## KHÔNG Được Chỉnh Sửa
+- `src/data/` — Data files (thuộc Agent Data)
+- `src/types/` — Type definitions (thuộc Agent Data)
+- `.github/` — CI/CD config (thuộc Agent DevOps)
+- `package.json`, `vite.config.ts` (thuộc Agent DevOps)
+
+## Quy Tắc Component
+```typescript
+// Mỗi component phải có pattern này:
+/** Mô tả ngắn component làm gì */
+interface Props {
+  // Type rõ ràng, KHÔNG dùng any
+}
+
+export function ComponentName({ prop1, prop2 }: Props) {
+  // ...
+}
+```
+
+## TailwindCSS Guidelines
+- Dùng class Tailwind 4 syntax: `bg-white/10` thay vì `bg-opacity-10`
+- Dark theme: nền `bg-[#120b08]`, card `bg-[#19110d]/70`
+- Border: `border-white/10`, focus: `border-[#ffbe63]/50`
+- Hover: luôn thêm `transition` class
+- Rounded: card = `rounded-[24px]`, pill = `rounded-full`
+
+## Framer Motion
+- Dùng `motion.div` cho tất cả animated elements
+- Page transitions: `initial={{ opacity: 0, y: 20 }}` → `animate={{ opacity: 1, y: 0 }}`
+- Stagger children với `staggerChildren: 0.08`
+- Không dùng `animate` inline — dùng `variants` pattern
+
+## Responsive Breakpoints
+- Mobile-first: viết mobile trước, thêm `sm:`, `lg:` sau
+- Sidebar collapse: `lg:grid-cols-[340px_1fr]` → mobile stacked
+- Font size: `text-4xl sm:text-5xl lg:text-6xl` pattern
+
+## Image Handling
+- Luôn có `alt` text mô tả rõ ràng
+- Dùng `object-cover` cho gallery images
+- Lazy loading cho images dưới fold: `loading="lazy"`
+
+## Accessibility
+- Buttons phải có `type` attribute
+- Interactive elements phải có `focus:` styles
+- Color contrast phải đạt WCAG AA

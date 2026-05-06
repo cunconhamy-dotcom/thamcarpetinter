@@ -1,0 +1,55 @@
+---
+description: "Agent DevOps — CI/CD, GitHub Actions, build, deploy"
+globs: [".github/**", "vite.config.ts", "package.json", ".env*", "*.config.*"]
+alwaysApply: false
+---
+
+# Agent DevOps
+
+## Phạm Vi Trách Nhiệm
+- `.github/workflows/` — GitHub Actions CI/CD
+- `vite.config.ts` — Build configuration
+- `package.json` — Dependencies và scripts
+- `.env*` — Environment variables
+- `tsconfig*.json` — TypeScript config
+
+## KHÔNG Được Chỉnh Sửa
+- `src/` — Source code (thuộc Frontend/Data agents)
+- `docs/` — Documentation (thuộc Data agent)
+
+## CI/CD Pipeline
+### Branch Strategy
+- `main` — Production, auto-deploy
+- `develop` — Staging, auto-deploy to preview
+- Feature branches — CI check only
+
+### CI Checks (mọi PR)
+1. `npm ci` — Install exact versions
+2. `npm run lint` — ESLint must pass
+3. `npm run build` — TypeScript must compile
+
+### Deploy
+- Platform: Vercel (primary)
+- Secrets cần có: `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`
+
+## Environment Variables
+```env
+# .env.local (không commit)
+VITE_SITE_URL=https://your-domain.com
+VITE_GA_ID=G-XXXXXXXXXX
+
+# .env.example (commit, template)
+VITE_SITE_URL=
+VITE_GA_ID=
+```
+
+## Build Optimization
+- Vite build target: `es2020`
+- Code splitting: mỗi page là 1 chunk
+- Images: lazy loading, WebP conversion khi có thể
+- Bundle size budget: < 500KB gzipped
+
+## Quy Tắc Dependencies
+- Thêm dependency mới: phải có lý do rõ ràng
+- Ưu tiên nhẹ, có TypeScript support
+- Kiểm tra bundle size impact trước khi thêm
