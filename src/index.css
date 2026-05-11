@@ -1,14 +1,9 @@
 @import "tailwindcss";
 
-@theme {
-  --font-sans: "Inter", sans-serif;
-  --font-serif: "Playfair Display", serif;
-}
-
 :root {
   color: #ffffff;
   background: #120b08;
-  font-family: "Inter", "Segoe UI", sans-serif;
+  font-family: "Inter", "Noto Sans", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
 }
 
 html {
@@ -25,10 +20,6 @@ body {
 
 a {
   text-decoration: none;
-}
-
-.font-serif {
-  font-family: Georgia, "Times New Roman", serif;
 }
 
 ::-webkit-scrollbar {

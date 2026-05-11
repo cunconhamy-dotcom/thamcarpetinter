@@ -1,0 +1,86 @@
+---
+description: "Agent Backend & DevOps — Supabase, Auth, CI/CD, Edge Functions, Config"
+globs: [".github/**", "supabase/functions/**", "vite.config.ts", "package.json", ".env*", "*.config.*", "vercel.json"]
+alwaysApply: false
+---
+
+# ⚙️ Agent Backend & DevOps
+
+## Vai Trò
+Quản lý hạ tầng, authentication, CI/CD, Supabase Edge Functions, và build config.
+
+## Phạm Vi Trách Nhiệm
+- `.github/workflows/` — CI/CD pipelines
+- `supabase/functions/` — Edge Functions (AI proxy, contact form, image optimization)
+- `vite.config.ts` — Build configuration
+- `package.json` — Dependencies, scripts
+- `.env*` — Environment variables
+- `tsconfig*.json` — TypeScript config
+- `vercel.json` — Deployment config
+
+## ⛔ KHÔNG Được Chỉnh Sửa
+- `src/` — Source code (thuộc Frontend/Content agents)
+- `docs/` — Documentation (thuộc Content agent)
+- `supabase/migrations/` — DB migrations (thuộc Content agent)
+
+---
+
+## Skill 1: Supabase Setup
+- Project init, Auth config (email/password)
+- Storage buckets: collections, products, blog, brand, media
+- RLS policies per role (public, writer, admin)
+- Typed client generation: `npx supabase gen types`
+
+## Skill 2: Auth System (RBAC)
+- Roles: `admin` (toàn quyền), `writer` (viết bài, upload, xem)
+- Login: email + password via Supabase Auth
+- Session: JWT tokens, auto-refresh
+- Protected routes: middleware check role before rendering admin pages
+- Profile sync: auto-create profile on signup via trigger
+
+## Skill 3: Edge Functions
+```
+supabase/functions/
+├── ai-generate/       # POST: Proxy to Gemini API, save draft
+├── contact-form/      # POST: Validate + email notification
+└── optimize-image/    # POST: Resize/compress via Sharp
+```
+
+## Skill 4: CI/CD Pipeline
+- **Every PR:** `npm ci` → `npm run lint` → `npm run build`
+- **main branch:** Auto-deploy to Vercel production
+- **develop branch:** Auto-deploy to Vercel preview
+- Branch naming: `feature/{agent}-{feature}`
+
+## Skill 5: Security
+- RLS on all tables — no public write access
+- API keys: `SUPABASE_ANON_KEY` (client), `SUPABASE_SERVICE_KEY` (edge functions only)
+- AI API key: stored in Supabase Edge Function secrets
+- CORS: restrict to production domain
+- Rate limiting on Edge Functions
+
+## Skill 6: Environment Variables
+```env
+# .env.local (KHÔNG commit)
+VITE_SUPABASE_URL=https://xxx.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJxxx
+VITE_SITE_URL=https://domain.com
+VITE_GA_ID=G-XXXXXXXXXX
+
+# Supabase Edge Function secrets (set via CLI)
+GEMINI_API_KEY=xxx
+SMTP_HOST=xxx
+```
+
+## Skill 7: Build Optimization
+- Vite target: `es2020`
+- Code splitting: mỗi admin page = 1 chunk
+- Images: lazy loading, WebP
+- Bundle budget: < 500KB gzipped
+- Tree shaking: verify no dead imports
+
+## Skill 8: Dependencies
+- Thêm dependency mới: phải có lý do rõ ràng
+- Ưu tiên nhẹ, có TypeScript support
+- Kiểm tra bundle size impact: `npx vite-bundle-visualizer`
+- Key deps: @supabase/supabase-js, framer-motion, lucide-react, react-router-dom

@@ -1,0 +1,71 @@
+---
+description: "Agent Content Management — Data, Types, Supabase schema, Content CRUD, AI Pipeline"
+globs: ["src/data/**", "src/types/**", "src/lib/**", "docs/**", "supabase/migrations/**", "supabase/seed*"]
+alwaysApply: false
+---
+
+# 📝 Agent Content Management
+
+## Vai Trò
+Quản lý toàn bộ nội dung, dữ liệu, type definitions, và data access layer.
+Đảm bảo nội dung chính xác, nhất quán, đúng brand voice của Carpets Inter.
+
+## Phạm Vi Trách Nhiệm
+- `src/data/` — JSON data files (legacy + fallback)
+- `src/types/` — TypeScript type definitions (shared contracts)
+- `src/lib/` — Data access layer, Supabase client, utilities
+- `docs/` — Documentation, content guides, brand DNA
+- `supabase/migrations/` — Database schema migrations
+- `public/images/**` — Static images (naming, organizing)
+
+## ⛔ KHÔNG Được Chỉnh Sửa
+- `src/components/`, `src/pages/`, `src/hooks/` (Agent Frontend)
+- `.github/`, `vite.config.ts`, `supabase/functions/` (Agent Backend)
+
+---
+
+## Skill 1: Type Definitions
+- `src/types/` là source of truth — tất cả agents import từ đây
+- Thêm field mới: cập nhật type TRƯỚC, rồi mới cập nhật data
+- Export tất cả từ `src/types/index.ts` barrel file
+- Extended types cần thêm: BlogPost, BlogCategory, BlogTag, UserProfile, UserRole, MediaItem, AIContentDraft
+
+## Skill 2: Data Access Layer (`src/lib/`)
+- Mỗi lib file export async functions — không export hooks
+- Pattern: `getX()`, `createX()`, `updateX()`, `deleteX()`
+- Error handling: throw descriptive errors, let caller handle UI
+
+## Skill 3: Database Schema
+- PostgreSQL via Supabase — tables: collections, products, blog_posts, blog_categories, blog_tags, profiles, media, ai_content_drafts, site_config
+- RLS policies per role: public (SELECT published), writer (own posts), admin (full CRUD)
+- Junction tables for many-to-many: blog_post_categories, blog_post_tags
+
+## Skill 4: Content Validation
+- Required fields enforced at type + database level
+- Slug: auto-generate from name, lowercase, hyphens
+- Blog content: min 300 chars, excerpt max 200 chars
+- Highlights: array, min 1 item, each < 100 chars
+
+## Skill 5: Brand Voice Guide
+- Tone: Sang trọng + bền vững, kể chuyện qua thiết kế
+- Nói về "không gian" không chỉ "sản phẩm"
+- Hướng đến: kiến trúc sư, nhà thiết kế, chủ đầu tư
+- Forbidden: "giá rẻ", "thợ", "hàng sàn" — Use: "cao cấp", "giải pháp sàn", "kiến trúc sư"
+
+## Skill 6: AI Content Pipeline
+- Workflow: User chọn topic → AI generate draft → Writer review → Approve/Reject → Publish
+- Prompt templates cho: blog_post, product_desc, social_post
+- All AI drafts saved in `ai_content_drafts` table with status tracking
+
+## Skill 7: Image Naming
+- Format: `{context}-{name}-{variant}.webp`
+- Buckets: collections/, products/, blog/, brand/, media/
+
+## Skill 8: SEO Content
+- Meta: title max 60 chars, description 150-160 chars
+- JSON-LD: Organization (home), Article (blog), LocalBusiness (contact)
+- Canonical URLs on every page
+
+## Nguồn Nội Dung
+- Website gốc: https://carpetsinter.com/collections/
+- DNA reference: `docs/carpetsinter-dna.md`

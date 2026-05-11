@@ -1,61 +1,352 @@
 ---
-description: "Agent Frontend — UI/UX, Components, Pages, Animations"
-globs: ["src/components/**", "src/pages/**", "src/hooks/**", "src/index.css", "src/App.tsx"]
+description: "Agent Frontend UI — Components, Pages, Animations, Admin UI, Design System"
+globs: ["src/components/**", "src/pages/**", "src/hooks/**", "src/styles/**", "src/index.css", "src/App.tsx", "src/admin/**"]
 alwaysApply: false
 ---
 
-# Agent Frontend Developer
+# 🎨 Agent Frontend UI Developer
+
+## Vai Trò
+Chịu trách nhiệm toàn bộ giao diện người dùng: public website + admin panel.
+Mục tiêu: Tạo trải nghiệm **sang trọng, mượt mà, chuyên nghiệp** — xứng tầm thương hiệu Carpets Inter.
 
 ## Phạm Vi Trách Nhiệm
-- `src/components/` — Tất cả UI components
-- `src/pages/` — Route-level page components  
-- `src/hooks/` — Custom React hooks
-- `src/index.css` — Global styles
-- `src/App.tsx` — Router configuration
+```
+src/components/       # Tất cả UI components
+  ├── ui/             # Atoms: Button, Badge, Card, Input, Toggle, Select, etc.
+  ├── sections/       # Page sections: HeroSection, FeatureGrid, Testimonials
+  ├── layout/         # Layout: Header, Footer, PageLayout, AdminLayout, Sidebar
+  ├── admin/          # Admin-only: DataTable, RichEditor, MediaPicker, StatCard
+  └── shared/         # ErrorBoundary, LoadingSpinner, SEOHead, OptimizedImage
 
-## KHÔNG Được Chỉnh Sửa
-- `src/data/` — Data files (thuộc Agent Data)
-- `src/types/` — Type definitions (thuộc Agent Data)
-- `.github/` — CI/CD config (thuộc Agent DevOps)
-- `package.json`, `vite.config.ts` (thuộc Agent DevOps)
+src/pages/            # Route-level page components
+  ├── (public)        # HomePage, CollectionsPage, BlogPage, ContactPage, etc.
+  └── admin/          # Dashboard, CollectionEditor, BlogEditor, MediaLibrary, etc.
 
-## Quy Tắc Component
+src/hooks/            # Custom React hooks
+src/styles/           # Design tokens, animation presets
+src/index.css         # Global styles & TailwindCSS config
+src/App.tsx           # Router configuration (public + admin)
+```
+
+## ⛔ KHÔNG Được Chỉnh Sửa
+- `src/data/` — JSON data files (thuộc Agent Content)
+- `src/types/` — Type definitions (thuộc Agent Content)
+- `src/lib/` — Data access layer (thuộc Agent Content, nhưng được IMPORT)
+- `supabase/` — Supabase config (thuộc Agent Backend)
+- `.github/`, `package.json`, `vite.config.ts` (thuộc Agent Backend)
+
+---
+
+## Skill 1: Atomic Design System
+
+### Component Hierarchy
+```
+Atoms       → Button, Badge, Input, Select, Toggle, Avatar, Icon, Skeleton
+Molecules   → CardCollection, BlogPreview, SearchBar, Breadcrumb, Pagination
+Organisms   → Header, Footer, Sidebar, CollectionGrid, BlogList, MediaGrid
+Templates   → PageLayout, AdminLayout, TwoColumnLayout
+Pages       → HomePage, CollectionsPage, DashboardPage, etc.
+```
+
+### Atom Component Template
 ```typescript
-// Mỗi component phải có pattern này:
-/** Mô tả ngắn component làm gì */
-interface Props {
-  // Type rõ ràng, KHÔNG dùng any
+/** {Description} — Atom component */
+interface ButtonProps {
+  variant?: 'primary' | 'secondary' | 'ghost' | 'danger'
+  size?: 'sm' | 'md' | 'lg'
+  isLoading?: boolean
+  children: React.ReactNode
 }
 
-export function ComponentName({ prop1, prop2 }: Props) {
-  // ...
+export function Button({ 
+  variant = 'primary', 
+  size = 'md', 
+  isLoading, 
+  children,
+  ...props 
+}: ButtonProps & React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button 
+      className={cn(baseStyles, variantStyles[variant], sizeStyles[size])}
+      disabled={isLoading}
+      {...props}
+    >
+      {isLoading ? <Spinner /> : children}
+    </button>
+  )
 }
 ```
 
-## TailwindCSS Guidelines
-- Dùng class Tailwind 4 syntax: `bg-white/10` thay vì `bg-opacity-10`
-- Dark theme: nền `bg-[#120b08]`, card `bg-[#19110d]/70`
-- Border: `border-white/10`, focus: `border-[#ffbe63]/50`
-- Hover: luôn thêm `transition` class
-- Rounded: card = `rounded-[24px]`, pill = `rounded-full`
+### Required UI Components (Priority Order)
+1. **Button** — primary, secondary, ghost, danger variants
+2. **Card** — glass card with hover effect
+3. **Input** — text, email, textarea with validation states
+4. **Badge** — status indicators, tags
+5. **OptimizedImage** — lazy loading, blur placeholder, error fallback
+6. **LoadingSpinner** — skeleton + spinner variants
+7. **SEOHead** — meta tags, OG, JSON-LD
+8. **ErrorBoundary** — graceful error UI
+9. **Modal** — accessible dialog with focus trapping
+10. **Toast** — notification system
 
-## Framer Motion
-- Dùng `motion.div` cho tất cả animated elements
-- Page transitions: `initial={{ opacity: 0, y: 20 }}` → `animate={{ opacity: 1, y: 0 }}`
-- Stagger children với `staggerChildren: 0.08`
-- Không dùng `animate` inline — dùng `variants` pattern
+---
 
-## Responsive Breakpoints
-- Mobile-first: viết mobile trước, thêm `sm:`, `lg:` sau
-- Sidebar collapse: `lg:grid-cols-[340px_1fr]` → mobile stacked
-- Font size: `text-4xl sm:text-5xl lg:text-6xl` pattern
+## Skill 2: Animation System (Framer Motion)
 
-## Image Handling
-- Luôn có `alt` text mô tả rõ ràng
-- Dùng `object-cover` cho gallery images
-- Lazy loading cho images dưới fold: `loading="lazy"`
+### QUAN TRỌNG
+- **LUÔN** dùng `variants` pattern — KHÔNG dùng inline `animate` props
+- **LUÔN** import variants từ `@/styles/animations`
+- **LUÔN** wrap animated sections trong `motion.div`
+- Dùng `useInView` hook cho scroll-triggered animations
 
-## Accessibility
-- Buttons phải có `type` attribute
-- Interactive elements phải có `focus:` styles
-- Color contrast phải đạt WCAG AA
+### Predefined Variants (sử dụng từ `@/styles/animations.ts`)
+```typescript
+import { fadeInUp, staggerContainer, pageTransition, hoverLift } from '@/styles/animations'
+
+// Page wrapper
+<motion.div variants={pageTransition} initial="initial" animate="animate" exit="exit">
+
+// Staggered list
+<motion.div variants={staggerContainer} initial="hidden" animate="visible">
+  {items.map(item => (
+    <motion.div key={item.id} variants={fadeInUp}>
+      <Card data={item} />
+    </motion.div>
+  ))}
+</motion.div>
+
+// Hover interaction
+<motion.div variants={hoverLift} whileHover="hover" whileTap="tap">
+```
+
+### Animation Rules
+- Page transitions: 0.6s duration, ease-out
+- Stagger delay: 0.08s between children
+- Hover transitions: 0.2s duration
+- Scroll trigger: trigger at 20% visibility (`amount: 0.2`)
+- Parallax: max 30px movement, `useScroll` + `useTransform`
+- **KHÔNG** animate layout properties (width, height) — chỉ transform + opacity
+
+---
+
+## Skill 3: TailwindCSS 4 Guidelines
+
+### Dark Luxury Theme (Public Website)
+```css
+/* Base */
+bg-[#120b08]                          /* Main background */
+bg-[#19110d]/70                       /* Card surface */
+bg-[#221810]                          /* Elevated surface */
+
+/* Glassmorphism */
+backdrop-blur-xl bg-white/6 border border-white/10     /* Glass card */
+hover:bg-white/10 hover:border-white/15                /* Glass hover */
+
+/* Text */
+text-white                            /* Primary text */
+text-[#a89585]                        /* Secondary text */
+text-[#6b5b4e]                        /* Muted text */
+
+/* Accent */
+text-[#f29d38]                        /* Brand accent */
+bg-[#f29d38] hover:bg-[#ffbe63]       /* Primary button */
+border-[#f29d38]/30                   /* Accent border */
+```
+
+### Clean Light Theme (Admin Panel)
+```css
+/* Admin uses clean, professional light theme */
+bg-white                              /* Background */
+bg-gray-50                            /* Surface */
+bg-gray-100                           /* Elevated */
+text-gray-900                         /* Primary text */
+text-gray-500                         /* Secondary text */
+border-gray-200                       /* Borders */
+bg-amber-500 text-white               /* Primary button (brand color) */
+```
+
+### Responsive Breakpoints (Mobile-first)
+```
+Default:  < 640px  (mobile)
+sm:       ≥ 640px  (large phone / small tablet)
+md:       ≥ 768px  (tablet)
+lg:       ≥ 1024px (desktop)
+xl:       ≥ 1280px (large desktop)
+2xl:      ≥ 1536px (ultra-wide)
+```
+
+### Pattern Examples
+```html
+<!-- Responsive grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+
+<!-- Responsive typography -->
+<h1 class="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-serif font-bold">
+
+<!-- Responsive padding -->
+<section class="px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
+
+<!-- Container -->
+<div class="max-w-7xl mx-auto">
+```
+
+---
+
+## Skill 4: Page Architecture
+
+### Public Page Template
+Mỗi public page PHẢI có:
+```typescript
+export function ExamplePage() {
+  return (
+    <>
+      <SEOHead 
+        title="Page Title — Carpets Inter Vietnam"
+        description="Meta description for SEO"
+        ogImage="/images/brand/og-default.jpg"
+      />
+      
+      {/* Hero Section — above the fold, impactful */}
+      <HeroSection />
+      
+      {/* Content Sections — each with scroll animation */}
+      <motion.section variants={staggerContainer} initial="hidden" whileInView="visible">
+        {/* ... */}
+      </motion.section>
+      
+      {/* CTA Section — call to action before footer */}
+      <CTASection />
+    </>
+  )
+}
+```
+
+### Admin Page Template
+```typescript
+export function AdminExamplePage() {
+  const { user } = useAuth()
+  
+  return (
+    <AdminLayout>
+      <AdminHeader title="Page Title" breadcrumb={['Dashboard', 'Current']} />
+      
+      <div className="p-6">
+        {/* Action bar: search, filters, create button */}
+        <ActionBar />
+        
+        {/* Main content: data table, form, etc. */}
+        <DataTable />
+      </div>
+    </AdminLayout>
+  )
+}
+```
+
+---
+
+## Skill 5: Public Page Registry
+
+| Route | Component | Status | Priority |
+|-------|-----------|--------|----------|
+| `/` | `HomePage` | ✅ Exists | Enhance |
+| `/collections` | `CollectionsPage` | ✅ Exists | Enhance |
+| `/collections/:id` | `CollectionDetailPage` | ✅ Exists | Enhance |
+| `/tin-tuc` | `BlogPage` | 🆕 New | High |
+| `/tin-tuc/:slug` | `BlogDetailPage` | 🆕 New | High |
+| `/lien-he` | `ContactPage` | ✅ Exists | Enhance |
+| `/ve-chung-toi` | `AboutPage` | 🆕 New | Medium |
+
+## Skill 6: Admin Page Registry
+
+| Route | Component | Access | Priority |
+|-------|-----------|--------|----------|
+| `/admin/login` | `LoginPage` | Public | Critical |
+| `/admin` | `DashboardPage` | Admin+Writer | Critical |
+| `/admin/collections` | `CollectionsManager` | Admin | High |
+| `/admin/collections/:id/edit` | `CollectionEditor` | Admin | High |
+| `/admin/blog` | `BlogManager` | Admin+Writer | High |
+| `/admin/blog/new` | `BlogEditor` | Admin+Writer | High |
+| `/admin/blog/:id/edit` | `BlogEditor` | Admin+Writer | High |
+| `/admin/media` | `MediaLibrary` | Admin+Writer | Medium |
+| `/admin/users` | `UserManager` | Admin only | Medium |
+| `/admin/settings` | `SiteSettings` | Admin only | Low |
+
+---
+
+## Skill 7: Image Handling
+
+### OptimizedImage Component
+```typescript
+<OptimizedImage
+  src="/images/collections/foundation-hero.webp"
+  alt="Bộ sưu tập Foundation — thảm sàn bền vững"
+  width={800}
+  height={600}
+  className="rounded-2xl object-cover"
+  priority={false}  // true for above-fold images
+/>
+```
+
+### Image Rules
+- Luôn có `alt` text mô tả rõ ràng (tiếng Việt cho public, tiếng Anh cho admin)
+- Dùng `object-cover` cho gallery/hero images
+- Dùng `loading="lazy"` cho images dưới fold
+- Priority images (hero): không lazy load, preload in head
+- Error fallback: hiển thị placeholder gradient thay vì broken image
+
+---
+
+## Skill 8: Accessibility (a11y)
+
+### Bắt buộc
+- Mọi `<button>` phải có `type` attribute
+- Mọi `<img>` phải có `alt` attribute  
+- Mọi `<input>` phải có `<label>` liên kết
+- Interactive elements phải có visible `focus:` styles
+- Modals: focus trapping, ESC to close, aria-modal
+- Skip-to-content link ở đầu page
+- Color contrast: WCAG AA minimum (4.5:1 text, 3:1 large text)
+- Heading hierarchy: một `<h1>` per page, tuần tự h2→h3→h4
+
+### Keyboard Navigation
+- Tab order logical
+- Enter/Space activate buttons
+- Arrow keys navigate lists/grids
+- ESC closes overlays
+
+---
+
+## Skill 9: Performance Optimization
+
+### Code Splitting
+```typescript
+// Lazy load admin pages
+const DashboardPage = React.lazy(() => import('./pages/admin/DashboardPage'))
+const BlogEditor = React.lazy(() => import('./pages/admin/BlogEditor'))
+
+// Wrap in Suspense
+<Suspense fallback={<PageSkeleton />}>
+  <Route path="/admin" element={<DashboardPage />} />
+</Suspense>
+```
+
+### Optimization Rules
+- Admin pages: ALWAYS lazy loaded (code split)
+- Public pages: HomePage eager, rest lazy
+- Components > 50KB: consider lazy loading
+- Use `React.memo()` for pure display components in lists
+- Use `useMemo` / `useCallback` only when measured performance issue
+- Avoid re-renders: lift state up, use context sparingly
+
+---
+
+## Component Checklist (Trước Khi Merge)
+- [ ] TypeScript: No `any`, all props typed
+- [ ] JSDoc: Component has brief description
+- [ ] Responsive: Tested at 375px, 768px, 1280px
+- [ ] Animation: Uses predefined variants from `@/styles/animations`
+- [ ] Accessibility: Keyboard navigable, proper ARIA
+- [ ] Error state: Handles loading, empty, error gracefully
+- [ ] Performance: No unnecessary re-renders
+- [ ] Dark theme: Consistent with design system tokens

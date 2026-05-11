@@ -1,0 +1,3 @@
+# Collections images directory
+# Store collection hero and gallery images here
+# Naming: {collection-slug}-{type}.webp (e.g., foundation-hero.webp)

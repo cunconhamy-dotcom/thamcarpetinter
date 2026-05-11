@@ -1,43 +1,191 @@
 ---
-description: "Quy tắc tổng quan dự án website thảm sàn Carpets Inter Vietnam"
+description: "Constitution — Quy tắc tổng quan dự án Carpets Inter Vietnam. Áp dụng cho TẤT CẢ agents."
 globs: ["**/*"]
 alwaysApply: true
 ---
 
-# Dự Án: Website Thảm Sàn Carpets Inter Vietnam
+# 🏛️ Dự Án: Website Thảm Sàn Carpets Inter Vietnam
 
-## Tổng Quan
-Website trưng bày và bán hàng thảm sàn cao cấp Carpets Inter cho thị trường Việt Nam.
-- **Stack:** React 19 + TypeScript + Vite + TailwindCSS 4 + Framer Motion + React Router 7
-- **Data Layer:** JSON files trong `src/data/` — type-safe, dễ chỉnh sửa, dễ migrate
-- **Ngôn ngữ UI:** Tiếng Việt (nội dung) + tiếng Anh (code, comments)
+## Tổng Quan Dự Án
+Website trưng bày, bán hàng và quản trị nội dung thảm sàn cao cấp Carpets Inter cho thị trường Việt Nam.
 
-## Nguyên Tắc Thiết Kế
-- **Dark luxury aesthetic:** nền `#120b08`, accent `#f29d38` / `#ffbe63`
-- **Glassmorphism:** `backdrop-blur`, `bg-white/6`, `border-white/10`
-- **Serif headings + sans body:** dùng Google Fonts Inter + Playfair Display
-- **Framer Motion** cho tất cả animations — không dùng CSS transitions thuần
+### Technology Stack
+| Layer | Technology |
+|-------|-----------|
+| **Frontend** | React 19 + TypeScript 5.9 + Vite 7 |
+| **Styling** | TailwindCSS 4 + Custom CSS |
+| **Animation** | Framer Motion 12 |
+| **Routing** | React Router 7 |
+| **Backend** | Supabase (Auth + PostgreSQL + Storage + Edge Functions) |
+| **AI** | Gemini API (content generation) |
+| **Icons** | Lucide React |
+| **Deploy** | Vercel (frontend) + Supabase Cloud (backend) |
+| **CI/CD** | GitHub Actions |
 
-## Cấu Trúc Thư Mục Quan Trọng
-- `src/data/` — JSON data, chỉnh sửa nội dung TẠI ĐÂY
-- `src/types/` — TypeScript interfaces, source of truth
-- `src/components/` — Reusable components
-- `src/pages/` — Route-level components
-- `.cursor/rules/` — Cursor rules cho từng agent
+### Ngôn Ngữ
+- **UI nội dung:** Tiếng Việt
+- **Code, comments, commit messages:** Tiếng Anh
+- **Type/Interface names:** Tiếng Anh
 
-## Brand Guidelines
-- Tên thương hiệu: **Carpets Inter** (không viết tắt)
-- Màu chính: `#f29d38` (amber), `#ffbe63` (gold light)
-- Tone: Sang trọng, chuyên nghiệp, có chiều sâu — KHÔNG bình dân hóa
-- Tagline nguồn: "Elevate Spaces, Empower Living"
+---
 
-## Quy Tắc Code
-- Luôn dùng TypeScript strict mode
-- Import paths: dùng alias `@/` cho `src/`
-- Component files: PascalCase (`CollectionCard.tsx`)
-- Data files: camelCase (`collections.json`)
-- Không dùng `any` type — luôn khai báo type rõ ràng
-- Mọi component phải có JSDoc comment ngắn
+## Design System Tokens
+
+### Colors
+```
+Primary:        #f29d38  (Amber — brand accent)
+Primary Light:  #ffbe63  (Gold light — hover states)
+Primary Dark:   #d4872e  (Deep amber — active states)
+
+Background:     #120b08  (Rich dark — main background)
+Surface 1:      #19110d  (Dark brown — cards)
+Surface 2:      #221810  (Warm dark — elevated cards)
+Surface 3:      #2a1f15  (Medium — sidebars, modals)
+
+Text Primary:   #ffffff  (White — headings, body)
+Text Secondary: #a89585  (Warm gray — descriptions, labels)
+Text Muted:     #6b5b4e  (Faded — timestamps, captions)
+
+Border:         rgba(255, 255, 255, 0.10)  (Subtle dividers)
+Border Accent:  rgba(242, 157, 56, 0.30)   (Highlighted borders)
+
+Glass:          rgba(255, 255, 255, 0.06)   (Glassmorphism bg)
+Glass Hover:    rgba(255, 255, 255, 0.10)   (Glassmorphism hover)
+
+Success:        #22c55e
+Warning:        #eab308
+Error:          #ef4444
+Info:           #3b82f6
+```
+
+### Typography
+```
+Font Heading:  "Playfair Display", Georgia, serif
+Font Body:     "Inter", "Segoe UI", sans-serif
+Font Mono:     "JetBrains Mono", "Fira Code", monospace  (code blocks, admin)
+
+Size Scale:    xs=12, sm=14, base=16, lg=18, xl=20, 2xl=24, 3xl=30, 4xl=36, 5xl=48, 6xl=60
+Line Height:   tight=1.2 (headings), normal=1.5 (body), relaxed=1.75 (reading)
+Font Weight:   light=300, normal=400, medium=500, semibold=600, bold=700
+```
+
+### Spacing & Layout
+```
+Base Unit:     4px
+Spacing:       1=4, 2=8, 3=12, 4=16, 5=20, 6=24, 8=32, 10=40, 12=48, 16=64, 20=80, 24=96
+
+Container:     max-w-7xl (1280px), px-4 sm:px-6 lg:px-8
+Section Gap:   py-16 sm:py-20 lg:py-24
+Card Gap:      gap-4 sm:gap-6 lg:gap-8
+```
+
+### Border Radius
+```
+Card:          24px  (rounded-[24px])
+Button:        12px  (rounded-xl)
+Input:         12px  (rounded-xl)
+Pill/Tag:      9999px (rounded-full)
+Image:         16px  (rounded-2xl)
+Modal:         24px  (rounded-[24px])
+```
+
+### Shadows & Effects
+```
+Shadow SM:     0 2px 8px rgba(0,0,0,0.3)
+Shadow MD:     0 4px 16px rgba(0,0,0,0.4)
+Shadow LG:     0 8px 32px rgba(0,0,0,0.5)
+Shadow Glow:   0 0 24px rgba(242,157,56,0.15)
+
+Glass Effect:  backdrop-blur-xl bg-white/6 border border-white/10
+Glass Hover:   bg-white/10 border-white/15
+```
+
+---
+
+## Brand Guidelines (KHÔNG thay đổi)
+- **Tên thương hiệu:** Carpets Inter (không viết tắt, không đổi cách viết)
+- **Tagline gốc:** "Elevate Spaces, Empower Living"
+- **Tone:** Sang trọng, chuyên nghiệp, có chiều sâu — KHÔNG bình dân hóa
+- **Target:** Chủ đầu tư, kiến trúc sư, nhà thiết kế nội thất
 
 ## Thông Tin Liên Hệ (Website VN — KHÔNG thay đổi)
-Phần `contactInfo` trong data là thông tin của đại lý Việt Nam — KHÔNG dùng thông tin trụ sở Thái Lan.
+Phần `contactInfo` là thông tin đại lý Việt Nam — KHÔNG dùng thông tin trụ sở Thái Lan.
+
+---
+
+## 3-Agent Architecture
+
+### Agent Map
+| Agent | File Rule | Phạm Vi |
+|-------|-----------|---------|
+| **Frontend UI** | `frontend.mdc` | Components, Pages, Hooks, Styles, Admin UI |
+| **Content Management** | `content.mdc` | Data, Types, Lib, Docs, Supabase schema |
+| **Backend & DevOps** | `backend.mdc` | CI/CD, Config, Supabase, Edge Functions |
+
+### Inter-Agent Protocol
+1. **Không cross-edit:** Mỗi agent CHỈ chỉnh sửa files trong phạm vi của mình
+2. **Giao tiếp qua contracts:** `src/types/` là shared contract — thay đổi phải thông qua Content agent
+3. **Data access:** Frontend đọc data qua `src/lib/` — không truy cập Supabase trực tiếp từ components
+4. **Import direction:** Pages → Components → Hooks → Lib → Types (không import ngược)
+
+---
+
+## Quy Tắc Code Chung
+
+### TypeScript
+- Strict mode bắt buộc (`strict: true`)
+- KHÔNG dùng `any` — luôn khai báo type rõ ràng
+- Prefer `interface` cho object shapes, `type` cho unions/intersections
+- Export types từ `src/types/` — không define inline
+
+### File Naming
+- Components: PascalCase (`CollectionCard.tsx`)
+- Hooks: camelCase với prefix `use` (`useScrollAnimation.ts`)
+- Utilities: camelCase (`formatDate.ts`)
+- Types: PascalCase file, PascalCase exports (`BlogPost.ts` → `export interface BlogPost`)
+- Data files: camelCase (`collections.json`)
+- CSS: kebab-case (`admin-layout.css`)
+
+### Import Aliases
+```typescript
+@/           → src/
+@/components → src/components/
+@/pages      → src/pages/
+@/hooks      → src/hooks/
+@/lib        → src/lib/
+@/types      → src/types/
+@/styles     → src/styles/
+@/data       → src/data/
+```
+
+### Component Pattern
+```typescript
+/** Brief description of what this component does */
+interface ComponentNameProps {
+  // Type rõ ràng, KHÔNG dùng any
+}
+
+export function ComponentName({ prop1, prop2 }: ComponentNameProps) {
+  // Implementation
+}
+```
+
+### Git Conventions
+- **Quy tắc đặt tên Commit Message (BẮT BUỘC):**
+  - Mọi commit phải có tiền tố `V1:` hoặc `T1:`, sau đó là dấu cách và phần diễn giải bằng **Tiếng Việt**.
+  - Ví dụ: `V1: Khôi phục trạng thái giao diện gốc từ folder 2`
+  - Ví dụ: `T1: Thêm component Hero Section`
+- **Branch:** `feature/{agent}-{feature}` (e.g., `feature/frontend-hero-section`)
+- **PR:** Include agent name in title
+
+---
+
+## Performance Budgets
+| Metric | Target |
+|--------|--------|
+| LCP | < 2.5s |
+| FID | < 100ms |
+| CLS | < 0.1 |
+| Bundle (gzipped) | < 500KB |
+| Image (max per file) | < 200KB |
+| First load JS | < 300KB |

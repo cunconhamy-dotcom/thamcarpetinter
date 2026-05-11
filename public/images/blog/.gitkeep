@@ -1,0 +1,3 @@
+# Blog images directory
+# Store blog cover and inline images here
+# Naming: {slug}-cover.webp, {slug}-{number}.webp
