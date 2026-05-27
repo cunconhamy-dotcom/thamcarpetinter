@@ -10,6 +10,9 @@ const CollectionEditor = lazy(() => import('@/pages/admin/CollectionEditor').the
 const BlogManager = lazy(() => import('@/pages/admin/BlogManager').then(m => ({ default: m.BlogManager })))
 const BlogEditor = lazy(() => import('@/pages/admin/BlogEditor').then(m => ({ default: m.BlogEditor })))
 const MediaManager = lazy(() => import('@/pages/admin/MediaManager').then(m => ({ default: m.MediaManager })))
+const UsersManager = lazy(() => import('@/pages/admin/UsersManager').then(m => ({ default: m.UsersManager })))
+const SettingsPage = lazy(() => import('@/pages/admin/SettingsPage').then(m => ({ default: m.SettingsPage })))
+const AISettingsPage = lazy(() => import('@/pages/admin/AISettingsPage').then(m => ({ default: m.AISettingsPage })))
 
 // Import existing public page
 import PublicApp from './PublicApp'
@@ -83,6 +86,9 @@ function AdminRouter() {
   else if (path === '/admin/blog/new') match = <BlogEditor />;
   else if (path.startsWith('/admin/blog/')) match = <BlogEditor />;
   else if (path === '/admin/media') match = <MediaManager />;
+  else if (path === '/admin/users') match = <UsersManager />;
+  else if (path === '/admin/settings') match = <SettingsPage />;
+  else if (path === '/admin/ai-settings') match = <AISettingsPage />;
   else match = <DashboardPage />; // Fallback
 
   return (

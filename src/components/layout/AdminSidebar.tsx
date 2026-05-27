@@ -1,6 +1,6 @@
 /** AdminSidebar — Main navigation sidebar for admin panel */
 import { useAuth } from '@/contexts/AuthContext'
-import { ROLE_PERMISSIONS } from '@/types/auth'
+
 import {
   LayoutDashboard,
   FolderOpen,
@@ -10,6 +10,7 @@ import {
   Settings,
   LogOut,
   ChevronRight,
+  Bot
 } from 'lucide-react'
 
 interface NavSection {
@@ -43,6 +44,7 @@ const NAV_SECTIONS: NavSection[] = [
     items: [
       { label: 'Người dùng', href: '/admin/users', icon: Users, permission: 'users.view' },
       { label: 'Cài đặt', href: '/admin/settings', icon: Settings, permission: 'settings.view' },
+      { label: 'Trợ lý AI', href: '/admin/ai-settings', icon: Bot, permission: 'settings.view' },
     ],
   },
 ]
@@ -54,11 +56,11 @@ interface AdminSidebarProps {
 }
 
 export function AdminSidebar({ currentPath, isOpen, onClose }: AdminSidebarProps) {
-  const { user, signOut } = useAuth()
+  const { user, signOut, permissions } = useAuth()
 
   if (!user) return null
 
-  const userPermissions = ROLE_PERMISSIONS[user.role] ?? []
+  const userPermissions = permissions[user.role] ?? []
 
   const handleSignOut = async () => {
     await signOut()

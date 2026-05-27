@@ -5,8 +5,8 @@
  *      Credentials: admin@carpetsinter.vn / admin123
  *   2. Supabase mode: activated automatically when VITE_SUPABASE_URL is set.
  */
-import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react'
-import { type UserProfile, type UserRole, type AuthState, ROLE_PERMISSIONS } from '@/types/auth'
+import { createContext, useContext, useEffect, useState, useCallback, useRef, type ReactNode } from 'react'
+import { type UserProfile, type UserRole, type AuthState, DEFAULT_ROLE_PERMISSIONS } from '@/types/auth'
 
 // ─── Demo Mode Config ────────────────────────────────────────────────────────
 const DEMO_EMAIL = 'admin@carpetsinter.vn'
@@ -26,17 +26,19 @@ const DEMO_USER: UserProfile = {
 // ─── Determine if running in demo mode ───────────────────────────────────────
 const IS_DEMO_MODE = !import.meta.env.VITE_SUPABASE_URL
 
-// ─── Supabase (lazy import to avoid errors when not configured) ───────────────
+// ─── Ensure supabase module loads once ───────────────────────────────────────
 let supabaseModule: typeof import('@/lib/supabase') | null = null
-if (!IS_DEMO_MODE) {
-  import('@/lib/supabase').then((m) => { supabaseModule = m }).catch(() => {})
-}
+const supabaseReady: Promise<typeof import('@/lib/supabase') | null> = IS_DEMO_MODE
+  ? Promise.resolve(null)
+  : import('@/lib/supabase').then((m) => { supabaseModule = m; return m }).catch(() => null)
 
 // ─── Context types ────────────────────────────────────────────────────────────
 interface AuthContextValue extends AuthState {
   signIn: (email: string, password: string) => Promise<{ error: string | null }>
   signOut: () => Promise<void>
   hasPermission: (permission: string) => boolean
+  permissions: Record<string, string[]>
+  setPermissions: (newPerms: Record<string, string[]>) => void
   isDemoMode: boolean
 }
 
@@ -45,8 +47,7 @@ const AuthContext = createContext<AuthContextValue | null>(null)
 // ─── Provider ─────────────────────────────────────────────────────────────────
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AuthState>(() => {
-    const isDemo = !import.meta.env.VITE_SUPABASE_URL
-    if (isDemo) {
+    if (IS_DEMO_MODE) {
       try {
         const saved = localStorage.getItem(DEMO_SESSION_KEY)
         if (saved === 'active') {
@@ -60,11 +61,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { user: null, isLoading: true, isAuthenticated: false }
   })
 
-  // ── Supabase mode init ──
+  const [permissions, setPermissions] = useState<Record<string, string[]>>(DEFAULT_ROLE_PERMISSIONS)
+  const subscriptionRef = useRef<{ unsubscribe: () => void } | null>(null)
+
+  // ── Fetch profile helper ──
   const fetchProfile = useCallback(async (userId: string): Promise<UserProfile | null> => {
-    if (!supabaseModule) return null
+    const mod = supabaseModule || await supabaseReady
+    if (!mod) return null
     try {
-      const { data, error } = await supabaseModule.supabase
+      const { data, error } = await mod.supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
@@ -86,53 +91,61 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
-  const initSupabase = useCallback(async () => {
-    try {
-      const module = supabaseModule || await import('@/lib/supabase')
-      supabaseModule = module
-
-      const { data: { session } } = await module.supabase.auth.getSession()
-      if (session?.user) {
-        const profile = await fetchProfile(session.user.id)
-        setState({ user: profile, isLoading: false, isAuthenticated: !!profile })
-      } else {
-        setState({ user: null, isLoading: false, isAuthenticated: false })
-      }
-    } catch {
-      setState({ user: null, isLoading: false, isAuthenticated: false })
-    }
-  }, [fetchProfile])
-
-  // ── Init on mount ──
+  // ── Init on mount (Supabase mode only) ──
   useEffect(() => {
-    if (IS_DEMO_MODE) {
-      // Demo session is already initialized synchronously in useState
-      return
-    }
+    if (IS_DEMO_MODE) return
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    initSupabase()
+    let cancelled = false
 
-    // Subscribe to Supabase auth changes
-    const setupSubscription = async () => {
-      if (!supabaseModule) return
-      const { data: { subscription } } = supabaseModule.supabase.auth.onAuthStateChange(
+    const init = async () => {
+      const mod = await supabaseReady
+      if (!mod || cancelled) return
+
+      // 1. Set up auth state change subscription FIRST
+      const { data: { subscription } } = mod.supabase.auth.onAuthStateChange(
         async (_event, session) => {
+          if (cancelled) return
           if (session?.user) {
             const profile = await fetchProfile(session.user.id)
-            setState({ user: profile, isLoading: false, isAuthenticated: !!profile })
+            if (!cancelled) setState({ user: profile, isLoading: false, isAuthenticated: !!profile })
           } else {
-            setState({ user: null, isLoading: false, isAuthenticated: false })
+            if (!cancelled) setState({ user: null, isLoading: false, isAuthenticated: false })
           }
         }
       )
-      return subscription
+      subscriptionRef.current = subscription
+
+      // 2. Load permissions from site_config
+      try {
+        const { data: configData } = await mod.supabase.from('site_config').select('value').eq('key', 'role_permissions').maybeSingle()
+        if (configData?.value && !cancelled) {
+          setPermissions({ ...DEFAULT_ROLE_PERMISSIONS, ...(configData.value as any) })
+        }
+      } catch { /* ignore */ }
+
+      // 3. Check existing session
+      try {
+        const { data: { session } } = await mod.supabase.auth.getSession()
+        if (cancelled) return
+
+        if (session?.user) {
+          const profile = await fetchProfile(session.user.id)
+          if (!cancelled) setState({ user: profile, isLoading: false, isAuthenticated: !!profile })
+        } else {
+          if (!cancelled) setState({ user: null, isLoading: false, isAuthenticated: false })
+        }
+      } catch {
+        if (!cancelled) setState({ user: null, isLoading: false, isAuthenticated: false })
+      }
     }
 
-    let unsubscribe: (() => void) | undefined
-    setupSubscription().then((sub) => { unsubscribe = sub?.unsubscribe })
-    return () => { unsubscribe?.() }
-  }, [initSupabase, fetchProfile])
+    init()
+
+    return () => {
+      cancelled = true
+      subscriptionRef.current?.unsubscribe()
+    }
+  }, [fetchProfile])
 
   // ─── signIn ───────────────────────────────────────────────────────────────
   const signIn = useCallback(async (email: string, password: string) => {
@@ -148,11 +161,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { error: 'DEMO_INVALID' }
     }
 
-    if (!supabaseModule) return { error: 'Supabase chưa được cấu hình.' }
-    const { error } = await supabaseModule.supabase.auth.signInWithPassword({ email, password })
+    const mod = supabaseModule || await supabaseReady
+    if (!mod) return { error: 'Supabase chưa được cấu hình.' }
+
+    const { data, error } = await mod.supabase.auth.signInWithPassword({ email, password })
     if (error) return { error: error.message }
+
+    // Immediately fetch profile and update state (don't rely solely on subscription)
+    if (data.user) {
+      const profile = await fetchProfile(data.user.id)
+      setState({ user: profile, isLoading: false, isAuthenticated: !!profile })
+    }
+
     return { error: null }
-  }, [])
+  }, [fetchProfile])
 
   // ─── signOut ──────────────────────────────────────────────────────────────
   const signOut = useCallback(async () => {
@@ -161,19 +183,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setState({ user: null, isLoading: false, isAuthenticated: false })
       return
     }
-    if (supabaseModule) await supabaseModule.supabase.auth.signOut()
+    const mod = supabaseModule || await supabaseReady
+    if (mod) await mod.supabase.auth.signOut()
     setState({ user: null, isLoading: false, isAuthenticated: false })
   }, [])
 
   // ─── hasPermission ────────────────────────────────────────────────────────
   const hasPermission = useCallback((permission: string): boolean => {
     if (!state.user) return false
-    const perms = ROLE_PERMISSIONS[state.user.role] ?? []
+    if (state.user.role === 'admin') return true
+    const perms = permissions[state.user.role] ?? []
     return perms.includes(permission)
-  }, [state.user])
+  }, [state.user, permissions])
 
   return (
-    <AuthContext.Provider value={{ ...state, signIn, signOut, hasPermission, isDemoMode: IS_DEMO_MODE }}>
+    <AuthContext.Provider value={{ ...state, signIn, signOut, hasPermission, permissions, setPermissions, isDemoMode: IS_DEMO_MODE }}>
       {children}
     </AuthContext.Provider>
   )

@@ -19,7 +19,7 @@ export interface AuthState {
 }
 
 /** Permission matrix per role */
-export const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
+export const DEFAULT_ROLE_PERMISSIONS: Record<UserRole, string[]> = {
   admin: [
     'dashboard.view',
     'collections.view', 'collections.create', 'collections.edit', 'collections.delete',
@@ -40,4 +40,4 @@ export const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
   ],
 }
 
-export type Permission = typeof ROLE_PERMISSIONS.admin[number]
+export type Permission = typeof DEFAULT_ROLE_PERMISSIONS.admin[number]

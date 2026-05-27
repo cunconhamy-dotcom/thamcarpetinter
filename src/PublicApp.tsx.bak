@@ -3,7 +3,6 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowRight, BookOpen, Check, Download, ExternalLink, FileText, Grid2x2, Images, Mail, MessageCircle, Phone, Search, Send, Sparkles, Newspaper, Calendar, User } from 'lucide-react'
 import { collectionHeroRotator, collections, contactInfo, featuredResources, type Product, type ResourceLink } from './lib/collections'
 import { mockNews } from './lib/news'
-import { AIChatbot } from './components/ui/AIChatbot'
 
 const resourceLabels: Record<ResourceLink['type'], string> = {
   brochure: 'Brochure',
@@ -100,10 +99,7 @@ function PublicApp() {
     )
 
     window.location.href = `mailto:${contactInfo.email}?subject=${subject}&body=${body}`
-    setFormStatus('Yêu cầu đã được mở trong ứng dụng email của bạn để gửi trực tiếp.')
-  }
-
-  return (
+    setFormStatus('Yêu cầu đã được m�  return (
     <div className="min-h-screen bg-[#fafaf8] text-[#1a1a1a] selection:bg-[#e8720c]/20">
       {/* ── HERO SECTION ── */}
       <header className="relative w-full bg-[#fafaf8] border-b border-black/5 overflow-hidden">
@@ -884,7 +880,6 @@ function PublicApp() {
           </motion.div>
         )}
       </AnimatePresence>
-      <AIChatbot />
     </div>
   )
 }
@@ -915,6 +910,26 @@ function ProductCard({ product, accent, onClick }: { product: Product; accent: s
             <div key={point} className="flex items-start gap-3 text-sm leading-6 text-black/75">
               <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#e8720c]" />
               <span className="font-sans">{point}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </Component>
+  )
+}
+
+export default PublicApp-between gap-3">
+          <div>
+            <div className="text-xs uppercase tracking-[0.22em] text-white/58">{product.code}</div>
+            <h3 className="mt-2 text-xl font-light text-white">{product.name}</h3>
+          </div>
+          <span className="h-3 w-3 shrink-0 rounded-full" style={{ backgroundColor: accent }} />
+        </div>
+        <div className="mt-4 flex-1 space-y-2">
+          {product.highlights.map((point) => (
+            <div key={point} className="flex items-start gap-3 text-sm leading-6 text-white/82">
+              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#ffbe63]" />
+              <span>{point}</span>
             </div>
           ))}
         </div>
