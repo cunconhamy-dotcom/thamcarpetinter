@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowRight, BookOpen, Check, Download, ExternalLink, FileText, Grid2x2, Images, Mail, MessageCircle, Phone, Search, Send, Sparkles, Newspaper, Calendar, User } from 'lucide-react'
-import { collectionHeroRotator, collections, contactInfo, featuredResources, type Product, type ResourceLink } from './lib/collections'
-import { mockNews } from './lib/news'
+import { collectionHeroRotator, collections as fallbackCollections, fetchCollections, contactInfo, featuredResources, type Product, type ResourceLink, type CollectionItem } from './lib/collections'
+import { mockNews, fetchNewsArticles, type NewsArticle } from './lib/news'
 import { AIChatbot } from './components/ui/AIChatbot'
 
 const resourceLabels: Record<ResourceLink['type'], string> = {
@@ -13,8 +13,10 @@ const resourceLabels: Record<ResourceLink['type'], string> = {
 }
 
 function PublicApp() {
+  const [collections, setCollections] = useState<CollectionItem[]>(fallbackCollections)
+  const [newsArticles, setNewsArticles] = useState<NewsArticle[]>(mockNews)
   const [query, setQuery] = useState('')
-  const [activeId, setActiveId] = useState(collections[0].id)
+  const [activeId, setActiveId] = useState(fallbackCollections[0].id)
   const [activeNewsId, setActiveNewsId] = useState(mockNews[0].id)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const [selectedProductIndex, setSelectedProductIndex] = useState(0)
@@ -68,7 +70,24 @@ function PublicApp() {
   const selectedProduct = activeCollection.products[selectedProductIndex] ?? activeCollection.products[0]
   const currentSlide = selectedProduct?.image ?? productShowcase[selectedProductIndex] ?? activeCollection.heroImage
   const heroCollection = collectionHeroRotator[heroCollectionIndex] ?? collectionHeroRotator[0]
-  const activeNews = mockNews.find(n => n.id === activeNewsId) ?? mockNews[0]
+  // Fetch data on mount
+  useEffect(() => {
+    fetchNewsArticles().then((articles) => {
+      if (articles.length > 0) {
+        setNewsArticles(articles)
+        setActiveNewsId(articles[0].id)
+      }
+    })
+    
+    fetchCollections().then((cols) => {
+      if (cols.length > 0) {
+        setCollections(cols)
+        setActiveId(cols[0].id)
+      }
+    })
+  }, [])
+
+  const activeNews = newsArticles.find(n => n.id === activeNewsId) ?? newsArticles[0]
   
   const collectionGallery = useMemo(() => {
     const merged = [...productShowcase, ...activeCollection.gallery]
@@ -124,9 +143,8 @@ function PublicApp() {
               <p className="max-w-3xl text-xl font-light leading-9 text-[#8a5829] sm:text-2xl">
                 Bề mặt tĩnh lặng cho không gian có chiều sâu.
               </p>
-              <p className="max-w-3xl text-base leading-8 text-black/75 sm:text-lg">
-                Một trải nghiệm catalog Tiếng Việt dành cho kiến trúc sư, nhà thiết kế và chủ đầu tư: tối giản, giàu chất liệu,
-                tập trung vào cấu trúc sợi, nhịp màu và cảm giác sử dụng trong không gian hiện đại.
+              <p className="max-w-2xl text-lg sm:text-xl text-black/80 leading-relaxed font-light">
+                Nội thất công cộng Minh Đức đồng hành cùng đối tác quốc tế Carpets Inter, mang giải pháp thảm sàn sinh thái đẳng cấp toàn cầu đến mọi công trình bằng sự chân thành và cam kết chất lượng trọn vẹn.
               </p>
             </div>
 
@@ -376,7 +394,7 @@ function PublicApp() {
 
                 <div className="flex-1 overflow-y-auto pb-4" style={{ scrollbarWidth: 'none' }}>
                   <div className="space-y-1 p-3">
-                    {mockNews.map((item) => {
+                    {newsArticles.map((item) => {
                       const active = item.id === activeNewsId
                       return (
                         <button
