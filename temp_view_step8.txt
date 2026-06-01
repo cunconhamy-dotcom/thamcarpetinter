@@ -1,0 +1,12 @@
+Created At: 2026-05-26T09:11:40Z
+Completed At: 2026-05-26T09:11:41Z
+File Path: `file:///d:/Thi%E1%BA%BFt%20k%E1%BA%BF%20website%20th%E1%BA%A3m%20s%C3%A0n%20carpet/.env.local`
+Total Lines: 4
+Total Bytes: 327
+Showing lines 1 to 4
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: VITE_SUPABASE_URL=https://wdmjdayxaudravihloei.supabase.co
+2: VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndkbWpkYXl4YXVkcmF2aWhsb2VpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0ODcwNTcsImV4cCI6MjA5NDA2MzA1N30.aSVQeg29lYSz83RwcFQKlhp5up6DY30odPi2sQTTEi0
+3: VITE_SITE_URL=http://localhost:5173
+4: 
+The above content shows the entire, complete file contents of the requested file.

@@ -1,21 +1,24 @@
-import { createClient } from '@supabase/supabase-js';
+import https from 'https';
 
-const supabase = createClient(
-  'https://wdmjdayxaudravihloei.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndkbWpkYXl4YXVkcmF2aWhsb2VpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0ODcwNTcsImV4cCI6MjA5NDA2MzA1N30.aSVQeg29lYSz83RwcFQKlhp5up6DY30odPi2sQTTEi0'
-);
-
-async function main() {
-  const { data, error } = await supabase.from('collections').select('id, slug, name, metadata');
-  if (error) {
-    console.error('Error fetching collections:', error);
-  } else {
-    console.log(`Fetched ${data?.length || 0} collections.`);
-    if (data?.length > 0) {
-      console.log('Sample slugs:', data.map(c => c.slug).join(', '));
-      console.log('Sample metadata exists:', !!data[0].metadata);
+https.get('https://hh-junk-removal-y4cp.arcada.app/', (res) => {
+  let data = '';
+  res.on('data', (chunk) => {
+    data += chunk;
+  });
+  res.on('end', () => {
+    // Extract background colors (bg-*, hex codes, rgb)
+    const bgMatches = data.match(/bg-\[[#a-zA-Z0-9]+\]/g) || [];
+    const hexMatches = data.match(/#[a-fA-F0-9]{3,6}/g) || [];
+    
+    console.log("Background classes:", Array.from(new Set(bgMatches)));
+    console.log("Hex codes:", Array.from(new Set(hexMatches)));
+    
+    // Also print first 2000 chars of the body to see structure
+    const bodyStart = data.indexOf('<body');
+    if (bodyStart !== -1) {
+        console.log("Body snippet:", data.substring(bodyStart, bodyStart + 2000));
     }
-  }
-}
-
-main();
+  });
+}).on('error', (err) => {
+  console.log('Error:', err.message);
+});

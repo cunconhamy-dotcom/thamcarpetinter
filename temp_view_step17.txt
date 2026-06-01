@@ -1,0 +1,100 @@
+Created At: 2026-05-26T09:11:53Z
+Completed At: 2026-05-26T09:11:53Z
+File Path: `file:///d:/Thi%E1%BA%BFt%20k%E1%BA%BF%20website%20th%E1%BA%A3m%20s%C3%A0n%20carpet/src/App.tsx`
+Total Lines: 119
+Total Bytes: 4063
+Showing lines 1 to 119
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: /** App entry — Router with public + admin routes */
+2: import { lazy, Suspense, useEffect, useState } from 'react'
+3: import { AuthProvider, useAuth } from '@/contexts/AuthContext'
+4: 
+5: // Lazy load admin pages (code splitting)
+6: const LoginPage = lazy(() => import('@/pages/admin/LoginPage').then(m => ({ default: m.LoginPage })))
+7: const DashboardPage = lazy(() => import('@/pages/admin/DashboardPage').then(m => ({ default: m.DashboardPage })))
+8: const CollectionsManager = lazy(() => import('@/pages/admin/CollectionsManager').then(m => ({ default: m.CollectionsManager })))
+9: const CollectionEditor = lazy(() => import('@/pages/admin/CollectionEditor').then(m => ({ default: m.CollectionEditor })))
+10: const BlogManager = lazy(() => import('@/pages/admin/BlogManager').then(m => ({ default: m.BlogManager })))
+11: const BlogEditor = lazy(() => import('@/pages/admin/BlogEditor').then(m => ({ default: m.BlogEditor })))
+12: const MediaManager = lazy(() => import('@/pages/admin/MediaManager').then(m => ({ default: m.MediaManager })))
+13: const UsersManager = lazy(() => import('@/pages/admin/UsersManager').then(m => ({ default: m.UsersManager })))
+14: const SettingsPage = lazy(() => import('@/pages/admin/SettingsPage').then(m => ({ default: m.SettingsPage })))
+15: 
+16: // Import existing public page
+17: import PublicApp from './PublicApp'
+18: 
+19: /** Simple client-side router */
+20: function useRoute() {
+21:   const [path, setPath] = useState(window.location.pathname)
+22: 
+23:   useEffect(() => {
+24:     const handlePop = () => setPath(window.l
+<truncated 1013 bytes>
+; } }`}</style>
+54:       </div>
+55:     </div>
+56:   )
+57: }
+58: 
+59: /** Protected route — redirects to login if not authenticated */
+60: function ProtectedRoute({ children }: { children: React.ReactNode }) {
+61:   const { isAuthenticated, isLoading } = useAuth()
+62: 
+63:   if (isLoading) return <AdminPageSkeleton />
+64: 
+65:   if (!isAuthenticated) {
+66:     return (
+67:       <Suspense fallback={<AdminPageSkeleton />}>
+68:         <LoginPage />
+69:       </Suspense>
+70:     )
+71:   }
+72: 
+73:   return <>{children}</>
+74: }
+75: 
+76: function AdminRouter() {
+77:   const path = useRoute()
+78: 
+79:   let match = null;
+80:   if (path === '/admin') match = <DashboardPage />;
+81:   else if (path === '/admin/collections') match = <CollectionsManager />;
+82:   else if (path === '/admin/collections/new') match = <CollectionEditor />;
+83:   else if (path.startsWith('/admin/collections/')) match = <CollectionEditor />;
+84:   else if (path === '/admin/blog') match = <BlogManager />;
+85:   else if (path === '/admin/blog/new') match = <BlogEditor />;
+86:   else if (path.startsWith('/admin/blog/')) match = <BlogEditor />;
+87:   else if (path === '/admin/media') match = <MediaManager />;
+88:   else if (path === '/admin/users') match = <UsersManager />;
+89:   else if (path === '/admin/settings') match = <SettingsPage />;
+90:   else match = <DashboardPage />; // Fallback
+91: 
+92:   return (
+93:     <ProtectedRoute>
+94:       <Suspense fallback={<AdminPageSkeleton />}>
+95:         {match}
+96:       </Suspense>
+97:     </ProtectedRoute>
+98:   )
+99: }
+100: 
+101: /** Main App — route between public and admin */
+102: function AppRouter() {
+103:   const path = useRoute()
+104: 
+105:   if (path.startsWith('/admin')) {
+106:     return <AdminRouter />
+107:   }
+108: 
+109:   return <PublicApp />
+110: }
+111: 
+112: export default function App() {
+113:   return (
+114:     <AuthProvider>
+115:       <AppRouter />
+116:     </AuthProvider>
+117:   )
+118: }
+119: 
+The above content shows the entire, complete file contents of the requested file.

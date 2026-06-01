@@ -1,0 +1,1 @@
+const https = require('https'); https.get('https://carpetsinter.com/', res => { let data = ''; res.on('data', chunk => data += chunk); res.on('end', () => { const matches = data.match(/https:\/\/carpetsinter\.com\/wp-content\/uploads\/[^\"]+/g); if (matches) { const unique = [...new Set(matches)]; unique.forEach(m => console.log(m)); } }); });

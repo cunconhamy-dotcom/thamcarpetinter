@@ -1,0 +1,27 @@
+# Global Rules & Workflows for Agents
+
+## 1. Safety and Commit Policy (MANDATORY)
+- **Do not attempt to save tokens or cut corners** at the expense of safety, thoroughness, or correct execution. The user pays for a premium service and expects high-quality, reliable behavior.
+- **ALWAYS commit your work** (`git add .` and `git commit -m "..."`) after successfully completing a task or reaching a stable milestone. Do not leave the working tree dirty with important modifications for long periods.
+- **Before making any major changes or refactors**, you MUST commit the current state so there is a safe fallback point.
+- **NEVER use `git checkout <file>` or `git reset`** to discard changes without first carefully checking `git status` and `git diff`. You must ensure you are not accidentally destroying the user's uncommitted work.
+
+## 2. Planning and Communication for Major Changes
+- If a task involves significant architectural changes, large-scale UI modifications, or complex data migrations, you MUST outline a plan first.
+- Ask the user for explicit confirmation before proceeding with these major changes.
+- Clearly explain what files will be modified and what the expected outcome is.
+- Do not assume you have permission to completely overhaul a core file without a prior commit and explicit user consent.
+
+## 3. UI and Design Modifications
+- When working on backend or admin features (e.g., connecting a database to the UI), do not alter the existing aesthetic design (colors, layouts, styling) of the UI unless explicitly requested by the user.
+- If you need to replace hardcoded strings with dynamic variables, do so carefully without breaking the surrounding markup or Tailwind classes.
+
+## 4. Accountability
+- You are accountable for the integrity of the codebase. Treat the user's code with the utmost care and respect.
+- Acknowledge mistakes immediately without making excuses, and provide a clear path to recovery if something goes wrong.
+
+## 5. Role and Scope Boundaries (STRICT BOUNDARIES)
+- Every Agent must act within its strictly defined role and boundary. Do not touch code that belongs to another domain.
+- If you are tasked with Admin features, modify ONLY files in src/pages/admin, src/components/layout/AdminSidebar.tsx, or related admin routing. Do NOT touch Public UI files (e.g., PublicApp.tsx).
+- If you are tasked with Public UI, modify ONLY public-facing components. Do NOT touch Admin files.
+- If a task requires modifying multiple domains, you must either delegate to the correct subagent or inform the user that another role needs to handle the other half of the task. Do not cross domains carelessly.
