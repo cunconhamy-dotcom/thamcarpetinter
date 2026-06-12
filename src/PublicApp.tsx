@@ -273,7 +273,7 @@ function PublicApp() {
           <div className="rounded-[30px] border border-white/10 bg-[#262626] p-5 md:p-6 space-y-5 shadow-[0_8px_30px_rgba(0,0,0,0.2)]">
             <div className="flex items-center gap-2 text-base uppercase tracking-[0.22em] text-[#e8720c] font-semibold">
               <FileText size={16} />
-              Trang chi tiết từng collection
+              Bộ sưu tập thảm sàn Carpets Inter
             </div>
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {collections.map((item) => (

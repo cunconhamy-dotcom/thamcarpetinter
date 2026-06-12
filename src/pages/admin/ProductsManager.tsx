@@ -74,7 +74,7 @@ export function ProductsManager() {
   }
 
   return (
-    <AdminLayout title="Quản lý Sản phẩm" subtitle="Thêm, sửa, xóa các mẫu thảm độc lập">
+    <AdminLayout title="Quản lý Sản phẩm">
       <div className="admin-card">
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 24, gap: 16, flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', gap: 12, flex: 1, minWidth: 300 }}>
