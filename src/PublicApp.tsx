@@ -243,6 +243,10 @@ function PublicApp() {
                 <BookOpen size={20} />
                 Tài liệu kỹ thuật
               </a>
+              <a href="#news" className="border border-white/20 bg-black/40 px-8 py-4 rounded text-base font-medium text-white flex items-center gap-2 transition hover:bg-black/60 hover:border-white/40">
+                <Newspaper size={20} />
+                Tin tức & Sự kiện
+              </a>
             </div>
 
             {/* Slider controls */}
@@ -730,9 +734,16 @@ function PublicApp() {
                   </div>
 
                   <div className="space-y-4 text-base leading-8 text-black/75">
-                    {String(activeNews.content || '').split('\n\n').map((paragraph, idx) => (
-                      <p key={idx}>{paragraph}</p>
-                    ))}
+                    {activeNews.content && activeNews.content.includes('<') && activeNews.content.includes('>') ? (
+                      <div 
+                        className="space-y-4 [&>p]:text-black/75 [&>h2]:text-2xl [&>h2]:font-semibold [&>h2]:text-[#1a1a1a] [&>h2]:mt-6 [&>h3]:text-xl [&>h3]:font-medium [&>h3]:text-[#1a1a1a] [&>h3]:mt-4 [&>ul]:list-disc [&>ul]:pl-5 [&>li]:text-black/75 [&>strong]:font-semibold"
+                        dangerouslySetInnerHTML={{ __html: activeNews.content }} 
+                      />
+                    ) : (
+                      String(activeNews.content || '').split('\n\n').map((paragraph, idx) => (
+                        <p key={idx}>{paragraph}</p>
+                      ))
+                    )}
                   </div>
                 </div>
 
@@ -759,11 +770,11 @@ function PublicApp() {
       </section>
 
       {/* ── CONTACT & FOOTER (High Contrast Charcoal Black) ── */}
-      <footer id="lien-he-nhanh" className="relative w-full bg-[#1a1a1a] text-white py-16">
+      <footer id="lien-he-nhanh" className="relative w-full bg-[#fafaf8] text-white py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 grid gap-8 lg:grid-cols-[0.88fr_1.12fr]">
           
           {/* Info Side */}
-          <div className="rounded-[30px] border border-white/10 bg-white/5 p-6 backdrop-blur-md space-y-6">
+          <div className="rounded-[30px] border border-white/10 bg-[#262626] p-6 backdrop-blur-md space-y-6">
             <div>
               <div className="text-base uppercase tracking-[0.22em] text-[#e8720c] font-medium">Thông tin liên hệ</div>
               <h3 className="mt-3 text-2xl font-light text-white sm:text-3xl">Kết nối tư vấn dự án và lựa chọn collection phù hợp</h3>
@@ -804,7 +815,7 @@ function PublicApp() {
 
           {/* Form Side */}
           <div className="space-y-6">
-            <div className="rounded-[30px] border border-white/10 bg-white/5 p-6 backdrop-blur-md space-y-6">
+            <div className="rounded-[30px] border border-white/10 bg-[#262626] p-6 backdrop-blur-md space-y-6">
               <div>
                 <div className="text-base uppercase tracking-[0.22em] text-[#e8720c] font-medium font-sans">Yêu cầu của khách hàng</div>
                 <h3 className="mt-3 text-2xl font-light text-white">Gửi nhu cầu để nhận đề xuất bộ sưu tập phù hợp</h3>
@@ -823,7 +834,7 @@ function PublicApp() {
               </form>
             </div>
 
-            <div className="rounded-[30px] border border-white/10 bg-white/5 p-6 backdrop-blur-md space-y-5">
+            <div className="rounded-[30px] border border-white/10 bg-[#262626] p-6 backdrop-blur-md space-y-5">
               <div className="text-base uppercase tracking-[0.22em] text-[#e8720c] font-medium font-sans">Liên hệ nhanh đa kênh</div>
               <div className="grid gap-3 sm:grid-cols-2">
                 {[

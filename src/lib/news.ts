@@ -107,7 +107,7 @@ export async function fetchNewsArticles(): Promise<NewsArticle[]> {
         id: post.id,
         title: post.title,
         summary: post.excerpt || '',
-        content: typeof post.content === 'string' ? post.content : (post.content?.body || JSON.stringify(post.content) || ''),
+        content: typeof post.content === 'string' ? post.content : (post.content?.html || post.content?.body || JSON.stringify(post.content) || ''),
         date: post.published_at ? formatDate(post.published_at) : '',
         author: post.content?.author || 'Admin',
         image: post.cover_image || '',
