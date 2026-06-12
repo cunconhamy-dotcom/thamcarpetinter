@@ -263,10 +263,10 @@ function PublicApp() {
 
       
       {/* ── CHI TIẾT TỪNG COLLECTION ── */}
-      <section className="w-full bg-[#1a1a1a] py-16 border-b border-white/5">
+      <section className="w-full bg-[#fafaf8] py-16 border-b border-black/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Collections list page detail link */}
-          <div className="rounded-[30px] border border-white/10 bg-white/5 p-5 md:p-6 space-y-5 shadow-[0_8px_30px_rgba(0,0,0,0.2)]">
+          <div className="rounded-[30px] border border-white/10 bg-[#262626] p-5 md:p-6 space-y-5 shadow-[0_8px_30px_rgba(0,0,0,0.2)]">
             <div className="flex items-center gap-2 text-base uppercase tracking-[0.22em] text-[#e8720c] font-semibold">
               <FileText size={16} />
               Trang chi tiết từng collection
@@ -277,7 +277,7 @@ function PublicApp() {
                   key={item.id}
                   href={`#collection-${item.id}`}
                   onClick={() => setActiveId(item.id)}
-                  className="overflow-hidden rounded-[26px] border border-white/10 bg-white/5 shadow-sm transition-all duration-300 hover:border-[#e8720c]/40 hover:bg-white/10 group"
+                  className="overflow-hidden rounded-[26px] border border-white/10 bg-[#262626] shadow-sm transition-all duration-300 hover:border-[#e8720c]/40 hover:bg-[#333] group"
                 >
                   <div className="h-44 w-full overflow-hidden border-b border-white/10 bg-black/20">
                     <img src={item.heroImage} alt={item.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-105 opacity-90 group-hover:opacity-100" />
@@ -296,11 +296,12 @@ function PublicApp() {
                 </a>
               ))}
             </div>
-                  </div>
+          </div>
+        </div>
       </section>
 
 {/* ── COLLECTIONS SHOWCASE ── */}
-      <section id="collections" className="w-full bg-white py-16 border-b border-black/5">
+      <section id="collections" className="w-full bg-[#1a1a1a] py-16 border-b border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
           <div className="grid gap-6 lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)] items-stretch">
             
@@ -455,10 +456,10 @@ function PublicApp() {
       </section>
 
       {/* ── VALUE & SPEC SECTION ── */}
-      <section className="w-full bg-[#1a1a1a] py-16 border-b border-white/5">
+      <section className="w-full bg-[#fafaf8] py-16 border-b border-black/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid gap-8 lg:grid-cols-2">
           {/* GIÁ TRỊ NỔI BẬT */}
-          <div className="overflow-hidden rounded-[30px] border border-white/10 bg-white/5 shadow-[0_8px_30px_rgba(0,0,0,0.2)] p-6 lg:p-8 space-y-6">
+          <div className="overflow-hidden rounded-[30px] border border-white/10 bg-[#262626] shadow-[0_8px_30px_rgba(0,0,0,0.2)] p-6 lg:p-8 space-y-6">
             <div className="flex items-center gap-2">
               <span className="rounded-full bg-[#e8720c]/20 p-2 text-[#e8720c]">
                 <Check size={14} />
@@ -483,7 +484,7 @@ function PublicApp() {
           </div>
 
           {/* THÔNG SỐ KỸ THUẬT */}
-          <div className="overflow-hidden rounded-[30px] border border-white/10 bg-white/5 shadow-[0_8px_30px_rgba(0,0,0,0.2)] p-6 lg:p-8">
+          <div className="overflow-hidden rounded-[30px] border border-white/10 bg-[#262626] shadow-[0_8px_30px_rgba(0,0,0,0.2)] p-6 lg:p-8">
             {selectedProduct ? (
               <>
                 <div className="mb-5 flex items-start justify-between gap-4">
@@ -560,7 +561,7 @@ function PublicApp() {
       </section>
 
       {/* ── BROCHURES & DOCUMENTS ── */}
-      <section id="tai-lieu" className="w-full bg-[#f5f3f0] py-16 border-b border-black/5">
+      <section id="tai-lieu" className="w-full bg-[#fafaf8] py-16 border-b border-black/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="rounded-[30px] border border-black/8 bg-white shadow-[0_8px_30px_rgba(0,0,0,0.02)] p-5 lg:p-7 space-y-5">
             <div className="flex items-center gap-2 text-base uppercase tracking-[0.22em] text-[#e8720c] font-semibold">
@@ -595,7 +596,7 @@ function PublicApp() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           
           {/* Photos Grid */}
-          <div className="rounded-[30px] border border-white/10 bg-white/5 p-5 md:p-6 space-y-5 shadow-[0_8px_30px_rgba(0,0,0,0.2)]">
+          <div className="rounded-[30px] border border-white/10 bg-[#262626] p-5 md:p-6 space-y-5 shadow-[0_8px_30px_rgba(0,0,0,0.2)]">
             <div className="flex items-center gap-2 text-base uppercase tracking-[0.22em] text-[#e8720c] font-semibold">
               <Sparkles size={16} />
               Toàn bộ hình ảnh trong bộ sưu tập
@@ -622,11 +623,11 @@ function PublicApp() {
           
 </div>
 
-        </div>
+
       </section>
 
       {/* ── PORTFOLIO RESOURCES ── */}
-      <section className="w-full bg-[#f5f3f0] py-16 border-b border-black/5">
+      <section className="w-full bg-[#fafaf8] py-16 border-b border-black/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid gap-6 lg:grid-cols-[1fr_1.1fr]">
           <div className="rounded-[30px] border border-black/8 bg-white p-6 shadow-sm space-y-4">
             <div className="text-base uppercase tracking-[0.22em] text-[#e8720c] font-semibold">Tài liệu tổng hợp</div>
@@ -660,7 +661,7 @@ function PublicApp() {
       </section>
 
       {/* ── NEWS SECTION ── */}
-      <section id="news" className="w-full bg-[#f5f3f0] py-16 border-b border-black/5">
+      <section id="news" className="w-full bg-[#1a1a1a] py-16 border-b border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
           <div className="mb-2 flex items-center gap-2 text-base uppercase tracking-[0.22em] text-[#e8720c] font-semibold">
             <Newspaper size={16} />
