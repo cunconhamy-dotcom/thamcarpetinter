@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase'
 import {
   Save, ArrowLeft, Image as ImageIcon, Check, X, UploadCloud,
   Bold, Italic, Underline, Heading2, List, ListOrdered, Link2, Minus,
+  ImagePlus, Video,
 } from 'lucide-react'
 
 const toSlug = (s: string) =>
@@ -91,6 +92,86 @@ export function BlogEditor() {
   const insertLink = () => {
     const url = prompt('Nhập URL liên kết:')
     if (url) execCmd('createLink', url)
+  }
+
+  // Insert image into content
+  const insertImage = () => {
+    const url = prompt('Nhập URL hình ảnh (hoặc paste link ảnh):')
+    if (url && url.trim()) {
+      execCmd('insertHTML', `<div class="blog-img-wrap"><img src="${url.trim()}" alt="Hình minh họa" style="max-width:100%;border-radius:12px;margin:16px 0;" /><br/></div>`)
+    }
+  }
+
+  // Upload image into content
+  const handleContentImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (file.size > 5 * 1024 * 1024) {
+      showNotification('error', 'File quá lớn (tối đa 5MB)')
+      return
+    }
+
+    if (isDemoMode) {
+      const reader = new FileReader()
+      reader.onload = (ev) => {
+        const dataUrl = ev.target?.result as string
+        execCmd('insertHTML', `<div class="blog-img-wrap"><img src="${dataUrl}" alt="Hình minh họa" style="max-width:100%;border-radius:12px;margin:16px 0;" /><br/></div>`)
+      }
+      reader.readAsDataURL(file)
+      return
+    }
+
+    showNotification('success', 'Đang upload ảnh...')
+    const ext = file.name.split('.').pop() || 'jpg'
+    const path = `blog/${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`
+    const { error: uploadErr } = await supabase.storage.from('media').upload(path, file)
+    if (uploadErr) {
+      showNotification('error', `Upload lỗi: ${uploadErr.message}`)
+      return
+    }
+    const { data: urlData } = supabase.storage.from('media').getPublicUrl(path)
+    execCmd('insertHTML', `<div class="blog-img-wrap"><img src="${urlData.publicUrl}" alt="Hình minh họa" style="max-width:100%;border-radius:12px;margin:16px 0;" /><br/></div>`)
+    showNotification('success', 'Đã chèn ảnh vào bài viết')
+  }
+
+  // Parse video URL to get embeddable src
+  const parseVideoUrl = (url: string): { type: 'youtube' | 'vimeo' | 'direct'; embedSrc: string } | null => {
+    // YouTube
+    const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
+    if (ytMatch) {
+      return { type: 'youtube', embedSrc: `https://www.youtube.com/embed/${ytMatch[1]}` }
+    }
+    // Vimeo
+    const vmMatch = url.match(/vimeo\.com\/(\d+)/)
+    if (vmMatch) {
+      return { type: 'vimeo', embedSrc: `https://player.vimeo.com/video/${vmMatch[1]}` }
+    }
+    // Direct video file (.mp4, .webm, .ogg)
+    if (/\.(mp4|webm|ogg)(\?.*)?$/i.test(url)) {
+      return { type: 'direct', embedSrc: url }
+    }
+    return null
+  }
+
+  // Insert video into content
+  const insertVideo = () => {
+    const url = prompt('Nhập link video (YouTube, Vimeo, hoặc URL file .mp4):')
+    if (!url || !url.trim()) return
+
+    const parsed = parseVideoUrl(url.trim())
+    if (!parsed) {
+      showNotification('error', 'Không nhận dạng được link video. Hỗ trợ: YouTube, Vimeo, .mp4/.webm/.ogg')
+      return
+    }
+
+    let html = ''
+    if (parsed.type === 'direct') {
+      html = `<div class="blog-video-wrap"><video src="${parsed.embedSrc}" controls preload="metadata" style="max-width:100%;border-radius:12px;">Trình duyệt không hỗ trợ video.</video><br/></div>`
+    } else {
+      html = `<div class="blog-video-wrap"><iframe src="${parsed.embedSrc}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width:100%;aspect-ratio:auto;min-height:360px;border-radius:12px;"></iframe><br/></div>`
+    }
+    execCmd('insertHTML', html)
+    showNotification('success', 'Đã chèn video vào bài viết')
   }
 
   // Thumbnail upload
@@ -315,6 +396,34 @@ export function BlogEditor() {
                   >
                     <Minus size={16} />
                   </button>
+
+                  <div style={{ width: 1, height: 24, background: '#e5e7eb', margin: '0 4px', alignSelf: 'center' }} />
+
+                  {/* Image buttons */}
+                  <button type="button" title="Chèn ảnh từ URL" onClick={insertImage}
+                    style={{ background: 'none', border: '1px solid transparent', borderRadius: 6, padding: '6px 8px', cursor: 'pointer', color: '#4b5563', display: 'flex', alignItems: 'center' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = '#e5e7eb' }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
+                  >
+                    <ImagePlus size={16} />
+                  </button>
+
+                  <label title="Upload ảnh vào bài viết" style={{ background: 'none', border: '1px solid transparent', borderRadius: 6, padding: '6px 8px', cursor: 'pointer', color: '#4b5563', display: 'flex', alignItems: 'center' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = '#e5e7eb' }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
+                  >
+                    <UploadCloud size={16} />
+                    <input type="file" accept="image/*" onChange={handleContentImageUpload} style={{ display: 'none' }} />
+                  </label>
+
+                  {/* Video button */}
+                  <button type="button" title="Chèn video (YouTube, Vimeo, .mp4)" onClick={insertVideo}
+                    style={{ background: 'none', border: '1px solid transparent', borderRadius: 6, padding: '6px 8px', cursor: 'pointer', color: '#e8720c', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 600 }}
+                    onMouseEnter={e => { e.currentTarget.style.background = '#fff7ed' }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
+                  >
+                    <Video size={16} /> Video
+                  </button>
                 </div>
 
                 {/* Editable area */}
@@ -422,6 +531,15 @@ export function BlogEditor() {
         [contenteditable] ul, [contenteditable] ol { padding-left: 24px; margin: 8px 0; }
         [contenteditable] a { color: #f29d38; text-decoration: underline; }
         [contenteditable] hr { border: none; border-top: 1px solid #e5e7eb; margin: 16px 0; }
+        [contenteditable] .blog-img-wrap { margin: 16px 0; }
+        [contenteditable] .blog-img-wrap img { max-width: 100%; height: auto; border-radius: 12px; display: block; }
+        [contenteditable] .blog-video-wrap { margin: 16px 0; }
+        [contenteditable] .blog-video-wrap iframe { width: 100%; min-height: 360px; border: none; border-radius: 12px; background: #000; display: block; }
+        [contenteditable] .blog-video-wrap video { max-width: 100%; border-radius: 12px; display: block; }
+        /* Public facing */
+        .blog-content .blog-video-wrap iframe { width: 100%; min-height: 360px; border: none; border-radius: 12px; background: #000; display: block; }
+        .blog-content .blog-img-wrap img { max-width: 100%; height: auto; border-radius: 12px; }
+        .blog-content .blog-video-wrap video { max-width: 100%; border-radius: 12px; }
       `}</style>
     </AdminLayout>
   )

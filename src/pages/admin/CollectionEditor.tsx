@@ -9,12 +9,14 @@ interface ProductItem {
   code: string
   name: string
   image: string
-  specs: {
+  highlights?: string[]
+  colors?: string[]
+  spec: {
     construction?: string
     pile?: string
     backing?: string
     size?: string
-    warranty?: string
+    useCase?: string
     installation?: string
   }
 }
@@ -31,12 +33,13 @@ interface CollectionFormData {
   quickFacts: string[]
   valuePoints: string[]
   products: ProductItem[]
+  gallery: string[]
 }
 
 const EMPTY_FORM: CollectionFormData = {
   name: '', tagline: '', summary: '', detail: '',
   status: 'draft', applications: '', accent: '#f29d38', heroImage: '',
-  quickFacts: [''], valuePoints: [''], products: [],
+  quickFacts: [''], valuePoints: [''], products: [], gallery: [],
 }
 
 const toSlug = (s: string) =>
@@ -55,6 +58,9 @@ export function CollectionEditor() {
   const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
   const [heroPreview, setHeroPreview] = useState<string>('')
   const [heroUploading, setHeroUploading] = useState(false)
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false)
+  const [importUrl, setImportUrl] = useState('')
+  const [isImporting, setIsImporting] = useState(false)
 
   // Determine mode: create vs edit
   const pathParts = window.location.pathname.split('/')
@@ -92,8 +98,11 @@ export function CollectionEditor() {
 
       const meta = (data.metadata || {}) as Record<string, unknown>
       const products = (meta.products || []) as ProductItem[]
-      const quickFacts = (meta.quickFacts || meta.quick_facts || []) as string[]
-      const valuePoints = (meta.valuePoints || meta.value_points || []) as string[]
+      // Read quickFacts/valuePoints/applications from DB columns first, then metadata fallback
+      const quickFacts = (data.quick_facts?.length ? data.quick_facts : (meta.quickFacts || meta.quick_facts || [])) as string[]
+      const valuePoints = (data.value_points?.length ? data.value_points : (meta.valuePoints || meta.value_points || [])) as string[]
+      const applicationsArr = (data.applications?.length ? data.applications : (meta.applications || [])) as string[]
+      const gallery = (meta.gallery || meta.productImages || []) as string[]
 
       setForm({
         name: data.name || '',
@@ -101,14 +110,13 @@ export function CollectionEditor() {
         summary: data.summary || '',
         detail: data.detail || '',
         status: data.status || 'draft',
-        applications: Array.isArray(meta.applications)
-          ? (meta.applications as string[]).join(', ')
-          : (meta.applications as string) || '',
+        applications: applicationsArr.join(', '),
         accent: data.accent || '#f29d38',
         heroImage: data.hero_image || '',
         quickFacts: quickFacts.length > 0 ? quickFacts : [''],
         valuePoints: valuePoints.length > 0 ? valuePoints : [''],
         products,
+        gallery,
       })
       setHeroPreview(data.hero_image || '')
       setIsLoading(false)
@@ -118,6 +126,75 @@ export function CollectionEditor() {
   }, [isEditMode, collectionId, isDemoMode])
 
   // Form field handlers
+  const handleImport = async () => {
+    if (!importUrl) return
+    setIsImporting(true)
+    try {
+      showNotification('success', 'Đang tải trang web...')
+      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(importUrl)}`
+      const res = await fetch(proxyUrl)
+      const data = await res.json()
+      const html = data.contents
+
+      const parser = new DOMParser()
+      const doc = parser.parseFromString(html, 'text/html')
+      doc.querySelectorAll('script, style, noscript, nav, footer, header').forEach(el => el.remove())
+      
+      const texts = doc.body.innerText.substring(0, 15000)
+      const imgs = Array.from(doc.querySelectorAll('img'))
+        .map(img => img.src)
+        .filter(src => src.includes('wp-content') && !src.includes('logo') && !src.includes('icon'))
+      const uniqueImgs = [...new Set(imgs)].slice(0, 20)
+
+      showNotification('success', 'Đang dùng AI trích xuất dữ liệu...')
+      const schema = `{ "name": "", "tagline": "", "summary": "", "detail": "", "hero_image": "", "highlights": [], "quick_facts": [], "value_points": [], "applications": [] }`
+      const prompt = `You are a data extractor. Extract collection information from the text and images found on a Carpet product page. URL: ${importUrl}\nTEXT:\n${texts}\nIMAGES FOUND:\n${uniqueImgs.join('\\n')}\nPlease extract the collection details matching exactly this JSON schema. Return ONLY valid JSON: ${schema}. If not found, use empty strings or arrays. For hero_image, pick the most prominent design image.`
+
+      const payload = {
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+        generationConfig: { responseMimeType: "application/json" }
+      };
+      
+      const aiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${import.meta.env.VITE_GEMINI_API_KEY}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      
+      if (!aiRes.ok) throw new Error('Lỗi từ Gemini API')
+      
+      const aiData = await aiRes.json();
+      let text = aiData.candidates[0].content.parts[0].text;
+      if (text.startsWith('\`\`\`json')) {
+         text = text.replace(/\`\`\`json/g, '').replace(/\`\`\`/g, '').trim();
+      }
+      
+      const extracted = JSON.parse(text);
+      
+      setForm(prev => ({ 
+        ...prev, 
+        name: extracted.name || prev.name,
+        tagline: extracted.tagline || prev.tagline,
+        summary: extracted.summary || prev.summary,
+        detail: extracted.detail || prev.detail,
+        heroImage: extracted.hero_image || prev.heroImage,
+        applications: (extracted.applications || []).join(', '),
+        quickFacts: extracted.quick_facts?.length ? extracted.quick_facts : prev.quickFacts,
+        valuePoints: extracted.value_points?.length ? extracted.value_points : prev.valuePoints,
+        gallery: extracted.highlights?.length ? extracted.highlights : prev.gallery
+      }))
+      if (extracted.hero_image) setHeroPreview(extracted.hero_image)
+      
+      showNotification('success', 'Đã trích xuất dữ liệu thành công!')
+      setIsImportModalOpen(false)
+    } catch (e: any) {
+      console.error(e)
+      showNotification('error', 'Lỗi trích xuất: ' + e.message)
+    } finally {
+      setIsImporting(false)
+    }
+  }
+
   const updateField = <K extends keyof CollectionFormData>(key: K, value: CollectionFormData[K]) => {
     setForm(prev => ({ ...prev, [key]: value }))
   }
@@ -133,6 +210,13 @@ export function CollectionEditor() {
     const next = [...form.valuePoints]; next[i] = val; updateField('valuePoints', next)
   }
   const handleRemoveValuePoint = (i: number) => updateField('valuePoints', form.valuePoints.filter((_, idx) => idx !== i))
+
+  const handleAddGalleryImage = () => updateField('gallery', [...form.gallery, ''])
+  const handleUpdateGalleryImage = (i: number, val: string) => {
+    const next = [...form.gallery]; next[i] = val; updateField('gallery', next)
+  }
+  const handleRemoveGalleryImage = (i: number) => updateField('gallery', form.gallery.filter((_, idx) => idx !== i))
+
 
   // Hero image upload
   const handleHeroUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -175,7 +259,7 @@ export function CollectionEditor() {
 
   // Product CRUD
   const openAddProduct = () => {
-    setEditingProduct({ code: '', name: '', image: '', specs: {} })
+    setEditingProduct({ code: '', name: '', image: '', highlights: [], colors: [], spec: {} })
     setEditingProductIdx(-1)
     setIsProductModalOpen(true)
   }
@@ -218,6 +302,7 @@ export function CollectionEditor() {
     setIsSubmitting(true)
     const slug = toSlug(form.name)
 
+    const applicationsArray = form.applications.split(',').map(a => a.trim()).filter(Boolean)
     const dbRecord = {
       name: form.name,
       slug,
@@ -227,11 +312,13 @@ export function CollectionEditor() {
       status: form.status,
       accent: form.accent,
       hero_image: form.heroImage,
+      // Save to proper DB columns so fetchCollections() can read them
+      quick_facts: form.quickFacts.filter(f => f.trim()),
+      value_points: form.valuePoints.filter(v => v.trim()),
+      applications: applicationsArray,
       metadata: {
-        quickFacts: form.quickFacts.filter(f => f.trim()),
-        valuePoints: form.valuePoints.filter(v => v.trim()),
-        applications: form.applications.split(',').map(a => a.trim()).filter(Boolean),
         products: form.products,
+        gallery: form.gallery.filter(g => g.trim()),
       },
     }
 
@@ -309,10 +396,15 @@ export function CollectionEditor() {
           <button type="button" className="admin-btn admin-btn-ghost" onClick={() => navTo('/admin/collections')}>
             <ArrowLeft size={16} /> Quay lại
           </button>
-          <button type="submit" className="admin-btn admin-btn-primary" disabled={isSubmitting}>
-            <Save size={16} />
-            {isSubmitting ? 'Đang lưu...' : 'Lưu thay đổi'}
-          </button>
+          <div style={{ display: 'flex', gap: 12 }}>
+            <button type="button" className="admin-btn admin-btn-secondary" onClick={() => setIsImportModalOpen(true)}>
+              <UploadCloud size={16} /> Nhập từ URL
+            </button>
+            <button type="submit" className="admin-btn admin-btn-primary" disabled={isSubmitting}>
+              <Save size={16} />
+              {isSubmitting ? 'Đang lưu...' : 'Lưu thay đổi'}
+            </button>
+          </div>
         </div>
 
         <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', alignItems: 'flex-start' }}>
@@ -388,56 +480,51 @@ export function CollectionEditor() {
               </div>
             </div>
 
-            {/* Products Management */}
+            {/* Gallery Management */}
             <div style={{ background: 'white', borderRadius: 16, padding: 24, border: '1px solid #f0f0f5' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: '#1a1a2e' }}>Danh sách sản phẩm ({form.products.length} mã)</h3>
-                <button type="button" className="admin-btn admin-btn-secondary admin-btn-sm" onClick={openAddProduct}>
-                  <Plus size={14} /> Thêm sản phẩm
+                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: '#1a1a2e' }}>Hình ảnh Gallery ({form.gallery.length} ảnh)</h3>
+                <button type="button" className="admin-btn admin-btn-secondary admin-btn-sm" onClick={handleAddGalleryImage}>
+                  <Plus size={14} /> Thêm ảnh
                 </button>
               </div>
 
-              {form.products.length > 0 ? (
-                <div className="admin-table-container">
-                  <table className="admin-table">
-                    <thead>
-                      <tr>
-                        <th>Hình ảnh</th>
-                        <th>Mã SP</th>
-                        <th>Tên gọi</th>
-                        <th style={{ textAlign: 'right' }}>Thao tác</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {form.products.map((p, i) => (
-                        <tr key={i}>
-                          <td>
-                            {p.image ? (
-                              <img src={p.image} alt={p.code} style={{ width: 40, height: 40, borderRadius: 8, objectFit: 'cover' }} />
-                            ) : (
-                              <div style={{ width: 40, height: 40, borderRadius: 8, background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <ImageIcon size={16} color="#d1d5db" />
-                              </div>
-                            )}
-                          </td>
-                          <td style={{ fontWeight: 500 }}>{p.code}</td>
-                          <td style={{ color: '#6b7280' }}>{p.name || '—'}</td>
-                          <td>
-                            <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
-                              <button type="button" className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => openEditProduct(i)}>Sửa</button>
-                              <button type="button" className="admin-btn admin-btn-danger admin-btn-sm" onClick={() => deleteProduct(i)}><Trash2 size={14} /></button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+              {form.gallery.length > 0 ? (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 16 }}>
+                  {form.gallery.map((url, i) => (
+                    <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 8, background: '#f9fafb', padding: 12, borderRadius: 12, border: '1px solid #f0f0f5' }}>
+                      {url ? (
+                        <div style={{ position: 'relative', width: '100%', aspectRatio: '1/1', borderRadius: 8, overflow: 'hidden' }}>
+                          <img src={url} alt={`Gallery ${i}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        </div>
+                      ) : (
+                        <div style={{ width: '100%', aspectRatio: '1/1', borderRadius: 8, background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9ca3af' }}>
+                          <ImageIcon size={24} />
+                        </div>
+                      )}
+                      <input className="admin-input" style={{ padding: '8px 10px', fontSize: 13 }} placeholder="Nhập URL hình ảnh..." value={url} onChange={e => handleUpdateGalleryImage(i, e.target.value)} />
+                      <button type="button" className="admin-btn admin-btn-danger admin-btn-sm" onClick={() => handleRemoveGalleryImage(i)} style={{ width: '100%', justifyContent: 'center' }}>
+                        <Trash2 size={14} /> Xóa
+                      </button>
+                    </div>
+                  ))}
                 </div>
               ) : (
                 <div style={{ textAlign: 'center', color: '#9ca3af', padding: 32, background: '#f9fafb', borderRadius: 12 }}>
-                  Chưa có sản phẩm nào — nhấn "Thêm sản phẩm" để bắt đầu
+                  Chưa có hình ảnh — nhấn "Thêm ảnh" để nhập URL ảnh hiển thị
                 </div>
               )}
+            </div>
+
+            {/* Products Management moved */}
+            <div style={{ background: 'white', borderRadius: 16, padding: 24, border: '1px solid #f0f0f5', textAlign: 'center' }}>
+              <h3 style={{ margin: '0 0 12px 0', fontSize: 16, fontWeight: 600, color: '#1a1a2e' }}>Quản lý Sản phẩm</h3>
+              <p style={{ color: '#6b7280', fontSize: 14, marginBottom: 16 }}>
+                Tính năng quản lý sản phẩm (thêm, sửa, xóa mã thảm) đã được di chuyển sang một khu vực riêng biệt để dễ kiểm soát hơn.
+              </p>
+              <a href="/admin/products" className="admin-btn admin-btn-primary" style={{ display: 'inline-flex', textDecoration: 'none' }}>
+                Đi đến Trang quản lý Sản phẩm
+              </a>
             </div>
           </div>
 
@@ -516,6 +603,31 @@ export function CollectionEditor() {
         </div>
       </form>
 
+      {/* Import URL Modal */}
+      {isImportModalOpen && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 60, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }} onClick={() => !isImporting && setIsImportModalOpen(false)} />
+          <div style={{ position: 'relative', background: 'white', borderRadius: 20, width: '100%', maxWidth: 500, padding: 32, boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)' }}>
+            <h2 style={{ margin: '0 0 16px 0', fontSize: 20, fontWeight: 600 }}>Nhập dữ liệu tự động từ URL</h2>
+            <p style={{ color: '#6b7280', fontSize: 14, marginBottom: 24 }}>Dán đường link (URL) của bộ sưu tập. Hệ thống sẽ tự động sử dụng AI để đọc nội dung và điền vào form.</p>
+            
+            <div className="admin-input-group">
+              <label className="admin-input-label">Đường dẫn URL</label>
+              <input className="admin-input" placeholder="https://carpetsinter.com/..."
+                value={importUrl} onChange={e => setImportUrl(e.target.value)} disabled={isImporting} />
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 32 }}>
+              <button type="button" className="admin-btn admin-btn-secondary" onClick={() => setIsImportModalOpen(false)} disabled={isImporting}>Hủy</button>
+              <button type="button" className="admin-btn admin-btn-primary" onClick={handleImport} disabled={isImporting || !importUrl}>
+                {isImporting ? <div style={{ width: 16, height: 16, border: '2px solid white', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} /> : <Check size={16} />}
+                {isImporting ? 'Đang trích xuất...' : 'Bắt đầu trích xuất'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Product Modal */}
       {isProductModalOpen && editingProduct && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -561,10 +673,10 @@ export function CollectionEditor() {
                     <div key={key} className="admin-input-group">
                       <label className="admin-input-label">{label}</label>
                       <input className="admin-input" placeholder={ph}
-                        value={(editingProduct.specs as Record<string, string>)[key] || ''}
+                        value={(editingProduct.spec as Record<string, string>)[key] || ''}
                         onChange={e => setEditingProduct({
                           ...editingProduct,
-                          specs: { ...editingProduct.specs, [key]: e.target.value }
+                          spec: { ...editingProduct.spec, [key]: e.target.value }
                         })} />
                     </div>
                   ))}

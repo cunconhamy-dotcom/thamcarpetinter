@@ -5,7 +5,9 @@ import { AuthProvider, useAuth } from '@/contexts/AuthContext'
 // Lazy load admin pages (code splitting)
 const LoginPage = lazy(() => import('@/pages/admin/LoginPage').then(m => ({ default: m.LoginPage })))
 const DashboardPage = lazy(() => import('@/pages/admin/DashboardPage').then(m => ({ default: m.DashboardPage })))
+const HomePageSettings = lazy(() => import('@/pages/admin/HomePageSettings').then(m => ({ default: m.HomePageSettings })))
 const CollectionsManager = lazy(() => import('@/pages/admin/CollectionsManager').then(m => ({ default: m.CollectionsManager })))
+const ProductsManager = lazy(() => import('@/pages/admin/ProductsManager').then(m => ({ default: m.ProductsManager })))
 const CollectionEditor = lazy(() => import('@/pages/admin/CollectionEditor').then(m => ({ default: m.CollectionEditor })))
 const BlogManager = lazy(() => import('@/pages/admin/BlogManager').then(m => ({ default: m.BlogManager })))
 const BlogEditor = lazy(() => import('@/pages/admin/BlogEditor').then(m => ({ default: m.BlogEditor })))
@@ -79,7 +81,9 @@ function AdminRouter() {
 
   let match = null;
   if (path === '/admin') match = <DashboardPage />;
+  else if (path === '/admin/homepage') match = <HomePageSettings />;
   else if (path === '/admin/collections') match = <CollectionsManager />;
+  else if (path === '/admin/products') match = <ProductsManager />;
   else if (path === '/admin/collections/new') match = <CollectionEditor />;
   else if (path.startsWith('/admin/collections/')) match = <CollectionEditor />;
   else if (path === '/admin/blog') match = <BlogManager />;

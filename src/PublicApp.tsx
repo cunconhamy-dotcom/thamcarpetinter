@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowRight, BookOpen, Check, Download, ExternalLink, FileText, Grid2x2, Images, Mail, MessageCircle, Phone, Search, Send, Sparkles, Newspaper, Calendar, User, Zap } from 'lucide-react'
-import { collectionHeroRotator, collections as fallbackCollections, fetchCollections, contactInfo, featuredResources, type Product, type ResourceLink, type CollectionItem } from './lib/collections'
+import { fetchCollections, contactInfo, featuredResources, type Product, type ResourceLink, type CollectionItem } from './lib/collections'
 import { mockNews, fetchNewsArticles, type NewsArticle } from './lib/news'
 import { AIChatbot } from './components/ui/AIChatbot'
 
@@ -13,16 +13,17 @@ const resourceLabels: Record<ResourceLink['type'], string> = {
 }
 
 function PublicApp() {
-  const [collections, setCollections] = useState<CollectionItem[]>(fallbackCollections)
+  const [collections, setCollections] = useState<CollectionItem[]>([])
   const [newsArticles, setNewsArticles] = useState<NewsArticle[]>(mockNews)
   const [query, setQuery] = useState('')
-  const [activeId, setActiveId] = useState(fallbackCollections[0].id)
+  const [activeId, setActiveId] = useState('')
   const [activeNewsId, setActiveNewsId] = useState(mockNews[0].id)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const [selectedProductIndex, setSelectedProductIndex] = useState(0)
   const [selectedModalProduct, setSelectedModalProduct] = useState<Product | null>(null)
   const [heroCollectionIndex, setHeroCollectionIndex] = useState(0)
   const [formStatus, setFormStatus] = useState<string>('')
+  const [loadError, setLoadError] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -47,28 +48,40 @@ function PublicApp() {
 
       return pool.includes(keyword)
     })
-  }, [query])
+  }, [query, collections])
 
   const activeCollection =
     filteredCollections.find((item) => item.id === activeId) ?? filteredCollections[0] ?? collections[0]
 
-  const [prevCollectionId, setPrevCollectionId] = useState(activeCollection.id)
-  if (activeCollection.id !== prevCollectionId) {
+  const [prevCollectionId, setPrevCollectionId] = useState(activeCollection?.id || '')
+  if (activeCollection && activeCollection.id !== prevCollectionId) {
     setPrevCollectionId(activeCollection.id)
     setSelectedProductIndex(0)
   }
 
+  // Declare rotator BEFORE the timer useEffect so it is in scope
+  const collectionHeroRotator = useMemo(() => {
+    return collections.map(c => ({
+      id: c.id,
+      name: c.name,
+      image: c.heroImage,
+      accent: c.accent,
+      tagline: c.tagline
+    }))
+  }, [collections])
+
+  // Re-create the interval whenever collectionHeroRotator changes (i.e., after data loads)
   useEffect(() => {
+    if (collectionHeroRotator.length === 0) return
     const timer = window.setInterval(() => {
       setHeroCollectionIndex((prev) => (prev + 1) % collectionHeroRotator.length)
     }, 3200)
-
     return () => window.clearInterval(timer)
-  }, [])
+  }, [collectionHeroRotator.length])
 
-  const productShowcase = activeCollection.products.map((product) => product.image).filter(Boolean) as string[]
-  const selectedProduct = activeCollection.products[selectedProductIndex] ?? activeCollection.products[0]
-  const currentSlide = selectedProduct?.image ?? productShowcase[selectedProductIndex] ?? activeCollection.heroImage
+  const productShowcase = activeCollection?.products?.map((product) => product.image).filter(Boolean) as string[] || []
+  const selectedProduct = activeCollection?.products?.[selectedProductIndex] ?? activeCollection?.products?.[0]
+  const currentSlide = selectedProduct?.image ?? productShowcase[selectedProductIndex] ?? activeCollection?.heroImage
   const heroCollection = collectionHeroRotator[heroCollectionIndex] ?? collectionHeroRotator[0]
   // Fetch data on mount
   useEffect(() => {
@@ -83,6 +96,8 @@ function PublicApp() {
       if (cols.length > 0) {
         setCollections(cols)
         setActiveId(cols[0].id)
+      } else {
+        setLoadError(true)
       }
     })
   }, [])
@@ -90,7 +105,8 @@ function PublicApp() {
   const activeNews = newsArticles.find(n => n.id === activeNewsId) ?? newsArticles[0]
   
   const collectionGallery = useMemo(() => {
-    const merged = [...productShowcase, ...activeCollection.gallery]
+    if (!activeCollection) return []
+    const merged = [...productShowcase, ...(activeCollection.gallery || [])]
     const unique = Array.from(new Set(merged))
     return unique.filter(
       (image) =>
@@ -98,7 +114,7 @@ function PublicApp() {
           image,
         ),
     )
-  }, [activeCollection.gallery, productShowcase])
+  }, [activeCollection?.gallery, productShowcase])
 
 
   const handleFormChange = (field: keyof typeof formData, value: string) => {
@@ -106,7 +122,7 @@ function PublicApp() {
   }
 
   const handleSubmit = () => {
-    const subject = encodeURIComponent(`Yêu cầu tư vấn collection - ${formData.project || activeCollection.name}`)
+    const subject = encodeURIComponent(`Yêu cầu tư vấn collection - ${formData.project || activeCollection?.name || 'Carpet Inter'}`)
     const body = encodeURIComponent(
       [
         `Họ tên: ${formData.name}`,
@@ -120,6 +136,32 @@ function PublicApp() {
 
     window.location.href = `mailto:${contactInfo.email}?subject=${subject}&body=${body}`
     setFormStatus('Yêu cầu đã được mở trong ứng dụng email của bạn để gửi trực tiếp.')
+  }
+
+  if (collections.length === 0 && !loadError) {
+    return (
+      <div className="min-h-screen bg-[#1a1a1a] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-10 h-10 border-4 border-[#e8720c] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <h2 className="text-lg font-medium text-white/90 uppercase tracking-widest">Đang tải dữ liệu</h2>
+        </div>
+      </div>
+    )
+  }
+
+  if (loadError || collections.length === 0) {
+    return (
+      <div className="min-h-screen bg-[#1a1a1a] flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="text-4xl">⚠️</div>
+          <h2 className="text-lg font-medium text-white/90">Không thể tải dữ liệu</h2>
+          <p className="text-white/50">Vui lòng kiểm tra kết nối và thử lại</p>
+          <button onClick={() => window.location.reload()} className="bg-[#e8720c] text-white px-6 py-2.5 rounded font-semibold">
+            Tải lại trang
+          </button>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -529,7 +571,7 @@ function PublicApp() {
                   </div>
 
                   <div className="space-y-4 text-base leading-8 text-black/75">
-                    {activeNews.content.split('\n\n').map((paragraph, idx) => (
+                    {String(activeNews.content || '').split('\n\n').map((paragraph, idx) => (
                       <p key={idx}>{paragraph}</p>
                     ))}
                   </div>

@@ -4,7 +4,7 @@ import { AdminLayout } from '@/components/layout/AdminLayout'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { Users, Shield, ShieldCheck, Eye, Check, X, Save } from 'lucide-react'
-import { type UserRole, DEFAULT_ROLE_PERMISSIONS } from '@/types/auth'
+import { type UserRole, DEFAULT_ROLE_PERMISSIONS, PERMISSION_GROUPS } from '@/types/auth'
 
 interface UserItem {
   id: string
@@ -143,18 +143,6 @@ export function UsersManager() {
 
   const AVATAR_COLORS = ['#f29d38', '#3b82f6', '#22c55e', '#8b5cf6', '#ef4444', '#06b6d4']
 
-  const PERMISSION_OPTIONS = [
-    { id: 'collections.create', label: 'Tạo Bộ sưu tập' },
-    { id: 'collections.edit', label: 'Sửa Bộ sưu tập' },
-    { id: 'collections.delete', label: 'Xóa Bộ sưu tập' },
-    { id: 'blog.create', label: 'Tạo Bài viết' },
-    { id: 'blog.edit', label: 'Sửa Bài viết' },
-    { id: 'blog.delete', label: 'Xóa Bài viết' },
-    { id: 'blog.publish', label: 'Xuất bản Bài viết' },
-    { id: 'media.upload', label: 'Tải lên Media' },
-    { id: 'media.delete', label: 'Xóa Media' },
-    { id: 'ai.generate', label: 'Dùng AI tạo nội dung' },
-  ]
 
   return (
     <AdminLayout title="Quản lý Người dùng" breadcrumb={['Quản trị', 'Hệ thống', 'Người dùng']}>
@@ -250,6 +238,15 @@ export function UsersManager() {
                         <RoleIcon size={12} />
                         {roleCfg.label}
                       </span>
+                      {u.role === 'writer' && (
+                        <span style={{
+                          display: 'inline-flex', alignItems: 'center',
+                          padding: '2px 8px', borderRadius: 999, fontSize: 11, fontWeight: 600,
+                          background: '#f1f5f9', color: '#64748b', marginLeft: 8
+                        }}>
+                          {writerPerms.length} quyền
+                        </span>
+                      )}
                     </td>
                     <td style={{ fontSize: 13, color: '#9ca3af' }}>
                       {new Date(u.createdAt).toLocaleDateString('vi-VN')}
@@ -304,19 +301,55 @@ export function UsersManager() {
             </button>
           </div>
           
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 16 }}>
-            {PERMISSION_OPTIONS.map(opt => {
-              const isChecked = writerPerms.includes(opt.id)
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 20 }}>
+            {PERMISSION_GROUPS.map(group => {
+              const groupPerms = group.permissions.map(p => p.key)
+              const selectedCount = groupPerms.filter(p => writerPerms.includes(p)).length
+              const allSelected = selectedCount === groupPerms.length && groupPerms.length > 0
+              
+              const handleToggleAll = () => {
+                if (allSelected) {
+                  setWriterPerms(prev => prev.filter(p => !groupPerms.includes(p as any)))
+                } else {
+                  setWriterPerms(prev => Array.from(new Set([...prev, ...groupPerms])))
+                }
+              }
+
               return (
-                <label key={opt.id} style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', background: isChecked ? '#e8f0fe' : '#f8f9fb', padding: '12px 16px', borderRadius: 12, border: `1px solid ${isChecked ? '#bfdbfe' : '#e5e7eb'}`, transition: 'all 0.2s' }}>
-                  <input
-                    type="checkbox"
-                    checked={isChecked}
-                    onChange={() => togglePermission(opt.id)}
-                    style={{ width: 16, height: 16, accentColor: '#3b82f6' }}
-                  />
-                  <span style={{ fontSize: 14, fontWeight: 500, color: isChecked ? '#1e3a8a' : '#4b5563' }}>{opt.label}</span>
-                </label>
+                <div key={group.label} style={{ background: '#f8fafc', border: '1.5px solid #e2e8f0', borderRadius: 14, padding: 20 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                    <div>
+                      <div style={{ fontSize: 15, fontWeight: 600, color: '#1e293b' }}>{group.label}</div>
+                      <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 2 }}>{group.description}</div>
+                    </div>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
+                      <input 
+                        type="checkbox" 
+                        checked={allSelected} 
+                        onChange={handleToggleAll}
+                        style={{ width: 14, height: 14, accentColor: '#f29d38' }}
+                      />
+                      <span style={{ fontSize: 12, fontWeight: 600, color: '#f29d38' }}>Tất cả</span>
+                    </label>
+                  </div>
+                  
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    {group.permissions.map(perm => {
+                      const isChecked = writerPerms.includes(perm.key)
+                      return (
+                        <label key={perm.key} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer' }}>
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={() => togglePermission(perm.key as string)}
+                            style={{ width: 16, height: 16, marginTop: 2, accentColor: '#3b82f6' }}
+                          />
+                          <span style={{ fontSize: 13, color: '#475569', lineHeight: 1.4 }}>{perm.label}</span>
+                        </label>
+                      )
+                    })}
+                  </div>
+                </div>
               )
             })}
           </div>

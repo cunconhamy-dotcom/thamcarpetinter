@@ -1,73 +1,69 @@
-# React + TypeScript + Vite
+# Carpets Inter Vietnam — Official E-Commerce Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Dự án Website Thương Mại Điện Tử B2B cho thương hiệu thảm modular cao cấp Carpets Inter (TCM Corporation Plc.) tại thị trường Việt Nam.
 
-Currently, two official plugins are available:
+## 🎯 Mục Tiêu Dự Án
+- Cung cấp trải nghiệm showcase các bộ sưu tập thảm (Foundation, Groundwork, Aspekt...).
+- Kết nối B2B với Kiến trúc sư, Nhà thiết kế nội thất, Chủ đầu tư.
+- Quản trị nội dung CMS, sản phẩm, và leads qua Admin Dashboard mạnh mẽ.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🛠 Tech Stack
+- **Framework:** React 19 + Vite 7
+- **Language:** TypeScript
+- **Styling:** TailwindCSS v4 + Framer Motion
+- **Database/Auth:** Supabase
+- **Icons:** Lucide React
 
-## React Compiler
+## 🤖 AI Agent Architecture (Đặc Biệt)
+Dự án này được thiết kế và vận hành dưới mô hình **AI Multi-Agent Supervisor Pattern**. Các AI (Claude Code, Google Antigravity, OpenAI Codex) tuân thủ nghiêm ngặt các quy tắc được định nghĩa trong hệ thống:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Đọc file `AGENTS.md` (root directory) để hiểu quy tắc chung.
+- Tham khảo `docs/agents/ROLES.md` để xem phân chia ranh giới code (Public UI vs Admin vs Data).
+- Luồng làm việc chuẩn được định nghĩa ở `docs/agents/WORKFLOWS.md`.
 
-## Expanding the ESLint configuration
+## 🚀 Hướng Dẫn Cài Đặt & Chạy Local
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 1. Yêu cầu hệ thống
+- Node.js >= 20
+- npm >= 10
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 2. Cài đặt dependencies
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 3. Thiết lập biến môi trường
+Tạo file `.env.local` ở thư mục gốc (xem mẫu `.env.example`):
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
+
+### 4. Chạy môi trường phát triển (Dev)
+```bash
+npm run dev
+```
+
+### 5. Build cho Production
+```bash
+npm run build
+```
+
+## 📁 Cấu Trúc Thư Mục Chính
+```
+├── src/
+│   ├── components/      # UI components (tách biệt layout admin và public ui)
+│   ├── pages/           # Admin pages
+│   ├── styles/          # Design tokens, global CSS, animations
+│   ├── lib/             # API clients, Supabase
+│   ├── contexts/        # React Context
+│   ├── types/           # TypeScript interfaces
+│   ├── App.tsx          # Main Router
+│   └── PublicApp.tsx    # Giao diện chính của website public
+├── docs/                # Project & Brand Documentation
+│   └── agents/          # AI Agent configurations
+└── supabase/            # Database schema & migrations
+```
+
+---
+*Powered by AI Agentic Workflows. "Elevate Spaces, Empower Living."*

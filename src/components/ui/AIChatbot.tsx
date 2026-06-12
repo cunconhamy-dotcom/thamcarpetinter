@@ -12,7 +12,7 @@ interface Message {
 }
 
 export function AIChatbot() {
-  const [isOpen, setIsOpen] = useState(true)
+  const [isOpen, setIsOpen] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')

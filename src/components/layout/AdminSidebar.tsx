@@ -3,6 +3,7 @@ import { useAuth } from '@/contexts/AuthContext'
 
 import {
   LayoutDashboard,
+  Layout,
   FolderOpen,
   FileText,
   Image,
@@ -29,12 +30,14 @@ const NAV_SECTIONS: NavSection[] = [
     title: 'Tổng quan',
     items: [
       { label: 'Bảng điều khiển', href: '/admin', icon: LayoutDashboard, permission: 'dashboard.view' },
+      { label: 'Trang chủ', href: '/admin/homepage', icon: Layout, permission: 'homepage.view' },
     ],
   },
   {
     title: 'Nội dung',
     items: [
       { label: 'Bộ sưu tập', href: '/admin/collections', icon: FolderOpen, permission: 'collections.view' },
+      { label: 'Sản phẩm', href: '/admin/products', icon: LayoutDashboard, permission: 'collections.view' },
       { label: 'Bài viết', href: '/admin/blog', icon: FileText, permission: 'blog.view' },
       { label: 'Thư viện media', href: '/admin/media', icon: Image, permission: 'media.view' },
     ],
@@ -56,11 +59,9 @@ interface AdminSidebarProps {
 }
 
 export function AdminSidebar({ currentPath, isOpen, onClose }: AdminSidebarProps) {
-  const { user, signOut, permissions } = useAuth()
+  const { user, signOut, hasPermission } = useAuth()
 
   if (!user) return null
-
-  const userPermissions = permissions[user.role] ?? []
 
   const handleSignOut = async () => {
     await signOut()
@@ -104,7 +105,7 @@ export function AdminSidebar({ currentPath, isOpen, onClose }: AdminSidebarProps
         <nav className="admin-sidebar-nav">
           {NAV_SECTIONS.map((section) => {
             const visibleItems = section.items.filter(item =>
-              userPermissions.includes(item.permission)
+              hasPermission(item.permission)
             )
 
             if (visibleItems.length === 0) return null

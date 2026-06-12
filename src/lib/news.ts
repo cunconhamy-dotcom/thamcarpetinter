@@ -89,7 +89,6 @@ export async function fetchNewsArticles(): Promise<NewsArticle[]> {
       .from('blog_posts')
       .select('id, title, slug, excerpt, content, cover_image, published_at')
       .eq('status', 'published')
-      .not('content->>category', 'is', null)
       .order('published_at', { ascending: false })
 
     if (error) {
@@ -102,14 +101,13 @@ export async function fetchNewsArticles(): Promise<NewsArticle[]> {
       return mockNews
     }
 
-    // Filter only news-category posts and map to NewsArticle
+    // Map all published blog posts to NewsArticle format
     const newsArticles: NewsArticle[] = data
-      .filter((post: any) => post.content?.category === 'news')
       .map((post: any) => ({
         id: post.id,
         title: post.title,
         summary: post.excerpt || '',
-        content: post.content?.body || '',
+        content: typeof post.content === 'string' ? post.content : (post.content?.body || JSON.stringify(post.content) || ''),
         date: post.published_at ? formatDate(post.published_at) : '',
         author: post.content?.author || 'Admin',
         image: post.cover_image || '',

@@ -16,12 +16,18 @@
 - When working on backend or admin features (e.g., connecting a database to the UI), do not alter the existing aesthetic design (colors, layouts, styling) of the UI unless explicitly requested by the user.
 - If you need to replace hardcoded strings with dynamic variables, do so carefully without breaking the surrounding markup or Tailwind classes.
 
-## 4. Accountability
+## 4. Accountability & Context Preservation
 - You are accountable for the integrity of the codebase. Treat the user's code with the utmost care and respect.
 - Acknowledge mistakes immediately without making excuses, and provide a clear path to recovery if something goes wrong.
+- **PRESERVE ALL COMMENTS:** Do not delete comments or docstrings that explain logic, unless you are completely removing that logic. Comments are critical context for other agents.
 
 ## 5. Role and Scope Boundaries (STRICT BOUNDARIES)
-- Every Agent must act within its strictly defined role and boundary. Do not touch code that belongs to another domain.
-- If you are tasked with Admin features, modify ONLY files in src/pages/admin, src/components/layout/AdminSidebar.tsx, or related admin routing. Do NOT touch Public UI files (e.g., PublicApp.tsx).
+- Every Agent must act within its strictly defined role and boundary. Do not touch code that belongs to another domain. Reference `docs/agents/ROLES.md`.
+- If you are tasked with Admin features, modify ONLY files in `src/pages/admin/`, `src/components/layout/`, or related admin routing. Do NOT touch Public UI files (e.g., `PublicApp.tsx`).
 - If you are tasked with Public UI, modify ONLY public-facing components. Do NOT touch Admin files.
 - If a task requires modifying multiple domains, you must either delegate to the correct subagent or inform the user that another role needs to handle the other half of the task. Do not cross domains carelessly.
+
+## 6. Handoff & Coordination Protocol
+- **CONTEXT.md:** When transferring work between agents, you MUST update `docs/agents/CONTEXT.md` with the current project state, what you just finished, and instructions for the next agent.
+- **Branch/Parallel Workspaces:** When multiple agents (e.g., Public UI and Admin) are assigned independent large tasks, consider using branched workspaces (`branch` mode in subagent definition) to avoid stepping on each other's toes, then have the Architect Agent merge the results.
+- **Git Commit Handoff:** Prefix commits intended for handoff with `handoff: [TargetAgent] - message`.
