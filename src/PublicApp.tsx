@@ -261,7 +261,45 @@ function PublicApp() {
         </div>
       </header>
 
-      {/* ── COLLECTIONS SHOWCASE ── */}
+      
+      {/* ── CHI TIẾT TỪNG COLLECTION ── */}
+      <section className="w-full bg-[#1a1a1a] py-16 border-b border-white/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Collections list page detail link */}
+          <div className="rounded-[30px] border border-white/10 bg-white/5 p-5 md:p-6 space-y-5 shadow-[0_8px_30px_rgba(0,0,0,0.2)]">
+            <div className="flex items-center gap-2 text-base uppercase tracking-[0.22em] text-[#e8720c] font-semibold">
+              <FileText size={16} />
+              Trang chi tiết từng collection
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {collections.map((item) => (
+                <a
+                  key={item.id}
+                  href={`#collection-${item.id}`}
+                  onClick={() => setActiveId(item.id)}
+                  className="overflow-hidden rounded-[26px] border border-white/10 bg-white/5 shadow-sm transition-all duration-300 hover:border-[#e8720c]/40 hover:bg-white/10 group"
+                >
+                  <div className="h-44 w-full overflow-hidden border-b border-white/10 bg-black/20">
+                    <img src={item.heroImage} alt={item.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-105 opacity-90 group-hover:opacity-100" />
+                  </div>
+                  <div className="space-y-3 p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <h4 className="text-lg font-medium text-white">{item.name}</h4>
+                      <span className="h-3 w-3 rounded-full" style={{ backgroundColor: item.accent }} />
+                    </div>
+                    <p className="line-clamp-3 text-base leading-6 text-white/60">{item.summary}</p>
+                    <span className="inline-flex items-center gap-2 text-base text-[#e8720c] font-medium">
+                      Xem chi tiết
+                      <ArrowRight size={14} />
+                    </span>
+                  </div>
+                </a>
+              ))}
+            </div>
+                  </div>
+      </section>
+
+{/* ── COLLECTIONS SHOWCASE ── */}
       <section id="collections" className="w-full bg-white py-16 border-b border-black/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
           <div className="grid gap-6 lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)] items-stretch">
@@ -501,6 +539,126 @@ function PublicApp() {
         </div>
       </section>
 
+      {/* ── PRODUCTS GRID & CATALOGUE ── */}
+      <section className="w-full bg-[#1a1a1a] py-16 border-b border-white/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+          <div className="rounded-[30px] border border-white/10 bg-white/5 shadow-[0_8px_30px_rgba(0,0,0,0.2)] p-5 lg:p-7 space-y-5">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2 text-base uppercase tracking-[0.22em] text-[#e8720c] font-semibold">
+                <Images size={16} />
+                Danh mục sản phẩm trong bộ sưu tập
+              </div>
+              <div className="text-sm text-white/40 font-medium">Click vào sản phẩm để xem chi tiết</div>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {activeCollection.products.map((product) => (
+                <ProductCard key={product.code} product={product} accent={activeCollection.accent} onClick={() => setSelectedModalProduct(product)} dark />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── BROCHURES & DOCUMENTS ── */}
+      <section id="tai-lieu" className="w-full bg-[#f5f3f0] py-16 border-b border-black/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="rounded-[30px] border border-black/8 bg-white shadow-[0_8px_30px_rgba(0,0,0,0.02)] p-5 lg:p-7 space-y-5">
+            <div className="flex items-center gap-2 text-base uppercase tracking-[0.22em] text-[#e8720c] font-semibold">
+              <FileText size={16} />
+              Brochure · Spec · Hướng dẫn
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {activeCollection.resources.map((resource) => (
+                <a
+                  key={resource.url}
+                  href={resource.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center justify-between gap-3 rounded-2xl border border-black/8 bg-[#f5f3f0] p-4 shadow-sm transition-all duration-200 hover:border-[#e8720c]/40 hover:shadow-md hover:bg-white"
+                >
+                  <div>
+                    <div className="text-base font-medium text-[#1a1a1a]">{resource.label}</div>
+                    <div className="mt-1 text-sm uppercase tracking-[0.18em] text-[#e8720c] font-semibold">{resourceLabels[resource.type]}</div>
+                  </div>
+                  <span className="rounded-full bg-[#e8720c] p-2 text-white shadow-[0_6px_16px_rgba(232,114,12,0.22)]">
+                    <Download size={15} />
+                  </span>
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── GALLERY & ALL IMAGES ── */}
+      <section className="w-full bg-[#1a1a1a] py-16 border-b border-white/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+          
+          {/* Photos Grid */}
+          <div className="rounded-[30px] border border-white/10 bg-white/5 p-5 md:p-6 space-y-5 shadow-[0_8px_30px_rgba(0,0,0,0.2)]">
+            <div className="flex items-center gap-2 text-base uppercase tracking-[0.22em] text-[#e8720c] font-semibold">
+              <Sparkles size={16} />
+              Toàn bộ hình ảnh trong bộ sưu tập
+            </div>
+            <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+              {collectionGallery.map((image, index) => (
+                <button
+                  key={`${image}-${index}`}
+                  type="button"
+                  onClick={() => {
+                    setSelectedImage(image)
+                  }}
+                  className="group overflow-hidden rounded-[22px] border border-white/10 bg-white/5 text-left shadow-sm animate-fade-in transition duration-300 hover:border-white/30"
+                >
+                  <div className="h-44 w-full overflow-hidden sm:h-48 border-b border-white/10 bg-black/20">
+                    <img src={image} alt={`${activeCollection.name} ${index + 1}`} className="h-full w-full object-cover transition duration-300 group-hover:scale-105 opacity-90 group-hover:opacity-100" />
+                  </div>
+                  <div className="px-4 py-3 text-base text-white/80 font-medium">Hình ảnh bộ sưu tập #{index + 1}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          
+</div>
+
+        </div>
+      </section>
+
+      {/* ── PORTFOLIO RESOURCES ── */}
+      <section className="w-full bg-[#f5f3f0] py-16 border-b border-black/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid gap-6 lg:grid-cols-[1fr_1.1fr]">
+          <div className="rounded-[30px] border border-black/8 bg-white p-6 shadow-sm space-y-4">
+            <div className="text-base uppercase tracking-[0.22em] text-[#e8720c] font-semibold">Tài liệu tổng hợp</div>
+            <h3 className="text-2xl font-light text-[#1a1a1a] sm:text-3xl">Portfolio hỗ trợ khách hàng</h3>
+            <p className="text-base leading-7 text-black/70">
+              Mỗi bộ sưu tập mang đến giải pháp thẩm mỹ rõ ràng cho từng kiểu không gian, giúp khách hàng dễ hình dung hiệu quả
+              hoàn thiện, nâng chất lượng cảm nhận và tạo giá trị sử dụng bền vững cho công trình.
+            </p>
+          </div>
+
+          <div className="grid gap-3">
+            {featuredResources.map((resource) => (
+              <a
+                key={resource.url}
+                href={resource.url}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center justify-between gap-3 rounded-[24px] border border-black/8 bg-white p-5 shadow-sm transition-all duration-200 hover:border-[#e8720c]/40 hover:shadow-md hover:bg-[#fafaf8]"
+              >
+                <div>
+                  <div className="text-base font-medium text-[#1a1a1a]">{resource.label}</div>
+                  <div className="mt-1 text-sm uppercase tracking-[0.2em] text-[#e8720c] font-semibold">{resourceLabels[resource.type]}</div>
+                </div>
+                <span className="rounded-full border border-[#e8720c]/30 bg-[#e8720c]/5 p-2 text-[#e8720c] transition duration-200">
+                  <ArrowRight size={16} />
+                </span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── NEWS SECTION ── */}
       <section id="news" className="w-full bg-[#f5f3f0] py-16 border-b border-black/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
@@ -595,156 +753,6 @@ function PublicApp() {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── PRODUCTS GRID & CATALOGUE ── */}
-      <section className="w-full bg-[#1a1a1a] py-16 border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          <div className="rounded-[30px] border border-white/10 bg-white/5 shadow-[0_8px_30px_rgba(0,0,0,0.2)] p-5 lg:p-7 space-y-5">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2 text-base uppercase tracking-[0.22em] text-[#e8720c] font-semibold">
-                <Images size={16} />
-                Danh mục sản phẩm trong bộ sưu tập
-              </div>
-              <div className="text-sm text-white/40 font-medium">Click vào sản phẩm để xem chi tiết</div>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {activeCollection.products.map((product) => (
-                <ProductCard key={product.code} product={product} accent={activeCollection.accent} onClick={() => setSelectedModalProduct(product)} dark />
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── BROCHURES & DOCUMENTS ── */}
-      <section id="tai-lieu" className="w-full bg-[#f5f3f0] py-16 border-b border-black/5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-[30px] border border-black/8 bg-white shadow-[0_8px_30px_rgba(0,0,0,0.02)] p-5 lg:p-7 space-y-5">
-            <div className="flex items-center gap-2 text-base uppercase tracking-[0.22em] text-[#e8720c] font-semibold">
-              <FileText size={16} />
-              Brochure · Spec · Hướng dẫn
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {activeCollection.resources.map((resource) => (
-                <a
-                  key={resource.url}
-                  href={resource.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex items-center justify-between gap-3 rounded-2xl border border-black/8 bg-[#f5f3f0] p-4 shadow-sm transition-all duration-200 hover:border-[#e8720c]/40 hover:shadow-md hover:bg-white"
-                >
-                  <div>
-                    <div className="text-base font-medium text-[#1a1a1a]">{resource.label}</div>
-                    <div className="mt-1 text-sm uppercase tracking-[0.18em] text-[#e8720c] font-semibold">{resourceLabels[resource.type]}</div>
-                  </div>
-                  <span className="rounded-full bg-[#e8720c] p-2 text-white shadow-[0_6px_16px_rgba(232,114,12,0.22)]">
-                    <Download size={15} />
-                  </span>
-                </a>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── GALLERY & ALL IMAGES ── */}
-      <section className="w-full bg-[#1a1a1a] py-16 border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-          
-          {/* Photos Grid */}
-          <div className="rounded-[30px] border border-white/10 bg-white/5 p-5 md:p-6 space-y-5 shadow-[0_8px_30px_rgba(0,0,0,0.2)]">
-            <div className="flex items-center gap-2 text-base uppercase tracking-[0.22em] text-[#e8720c] font-semibold">
-              <Sparkles size={16} />
-              Toàn bộ hình ảnh trong bộ sưu tập
-            </div>
-            <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-              {collectionGallery.map((image, index) => (
-                <button
-                  key={`${image}-${index}`}
-                  type="button"
-                  onClick={() => {
-                    setSelectedImage(image)
-                  }}
-                  className="group overflow-hidden rounded-[22px] border border-white/10 bg-white/5 text-left shadow-sm animate-fade-in transition duration-300 hover:border-white/30"
-                >
-                  <div className="h-44 w-full overflow-hidden sm:h-48 border-b border-white/10 bg-black/20">
-                    <img src={image} alt={`${activeCollection.name} ${index + 1}`} className="h-full w-full object-cover transition duration-300 group-hover:scale-105 opacity-90 group-hover:opacity-100" />
-                  </div>
-                  <div className="px-4 py-3 text-base text-white/80 font-medium">Hình ảnh bộ sưu tập #{index + 1}</div>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Collections list page detail link */}
-          <div className="rounded-[30px] border border-white/10 bg-white/5 p-5 md:p-6 space-y-5 shadow-[0_8px_30px_rgba(0,0,0,0.2)]">
-            <div className="flex items-center gap-2 text-base uppercase tracking-[0.22em] text-[#e8720c] font-semibold">
-              <FileText size={16} />
-              Trang chi tiết từng collection
-            </div>
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {collections.map((item) => (
-                <a
-                  key={item.id}
-                  href={`#collection-${item.id}`}
-                  onClick={() => setActiveId(item.id)}
-                  className="overflow-hidden rounded-[26px] border border-white/10 bg-white/5 shadow-sm transition-all duration-300 hover:border-[#e8720c]/40 hover:bg-white/10 group"
-                >
-                  <div className="h-44 w-full overflow-hidden border-b border-white/10 bg-black/20">
-                    <img src={item.heroImage} alt={item.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-105 opacity-90 group-hover:opacity-100" />
-                  </div>
-                  <div className="space-y-3 p-4">
-                    <div className="flex items-center justify-between gap-3">
-                      <h4 className="text-lg font-medium text-white">{item.name}</h4>
-                      <span className="h-3 w-3 rounded-full" style={{ backgroundColor: item.accent }} />
-                    </div>
-                    <p className="line-clamp-3 text-base leading-6 text-white/60">{item.summary}</p>
-                    <span className="inline-flex items-center gap-2 text-base text-[#e8720c] font-medium">
-                      Xem chi tiết
-                      <ArrowRight size={14} />
-                    </span>
-                  </div>
-                </a>
-              ))}
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      {/* ── PORTFOLIO RESOURCES ── */}
-      <section className="w-full bg-[#f5f3f0] py-16 border-b border-black/5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid gap-6 lg:grid-cols-[1fr_1.1fr]">
-          <div className="rounded-[30px] border border-black/8 bg-white p-6 shadow-sm space-y-4">
-            <div className="text-base uppercase tracking-[0.22em] text-[#e8720c] font-semibold">Tài liệu tổng hợp</div>
-            <h3 className="text-2xl font-light text-[#1a1a1a] sm:text-3xl">Portfolio hỗ trợ khách hàng</h3>
-            <p className="text-base leading-7 text-black/70">
-              Mỗi bộ sưu tập mang đến giải pháp thẩm mỹ rõ ràng cho từng kiểu không gian, giúp khách hàng dễ hình dung hiệu quả
-              hoàn thiện, nâng chất lượng cảm nhận và tạo giá trị sử dụng bền vững cho công trình.
-            </p>
-          </div>
-
-          <div className="grid gap-3">
-            {featuredResources.map((resource) => (
-              <a
-                key={resource.url}
-                href={resource.url}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center justify-between gap-3 rounded-[24px] border border-black/8 bg-white p-5 shadow-sm transition-all duration-200 hover:border-[#e8720c]/40 hover:shadow-md hover:bg-[#fafaf8]"
-              >
-                <div>
-                  <div className="text-base font-medium text-[#1a1a1a]">{resource.label}</div>
-                  <div className="mt-1 text-sm uppercase tracking-[0.2em] text-[#e8720c] font-semibold">{resourceLabels[resource.type]}</div>
-                </div>
-                <span className="rounded-full border border-[#e8720c]/30 bg-[#e8720c]/5 p-2 text-[#e8720c] transition duration-200">
-                  <ArrowRight size={16} />
-                </span>
-              </a>
-            ))}
           </div>
         </div>
       </section>
