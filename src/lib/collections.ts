@@ -15,6 +15,7 @@ export type Product = {
   highlights: string[]
   colors?: string[]
   image?: string
+  sort_order?: number
   spec: ProductSpec
 }
 
@@ -76,8 +77,12 @@ export async function fetchCollections(): Promise<CollectionItem[]> {
           image: p.image,
           highlights: p.highlights || [],
           colors: p.colors || [],
-          spec: p.spec || {}
-        })) || [];
+          spec: p.spec || {},
+          sort_order: p.sort_order || 0
+        })).sort((a: any, b: any) => {
+          if (a.sort_order !== b.sort_order) return a.sort_order - b.sort_order;
+          return a.code.localeCompare(b.code);
+        }) || [];
 
         return {
           id: item.slug,

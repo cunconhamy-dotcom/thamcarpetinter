@@ -20,6 +20,7 @@ interface ProductRecord {
     useCase?: string
     installation?: string
   }
+  sort_order?: number
 }
 
 interface CollectionBasic {
@@ -45,7 +46,7 @@ export function ProductsManager() {
     const { data: cols } = await supabase.from('collections').select('id, name, slug').order('name')
     if (cols) setCollections(cols)
 
-    const { data: prods } = await supabase.from('products').select('*').order('code')
+    const { data: prods } = await supabase.from('products').select('*').order('collection_id').order('sort_order', { ascending: true }).order('code')
     if (prods) setProducts(prods)
     
     setIsLoading(false)
@@ -122,6 +123,7 @@ export function ProductsManager() {
                   <th style={{ padding: '12px 16px', color: '#64748b', fontWeight: 600 }}>Mã SP</th>
                   <th style={{ padding: '12px 16px', color: '#64748b', fontWeight: 600 }}>Tên</th>
                   <th style={{ padding: '12px 16px', color: '#64748b', fontWeight: 600 }}>Bộ sưu tập</th>
+                  <th style={{ padding: '12px 16px', color: '#64748b', fontWeight: 600, width: 80, textAlign: 'center' }}>Thứ tự</th>
                   <th style={{ padding: '12px 16px', color: '#64748b', fontWeight: 600, textAlign: 'right' }}>Thao tác</th>
                 </tr>
               </thead>
@@ -137,6 +139,20 @@ export function ProductsManager() {
                       <span style={{ background: '#f1f5f9', padding: '4px 10px', borderRadius: 20, fontSize: 12, color: '#475569' }}>
                         {getCollectionName(p.collection_id)}
                       </span>
+                    </td>
+                    <td style={{ padding: '12px 16px', textAlign: 'center' }}>
+                      <input 
+                        type="number" 
+                        value={p.sort_order || 0}
+                        onChange={async (e) => {
+                          const newOrder = parseInt(e.target.value) || 0;
+                          setProducts(products.map(prod => prod.id === p.id ? { ...prod, sort_order: newOrder } : prod));
+                          if (!isDemoMode) {
+                            await supabase.from('products').update({ sort_order: newOrder }).eq('id', p.id);
+                          }
+                        }}
+                        style={{ width: 60, padding: '4px 8px', borderRadius: 6, border: '1px solid #e2e8f0', textAlign: 'center' }}
+                      />
                     </td>
                     <td style={{ padding: '12px 16px', textAlign: 'right' }}>
                       <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>

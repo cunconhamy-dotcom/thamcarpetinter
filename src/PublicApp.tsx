@@ -397,8 +397,8 @@ function PublicApp() {
                     </span>
                     <span className="h-px w-8 bg-white/10" />
                   </div>
-                  <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4">
-                    {productShowcase.slice(0, 8).map((image, index) => (
+                  <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-5">
+                    {productShowcase.slice(0, 12).map((image, index) => (
                       <button
                         key={image}
                         type="button"
