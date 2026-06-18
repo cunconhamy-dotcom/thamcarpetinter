@@ -37,6 +37,29 @@ export function ProductsManager() {
   const [searchTerm, setSearchTerm] = useState('')
   const [filterCollection, setFilterCollection] = useState('all')
 
+  // Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
+  const [highlightsText, setHighlightsText] = useState('')
+  const [formData, setFormData] = useState<Partial<ProductRecord>>({
+    collection_id: '',
+    code: '',
+    name: '',
+    image: '',
+    highlights: [],
+    colors: [],
+    spec: {
+      construction: '',
+      pile: '',
+      backing: '',
+      size: '',
+      useCase: '',
+      installation: ''
+    },
+    sort_order: 0
+  })
+
   useEffect(() => {
     loadData()
   }, [])
@@ -73,6 +96,125 @@ export function ProductsManager() {
     }
   }
 
+  const openModal = (item?: ProductRecord) => {
+    if (item) {
+      setEditingId(item.id)
+      setFormData({
+        ...item,
+        spec: {
+          construction: item.spec?.construction || '',
+          pile: item.spec?.pile || '',
+          backing: item.spec?.backing || '',
+          size: item.spec?.size || '',
+          useCase: item.spec?.useCase || '',
+          installation: item.spec?.installation || ''
+        }
+      })
+      setHighlightsText(item.highlights?.join('\n') || '')
+    } else {
+      setEditingId(null)
+      setFormData({
+        collection_id: collections[0]?.id || '',
+        code: '',
+        name: '',
+        image: '',
+        highlights: [],
+        colors: [],
+        spec: {
+          construction: '',
+          pile: '',
+          backing: '',
+          size: '',
+          useCase: '',
+          installation: ''
+        },
+        sort_order: products.length
+      })
+      setHighlightsText('')
+    }
+    setIsModalOpen(true)
+  }
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (file.size > 2 * 1024 * 1024) {
+      alert('File quá lớn (tối đa 2MB)')
+      return
+    }
+
+    if (isDemoMode) {
+      const reader = new FileReader()
+      reader.onload = (ev) => {
+        setFormData({ ...formData, image: ev.target?.result as string })
+      }
+      reader.readAsDataURL(file)
+      return
+    }
+
+    setIsUploading(true)
+    const ext = file.name.split('.').pop() || 'jpg'
+    const path = `products/${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`
+
+    const { error: uploadErr } = await supabase.storage.from('media').upload(path, file)
+    if (uploadErr) {
+      alert(`Upload lỗi: ${uploadErr.message}`)
+      setIsUploading(false)
+      return
+    }
+
+    const { data: publicUrlData } = supabase.storage.from('media').getPublicUrl(path)
+    setFormData({ ...formData, image: publicUrlData.publicUrl })
+    setIsUploading(false)
+  }
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (isDemoMode) return alert('Demo Mode: Chức năng bị khóa')
+
+    const cleanHighlights = highlightsText
+      .split('\n')
+      .map(h => h.trim())
+      .filter(h => h !== '')
+
+    const payload = {
+      collection_id: formData.collection_id,
+      code: formData.code,
+      name: formData.name,
+      image: formData.image,
+      highlights: cleanHighlights,
+      colors: formData.colors || [],
+      spec: {
+        construction: formData.spec?.construction || '',
+        pile: formData.spec?.pile || '',
+        backing: formData.spec?.backing || '',
+        size: formData.spec?.size || '',
+        useCase: formData.spec?.useCase || '',
+        installation: formData.spec?.installation || ''
+      },
+      sort_order: Number(formData.sort_order) || 0
+    }
+    
+    if (editingId) {
+      const { error } = await supabase.from('products').update(payload).eq('id', editingId)
+      if (error) alert('Lỗi: ' + error.message)
+      else {
+        setFilterCollection(formData.collection_id || 'all')
+        setIsModalOpen(false)
+        loadData()
+      }
+    } else {
+      const { error } = await supabase.from('products').insert([payload])
+      if (error) alert('Lỗi: ' + error.message)
+      else {
+        setFilterCollection(formData.collection_id || 'all')
+        setIsModalOpen(false)
+        loadData()
+      }
+    }
+  }
+
   return (
     <AdminLayout title="Quản lý Sản phẩm">
       <div className="admin-card">
@@ -102,7 +244,7 @@ export function ProductsManager() {
               </select>
             </div>
           </div>
-          <button className="admin-btn admin-btn-primary" onClick={() => alert('Chức năng thêm mới đang được hoàn thiện')}>
+          <button className="admin-btn admin-btn-primary" onClick={() => openModal()}>
             <Plus size={18} /> Thêm sản phẩm
           </button>
         </div>
@@ -156,7 +298,7 @@ export function ProductsManager() {
                     </td>
                     <td style={{ padding: '12px 16px', textAlign: 'right' }}>
                       <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-                        <button className="admin-btn admin-btn-ghost admin-btn-sm" title="Sửa" onClick={() => alert('Sửa: ' + p.code)}>
+                        <button className="admin-btn admin-btn-ghost admin-btn-sm" title="Sửa" onClick={() => openModal(p)}>
                           <Edit2 size={16} />
                         </button>
                         <button className="admin-btn admin-btn-ghost admin-btn-sm" style={{ color: '#ef4444' }} title="Xóa" onClick={() => handleDelete(p.id, p.code)}>
@@ -171,6 +313,164 @@ export function ProductsManager() {
           </div>
         )}
       </div>
+
+      {isModalOpen && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: 20 }}>
+          <div style={{ background: '#fff', padding: 24, borderRadius: 12, width: '100%', maxWidth: 650, maxHeight: '90vh', overflowY: 'auto' }}>
+            <h3 style={{ margin: '0 0 20px', fontSize: 18, fontWeight: 600 }}>{editingId ? 'Sửa Sản Phẩm' : 'Thêm Sản Phẩm Mới'}</h3>
+            <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label className="admin-label" style={{ display: 'block', marginBottom: 8, fontSize: 13, fontWeight: 600 }}>Bộ sưu tập *</label>
+                  <select 
+                    className="admin-input" 
+                    style={{ width: '100%' }}
+                    value={formData.collection_id}
+                    onChange={e => setFormData({...formData, collection_id: e.target.value})}
+                    required
+                  >
+                    <option value="">-- Chọn BST --</option>
+                    {collections.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="admin-label" style={{ display: 'block', marginBottom: 8, fontSize: 13, fontWeight: 600 }}>Mã SP *</label>
+                  <input 
+                    className="admin-input" 
+                    style={{ width: '100%' }}
+                    value={formData.code}
+                    onChange={e => setFormData({...formData, code: e.target.value})}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16 }}>
+                <div>
+                  <label className="admin-label" style={{ display: 'block', marginBottom: 8, fontSize: 13, fontWeight: 600 }}>Tên SP *</label>
+                  <input 
+                    className="admin-input" 
+                    style={{ width: '100%' }}
+                    value={formData.name}
+                    onChange={e => setFormData({...formData, name: e.target.value})}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="admin-label" style={{ display: 'block', marginBottom: 8, fontSize: 13, fontWeight: 600 }}>Thứ tự hiển thị</label>
+                  <input 
+                    type="number"
+                    className="admin-input" 
+                    style={{ width: '100%' }}
+                    value={formData.sort_order || 0}
+                    onChange={e => setFormData({...formData, sort_order: parseInt(e.target.value) || 0})}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="admin-label" style={{ display: 'block', marginBottom: 8, fontSize: 13, fontWeight: 600 }}>Hình Ảnh Sản Phẩm</label>
+                <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                  {formData.image && (
+                    <img src={formData.image} alt="preview" style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: 6, border: '1px solid #e2e8f0' }} />
+                  )}
+                  <div style={{ flex: 1, display: 'flex', gap: 8 }}>
+                    <input 
+                      className="admin-input" 
+                      style={{ flex: 1 }}
+                      value={formData.image}
+                      onChange={e => setFormData({...formData, image: e.target.value})}
+                      placeholder="Nhập URL hoặc tải ảnh lên..."
+                    />
+                    <label className="admin-btn admin-btn-secondary" style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                      {isUploading ? 'Đang tải...' : 'Tải lên từ máy'}
+                      <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handleImageUpload} disabled={isUploading} />
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 16 }}>
+                <h4 style={{ margin: '0 0 12px', fontSize: 14, fontWeight: 600, color: '#0f172a' }}>Thông số kỹ thuật sản phẩm</h4>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                  <div>
+                    <label className="admin-label" style={{ display: 'block', marginBottom: 6, fontSize: 12, fontWeight: 600 }}>Cấu trúc sợi (Pile)</label>
+                    <input 
+                      className="admin-input" 
+                      value={formData.spec?.pile || ''} 
+                      onChange={e => setFormData({...formData, spec: { ...formData.spec, pile: e.target.value }})}
+                      placeholder="Ví dụ: Sợi vòng lặp dệt nổi"
+                    />
+                  </div>
+                  <div>
+                    <label className="admin-label" style={{ display: 'block', marginBottom: 6, fontSize: 12, fontWeight: 600 }}>Kết cấu (Construction)</label>
+                    <input 
+                      className="admin-input" 
+                      value={formData.spec?.construction || ''} 
+                      onChange={e => setFormData({...formData, spec: { ...formData.spec, construction: e.target.value }})}
+                      placeholder="Ví dụ: Tufted"
+                    />
+                  </div>
+                  <div>
+                    <label className="admin-label" style={{ display: 'block', marginBottom: 6, fontSize: 12, fontWeight: 600 }}>Đế thảm (Backing)</label>
+                    <input 
+                      className="admin-input" 
+                      value={formData.spec?.backing || ''} 
+                      onChange={e => setFormData({...formData, spec: { ...formData.spec, backing: e.target.value }})}
+                      placeholder="Ví dụ: EcoSquare®"
+                    />
+                  </div>
+                  <div>
+                    <label className="admin-label" style={{ display: 'block', marginBottom: 6, fontSize: 12, fontWeight: 600 }}>Kích thước (Size)</label>
+                    <input 
+                      className="admin-input" 
+                      value={formData.spec?.size || ''} 
+                      onChange={e => setFormData({...formData, spec: { ...formData.spec, size: e.target.value }})}
+                      placeholder="Ví dụ: 50 x 50 cm"
+                    />
+                  </div>
+                  <div>
+                    <label className="admin-label" style={{ display: 'block', marginBottom: 6, fontSize: 12, fontWeight: 600 }}>Phù hợp sử dụng (Use Case)</label>
+                    <input 
+                      className="admin-input" 
+                      value={formData.spec?.useCase || ''} 
+                      onChange={e => setFormData({...formData, spec: { ...formData.spec, useCase: e.target.value }})}
+                      placeholder="Ví dụ: Văn phòng điều hành / Sàn yên tĩnh"
+                    />
+                  </div>
+                  <div>
+                    <label className="admin-label" style={{ display: 'block', marginBottom: 6, fontSize: 12, fontWeight: 600 }}>Cách lắp đặt (Installation)</label>
+                    <input 
+                      className="admin-input" 
+                      value={formData.spec?.installation || ''} 
+                      onChange={e => setFormData({...formData, spec: { ...formData.spec, installation: e.target.value }})}
+                      placeholder="Ví dụ: Quarter turn / ashlar / monolithic"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 16 }}>
+                <h4 style={{ margin: '0 0 12px', fontSize: 14, fontWeight: 600, color: '#0f172a' }}>Đặc điểm nổi bật (Highlights)</h4>
+                <label className="admin-label" style={{ display: 'block', marginBottom: 6, fontSize: 12, fontWeight: 600 }}>Mỗi dòng là một đặc điểm</label>
+                <textarea 
+                  className="admin-input" 
+                  rows={3}
+                  value={highlightsText}
+                  onChange={e => setHighlightsText(e.target.value)}
+                  placeholder="Ví dụ:&#10;Tông màu tinh tế&#10;Tạo độ sang trọng tự nhiên"
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 12, borderTop: '1px solid #e2e8f0', paddingTop: 16 }}>
+                <button type="button" className="admin-btn admin-btn-ghost" onClick={() => setIsModalOpen(false)}>Hủy</button>
+                <button type="submit" className="admin-btn admin-btn-primary">Lưu Sản Phẩm</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </AdminLayout>
   )
 }
