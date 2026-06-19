@@ -19,6 +19,7 @@ interface ProductRecord {
     size?: string
     useCase?: string
     installation?: string
+    detail?: string
   }
   sort_order?: number
 }
@@ -55,7 +56,8 @@ export function ProductsManager() {
       backing: '',
       size: '',
       useCase: '',
-      installation: ''
+      installation: '',
+      detail: ''
     },
     sort_order: 0
   })
@@ -107,7 +109,8 @@ export function ProductsManager() {
           backing: item.spec?.backing || '',
           size: item.spec?.size || '',
           useCase: item.spec?.useCase || '',
-          installation: item.spec?.installation || ''
+          installation: item.spec?.installation || '',
+          detail: item.spec?.detail || ''
         }
       })
       setHighlightsText(item.highlights?.join('\n') || '')
@@ -126,7 +129,8 @@ export function ProductsManager() {
           backing: '',
           size: '',
           useCase: '',
-          installation: ''
+          installation: '',
+          detail: ''
         },
         sort_order: products.length
       })
@@ -191,23 +195,32 @@ export function ProductsManager() {
         backing: formData.spec?.backing || '',
         size: formData.spec?.size || '',
         useCase: formData.spec?.useCase || '',
-        installation: formData.spec?.installation || ''
+        installation: formData.spec?.installation || '',
+        detail: formData.spec?.detail || ''
       },
       sort_order: Number(formData.sort_order) || 0
     }
     
     if (editingId) {
-      const { error } = await supabase.from('products').update(payload).eq('id', editingId)
-      if (error) alert('Lỗi: ' + error.message)
-      else {
+      const { data, error } = await supabase.from('products').update(payload).eq('id', editingId).select()
+      if (error) {
+        alert('Lỗi khi cập nhật: ' + error.message)
+      } else if (!data || data.length === 0) {
+        alert('Cập nhật thất bại. Vui lòng kiểm tra lại quyền truy cập (RLS) hoặc ID sản phẩm.')
+      } else {
+        alert('Lưu thay đổi thành công!')
         setFilterCollection(formData.collection_id || 'all')
         setIsModalOpen(false)
         loadData()
       }
     } else {
-      const { error } = await supabase.from('products').insert([payload])
-      if (error) alert('Lỗi: ' + error.message)
-      else {
+      const { data, error } = await supabase.from('products').insert([payload]).select()
+      if (error) {
+        alert('Lỗi khi thêm mới: ' + error.message)
+      } else if (!data || data.length === 0) {
+        alert('Thêm mới thất bại. Vui lòng thử lại.')
+      } else {
+        alert('Thêm sản phẩm mới thành công!')
         setFilterCollection(formData.collection_id || 'all')
         setIsModalOpen(false)
         loadData()
@@ -448,6 +461,17 @@ export function ProductsManager() {
                       placeholder="Ví dụ: Quarter turn / ashlar / monolithic"
                     />
                   </div>
+                </div>
+
+                <div style={{ marginTop: 12 }}>
+                  <label className="admin-label" style={{ display: 'block', marginBottom: 6, fontSize: 12, fontWeight: 600 }}>Thông tin chi tiết (Mô tả sản phẩm)</label>
+                  <textarea 
+                    className="admin-input" 
+                    rows={4}
+                    value={formData.spec?.detail || ''} 
+                    onChange={e => setFormData({...formData, spec: { ...formData.spec, detail: e.target.value }})}
+                    placeholder="Nhập thông tin chi tiết về sản phẩm..."
+                  />
                 </div>
               </div>
 

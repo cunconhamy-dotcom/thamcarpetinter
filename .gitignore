@@ -22,5 +22,35 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-.vite-source-tags.js
+
+# Vercel
 .vercel
+
+# Agon / Arena dev tools
+.vite-source-tags.js
+
+# Scratch / temp files
+scratch_*.cjs
+scratch_*.mjs
+temp_*.txt
+temp_*.tsx
+*.bak
+
+# Archives
+*.zip
+
+# One-off scripts (keep scripts/ dir)
+apply_bg*.cjs
+change_bg.cjs
+invert_themes.cjs
+move_sections.cjs
+reorder.cjs
+fetch_insight.cjs
+fix_*.mjs
+update_*.mjs
+verify_*.mjs
+audit_*.mjs
+check_*.mjs
+script.cjs
+script.js
+perfect_light_theme.tsx

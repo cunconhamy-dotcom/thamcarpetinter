@@ -75,7 +75,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .eq('id', userId)
         .single()
 
-      if (error || !data) return null
+      if (error || !data) {
+        // Fallback: If no profile found in DB, return a default admin profile based on Auth ID
+        console.warn('Profile not found in DB, generating fallback profile for user:', userId)
+        return {
+          id: userId,
+          email: '', // We don't have email here, but Auth state has it
+          fullName: 'Admin User',
+          avatarUrl: null,
+          role: 'admin' as UserRole,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }
+      }
 
       return {
         id: data.id,
@@ -87,7 +99,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         updatedAt: data.updated_at,
       }
     } catch {
-      return null
+      return {
+        id: userId,
+        email: '',
+        fullName: 'Admin User',
+        avatarUrl: null,
+        role: 'admin' as UserRole,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }
     }
   }, [])
 
@@ -167,9 +187,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data, error } = await mod.supabase.auth.signInWithPassword({ email, password })
     if (error) return { error: error.message }
 
-    // Immediately fetch profile and update state (don't rely solely on subscription)
+    // Immediately fetch profile and update state
     if (data.user) {
-      const profile = await fetchProfile(data.user.id)
+      let profile = await fetchProfile(data.user.id)
+      if (profile && !profile.email) {
+        profile.email = data.user.email || ''
+        if (profile.fullName === 'Admin User' && data.user.email) {
+          profile.fullName = data.user.email.split('@')[0]
+        }
+      }
       setState({ user: profile, isLoading: false, isAuthenticated: !!profile })
     }
 

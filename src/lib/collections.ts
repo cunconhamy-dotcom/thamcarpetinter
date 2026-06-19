@@ -7,9 +7,11 @@ export type ProductSpec = {
   size?: string
   useCase?: string
   installation?: string
+  detail?: string
 }
 
 export type Product = {
+  id: string
   code: string
   name: string
   highlights: string[]
@@ -35,6 +37,7 @@ export type ContactInfo = {
 
 export type CollectionItem = {
   id: string
+  dbId: string
   name: string
   tagline: string
   summary: string
@@ -86,6 +89,7 @@ export async function fetchCollections(): Promise<CollectionItem[]> {
 
         return {
           id: item.slug,
+          dbId: item.id,
           name: item.name,
           tagline: item.tagline || '',
           summary: item.summary || '',

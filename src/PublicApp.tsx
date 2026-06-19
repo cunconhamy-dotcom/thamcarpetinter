@@ -4,6 +4,12 @@ import { ArrowRight, BookOpen, Check, Download, ExternalLink, FileText, Grid2x2,
 import { fetchCollections, contactInfo, featuredResources, type Product, type ResourceLink, type CollectionItem } from './lib/collections'
 import { mockNews, fetchNewsArticles, type NewsArticle } from './lib/news'
 import { AIChatbot } from './components/ui/AIChatbot'
+import { HeroSection } from './components/ui/HeroSection'
+import { ValueSpecsSection } from './components/ui/ValueSpecsSection'
+import { GallerySection } from './components/ui/GallerySection'
+import { CollectionSidebar } from './components/ui/CollectionSidebar'
+import { ProductDetailView } from './components/ui/ProductDetailView'
+import { ResourcesSection } from './components/ui/ResourcesSection'
 
 const resourceLabels: Record<ResourceLink['type'], string> = {
   brochure: 'Brochure',
@@ -21,7 +27,6 @@ function PublicApp() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const [selectedProductIndex, setSelectedProductIndex] = useState(0)
   const [selectedModalProduct, setSelectedModalProduct] = useState<Product | null>(null)
-  const [heroCollectionIndex, setHeroCollectionIndex] = useState(0)
   const [formStatus, setFormStatus] = useState<string>('')
   const [loadError, setLoadError] = useState(false)
   const [formData, setFormData] = useState({
@@ -59,30 +64,9 @@ function PublicApp() {
     setSelectedProductIndex(0)
   }
 
-  // Declare rotator BEFORE the timer useEffect so it is in scope
-  const collectionHeroRotator = useMemo(() => {
-    return collections.map(c => ({
-      id: c.id,
-      name: c.name,
-      image: c.heroImage,
-      accent: c.accent,
-      tagline: c.tagline
-    }))
-  }, [collections])
-
-  // Re-create the interval whenever collectionHeroRotator changes (i.e., after data loads)
-  useEffect(() => {
-    if (collectionHeroRotator.length === 0) return
-    const timer = window.setInterval(() => {
-      setHeroCollectionIndex((prev) => (prev + 1) % collectionHeroRotator.length)
-    }, 3200)
-    return () => window.clearInterval(timer)
-  }, [collectionHeroRotator.length])
-
   const productShowcase = activeCollection?.products?.map((product) => product.image).filter(Boolean) as string[] || []
   const selectedProduct = activeCollection?.products?.[selectedProductIndex] ?? activeCollection?.products?.[0]
   const currentSlide = selectedProduct?.image ?? productShowcase[selectedProductIndex] ?? activeCollection?.heroImage
-  const heroCollection = collectionHeroRotator[heroCollectionIndex] ?? collectionHeroRotator[0]
   // Fetch data on mount
   useEffect(() => {
     fetchNewsArticles().then((articles) => {
@@ -103,18 +87,7 @@ function PublicApp() {
   }, [])
 
   const activeNews = newsArticles.find(n => n.id === activeNewsId) ?? newsArticles[0]
-  
-  const collectionGallery = useMemo(() => {
-    if (!activeCollection) return []
-    const merged = [...productShowcase, ...(activeCollection.gallery || [])]
-    const unique = Array.from(new Set(merged))
-    return unique.filter(
-      (image) =>
-        !/Specification|Installation|Capture|DV700-DV800|2024-port|2024-qs|Recommended|Brochure|Disc\.jpg|055\.jpg|install|DeclareLabel|Red-List-Free|หน้าเปล่า/i.test(
-          image,
-        ),
-    )
-  }, [activeCollection?.gallery, productShowcase])
+
 
 
   const handleFormChange = (field: keyof typeof formData, value: string) => {
@@ -167,103 +140,7 @@ function PublicApp() {
   return (
     <div className="min-h-screen bg-[#fafaf8] text-[#1a1a1a] selection:bg-[#e8720c]/20">
       {/* ── HERO SECTION ── */}
-      <header className="relative w-full h-[90vh] min-h-[650px] flex flex-col overflow-hidden">
-        {/* Background Image & Gradient */}
-        <div className="absolute inset-0 z-0 bg-[#1a1a1a]">
-          <AnimatePresence mode="wait">
-            <motion.img
-              key={heroCollection.id}
-              src={heroCollection.image}
-              initial={{ opacity: 0.3, scale: 1.03 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0.2, scale: 0.98 }}
-              transition={{ duration: 0.55 }}
-              className="absolute inset-0 h-full w-full object-cover"
-            />
-          </AnimatePresence>
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
-        </div>
-
-        {/* Top Navigation bar */}
-        <div className="relative z-10 w-full border-b border-white/10 bg-black/20 backdrop-blur-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            {/* Left Logo block */}
-            <div className="flex items-center gap-3">
-              <div className="bg-[#e8720c] h-10 w-10 text-white font-bold flex items-center justify-center text-lg rounded">
-                C
-              </div>
-              <div className="flex flex-col">
-                <span className="text-white font-semibold leading-tight">Carpets Inter</span>
-                <span className="uppercase text-white/70 text-xs leading-tight mt-0.5">THẢM TRẢI SÀN CAO CẤP</span>
-              </div>
-            </div>
-
-            {/* Center Nav Links */}
-            <div className="hidden md:flex gap-8 text-base font-medium text-white/90">
-              <a href="#collections" className="hover:text-[#e8720c] transition">Bộ sưu tập</a>
-              <a href="#tai-lieu" className="hover:text-[#e8720c] transition">Tài liệu</a>
-              <a href="#news" className="hover:text-[#e8720c] transition">Tin tức</a>
-              <a href="#lien-he-nhanh" className="hover:text-[#e8720c] transition">Liên hệ</a>
-            </div>
-
-            {/* Right CTA */}
-            <div className="flex items-center gap-4">
-              <div className="hidden sm:flex items-center gap-2">
-                <Phone size={16} className="text-[#e8720c]" />
-                <span className="text-white font-medium text-base">0908314939</span>
-              </div>
-              <a href="tel:0908314939" className="bg-[#e8720c] text-white px-6 py-2.5 rounded font-semibold text-base transition hover:bg-[#ff8a24]">
-                Gọi ngay
-              </a>
-            </div>
-          </div>
-        </div>
-
-        {/* Hero Body Content */}
-        <div className="relative z-10 flex-1 flex flex-col justify-center mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
-          <div className="max-w-3xl space-y-7">
-            <div className="inline-flex items-center gap-2.5 rounded-full border border-[#e8720c]/30 bg-black/40 px-5 py-2.5 text-sm text-white backdrop-blur-md">
-              <Zap size={16} className="text-[#e8720c]" />
-              Giao hàng và thi công nhanh chóng trên toàn quốc.
-            </div>
-
-            <h1 className="text-[2.5rem] sm:text-5xl lg:text-[4.5rem] font-bold text-white leading-[1.1] tracking-tight uppercase">
-              HƠN CẢ THẨM MỸ<br />ĐÓ LÀ <span className="text-[#e8720c]">SỰ BỀN VỮNG</span>
-            </h1>
-
-            <p className="max-w-2xl text-lg sm:text-lg text-white/80 leading-relaxed font-light">
-              Nội thất công cộng Minh Đức đồng hành cùng đối tác quốc tế Carpets Inter, mang giải pháp thảm sàn sinh thái đẳng cấp toàn cầu đến mọi công trình bằng sự chân thành và cam kết chất lượng trọn vẹn.
-            </p>
-
-            <div className="flex flex-wrap gap-4">
-              <a href="#collections" className="bg-[#e8720c] px-8 py-4 rounded text-base font-semibold text-white transition hover:bg-[#ff8a24]">
-                Xem bộ sưu tập
-              </a>
-              <a href="#tai-lieu" className="border border-white/20 bg-black/40 px-8 py-4 rounded text-base font-medium text-white flex items-center gap-2 transition hover:bg-black/60 hover:border-white/40">
-                <BookOpen size={20} />
-                Tài liệu kỹ thuật
-              </a>
-              <a href="#news" className="border border-white/20 bg-black/40 px-8 py-4 rounded text-base font-medium text-white flex items-center gap-2 transition hover:bg-black/60 hover:border-white/40">
-                <Newspaper size={20} />
-                Tin tức & Sự kiện
-              </a>
-            </div>
-
-            {/* Slider controls */}
-            <div className="pt-12 flex gap-2">
-              {collectionHeroRotator.map((item, index) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => setHeroCollectionIndex(index)}
-                  className={`h-2 rounded-full transition-all duration-300 ${index === heroCollectionIndex ? 'w-10 bg-[#e8720c]' : 'w-2 bg-white/30 hover:bg-white/50'}`}
-                  aria-label={`Chọn ${item.name}`}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </header>
+      <HeroSection />
 
       
       {/* ── CHI TIẾT TỪNG COLLECTION ── */}
@@ -279,7 +156,7 @@ function PublicApp() {
               {collections.map((item) => (
                 <a
                   key={item.id}
-                  href={`#collection-${item.id}`}
+                  href="#collections"
                   onClick={() => setActiveId(item.id)}
                   className="overflow-hidden rounded-[26px] border border-white/10 bg-[#262626] shadow-sm transition-all duration-300 hover:border-[#e8720c]/40 hover:bg-[#333] group"
                 >
@@ -310,239 +187,29 @@ function PublicApp() {
           <div className="grid gap-6 lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)] items-stretch">
             
             {/* SIDEBAR */}
-            <div className="relative lg:h-full">
-              <div className="lg:absolute lg:inset-0 h-[500px] lg:h-full flex flex-col overflow-hidden rounded-[28px] border border-white/10 bg-[#262626] shadow-[0_8px_30px_rgba(0,0,0,0.2)]">
-              <div className="shrink-0 border-b border-white/10 p-5">
-                <div className="mb-3 flex items-center gap-2 text-sm uppercase tracking-[0.25em] text-[#e8720c] font-semibold">
-                  <Grid2x2 size={14} />
-                  BỘ SƯU TẬP
-                </div>
-                <label className="relative block">
-                  <Search className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40" size={14} />
-                  <input
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Tìm bộ sưu tập..."
-                    className="w-full rounded-xl border border-white/12 bg-white/5 py-2.5 pl-10 pr-3 text-base text-white outline-none placeholder:text-white/40 focus:border-[#e8720c]/50"
-                  />
-                </label>
-              </div>
-
-              {/* Scrollable List */}
-              <div className="relative flex flex-1 min-h-0">
-                {/* Scroll track line (brand accent) */}
-                <div className="absolute right-0 top-0 bottom-0 w-[3px] rounded-full bg-gradient-to-b from-[#e8720c]/80 via-[#f29d38]/50 to-transparent z-10 pointer-events-none" />
-
-                <div
-                  className="flex-1 overflow-y-auto pb-4"
-                  style={{ scrollbarWidth: 'none' }}
-                >
-                  <div className="space-y-1 p-3">
-                    {filteredCollections.map((item) => {
-                      const active = item.id === activeCollection.id
-                      return (
-                        <button
-                          key={item.id}
-                          onClick={() => {
-                            setActiveId(item.id)
-                            setSelectedProductIndex(0)
-                          }}
-                          className={`w-full rounded-[18px] border p-3.5 text-left transition-all duration-200 ${
-                            active
-                              ? 'border-[#e8720c]/30 bg-white/10 shadow-[0_8px_24px_rgba(0,0,0,0.2)]'
-                              : 'border-transparent hover:border-white/10 hover:bg-white/5'
-                          }`}
-                        >
-                          <div className="flex items-center justify-between gap-2">
-                            <div className="min-w-0 flex-1">
-                              <div className={`text-base font-medium leading-tight ${active ? 'text-[#e8720c]' : 'text-white'}`}>
-                                {item.name}
-                              </div>
-                              <div className="mt-1 line-clamp-1 text-xs leading-4 text-white/50">
-                                {item.tagline}
-                              </div>
-                            </div>
-                            {active && (
-                              <div className="h-2 w-2 shrink-0 rounded-full bg-[#e8720c]" />
-                            )}
-                          </div>
-                        </button>
-                      )
-                    })}
-                    {!filteredCollections.length && (
-                      <div className="p-4 text-center text-sm text-white/40">
-                        Không tìm thấy bộ sưu tập.
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="shrink-0 mt-auto border-t border-white/10 px-4 py-3 bg-white/5">
-                <div className="text-center text-[11px] uppercase tracking-[0.2em] text-white/40 font-semibold font-sans">
-                  {filteredCollections.length} bộ sưu tập
-                </div>
-              </div>
-            </div>
-            </div>
+            <CollectionSidebar
+              query={query}
+              setQuery={setQuery}
+              filteredCollections={filteredCollections}
+              activeCollection={activeCollection}
+              setActiveId={setActiveId}
+              setSelectedProductIndex={setSelectedProductIndex}
+            />
 
             {/* PRODUCT DETAIL VIEW */}
-            <div id={`collection-${activeCollection.id}`} className="h-full overflow-hidden rounded-[30px] border border-white/10 bg-[#262626] shadow-[0_8px_30px_rgba(0,0,0,0.2)] p-5 lg:p-7">
-              <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] h-full">
-                {/* Left pane */}
-                <div className="space-y-5">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm uppercase tracking-[0.2em] text-[#e8720c] font-semibold">
-                      Chi tiết sản phẩm
-                    </span>
-                    <span className="rounded-full bg-white/10 px-3 py-1 text-sm text-white/70 font-medium">
-                      {activeCollection.products.length} mã sản phẩm
-                    </span>
-                  </div>
-
-                  <div>
-                    <h2 className="text-3xl font-light sm:text-4xl text-white">{activeCollection.name}</h2>
-                    <p className="mt-2 text-base leading-7 text-[#e8720c] font-medium">{activeCollection.tagline}</p>
-                  </div>
-
-                  <p className="text-base leading-8 text-white/80">{activeCollection.summary}</p>
-                  <p className="text-base leading-8 text-white/60">{activeCollection.detail}</p>
-
-                  <div className="grid gap-3 sm:grid-cols-3">
-                    {activeCollection.quickFacts.map((fact) => (
-                      <div key={fact} className="rounded-2xl border border-white/10 bg-white/5 p-4 text-base leading-6 text-white/80 shadow-sm">
-                        {fact}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Right pane (Image + thumbs) */}
-                <div className="space-y-4">
-                  <div className="overflow-hidden rounded-[22px] border border-white/10 bg-black/40">
-                    <AnimatePresence mode="wait">
-                      <motion.img
-                        key={currentSlide}
-                        initial={{ opacity: 0.35, scale: 1.03 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0.2, scale: 0.98 }}
-                        transition={{ duration: 0.5 }}
-                        src={currentSlide}
-                        alt={activeCollection.name}
-                        className="h-[300px] w-full object-cover"
-                      />
-                    </AnimatePresence>
-                  </div>
-                  <div className="flex items-center justify-center gap-3 py-1">
-                    <span className="h-px w-8 bg-white/10" />
-                    <span className="text-lg uppercase tracking-[0.15em] text-[#e8720c] font-semibold">
-                      {selectedProduct ? `${selectedProduct.code} · ${selectedProduct.name}` : "Click vào mẫu bên dưới để xem chi tiết"}
-                    </span>
-                    <span className="h-px w-8 bg-white/10" />
-                  </div>
-                  <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-5">
-                    {productShowcase.slice(0, 12).map((image, index) => (
-                      <button
-                        key={image}
-                        type="button"
-                        onClick={() => setSelectedProductIndex(index)}
-                        className={`overflow-hidden rounded-xl border bg-white/5 transition-all duration-200 ${image === currentSlide ? 'border-[#e8720c] ring-2 ring-[#e8720c]/20' : 'border-white/10 hover:border-white/30'}`}
-                      >
-                        <img src={image} alt={activeCollection.name} className="h-20 w-full object-cover transition hover:scale-105" />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
+            <ProductDetailView
+              activeCollection={activeCollection}
+              selectedProduct={selectedProduct}
+              currentSlide={currentSlide}
+              productShowcase={productShowcase}
+              setSelectedProductIndex={setSelectedProductIndex}
+            />
           </div>
         </div>
       </section>
 
       {/* ── VALUE & SPEC SECTION ── */}
-      <section className="w-full bg-[#fafaf8] py-16 border-b border-black/5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid gap-8 lg:grid-cols-2">
-          {/* GIÁ TRỊ NỔI BẬT */}
-          <div className="overflow-hidden rounded-[30px] border border-white/10 bg-[#262626] shadow-[0_8px_30px_rgba(0,0,0,0.2)] p-6 lg:p-8 space-y-6">
-            <div className="flex items-center gap-2">
-              <span className="rounded-full bg-[#e8720c]/20 p-2 text-[#e8720c]">
-                <Check size={14} />
-              </span>
-              <div className="text-base uppercase tracking-[0.25em] text-[#e8720c] font-semibold">Giá trị nổi bật mang lại</div>
-            </div>
-            
-            <div className="space-y-3">
-              {activeCollection.valuePoints.map((item) => (
-                <div key={item} className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 transition-all duration-200 hover:bg-white/10 hover:shadow-sm">
-                  <span className="mt-0.5 shrink-0 rounded-full bg-[#e8720c]/20 p-1.5 text-[#e8720c]">
-                    <Check size={13} />
-                  </span>
-                  <div className="text-base leading-7 text-white/80">{item}</div>
-                </div>
-              ))}
-            </div>
-            
-            <div className="rounded-2xl border border-[#e8720c]/30 bg-[#e8720c]/10 p-4 text-base leading-7 text-[#e8720c] font-medium">
-              Liên hệ ngay để được tư vấn đúng bộ sưu tập, đúng cấu trúc bề mặt và đúng sắc độ phù hợp với concept công trình của bạn.
-            </div>
-          </div>
-
-          {/* THÔNG SỐ KỸ THUẬT */}
-          <div className="overflow-hidden rounded-[30px] border border-white/10 bg-[#262626] shadow-[0_8px_30px_rgba(0,0,0,0.2)] p-6 lg:p-8">
-            {selectedProduct ? (
-              <>
-                <div className="mb-5 flex items-start justify-between gap-4">
-                  <div>
-                    <div className="text-sm uppercase tracking-[0.25em] text-[#e8720c] font-semibold">Thông số kỹ thuật sản phẩm</div>
-                    <h3 className="mt-2 text-2xl font-light text-white sm:text-3xl">
-                      {selectedProduct.code} · {selectedProduct.name}
-                    </h3>
-                  </div>
-                  <div className="h-3 w-3 shrink-0 rounded-full mt-2" style={{ backgroundColor: activeCollection.accent }} />
-                </div>
-
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {[
-                    ['Bộ sưu tập', activeCollection.name],
-                    ['Số mã hiển thị', String(activeCollection.products.length)],
-                    ['Cấu trúc sợi', selectedProduct.spec.pile],
-                    ['Kết cấu', selectedProduct.spec.construction],
-                    ['Đế thảm', selectedProduct.spec.backing],
-                    ['Kích thước', selectedProduct.spec.size],
-                    ['Phù hợp', selectedProduct.spec.useCase],
-                    ['Lắp đặt', selectedProduct.spec.installation],
-                  ].map(([label, value]) => (
-                    <div key={label} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-                      <div className="text-xs uppercase tracking-[0.18em] text-[#e8720c] font-semibold">{label}</div>
-                      <div className="mt-1 text-base leading-6 text-white/80">{value}</div>
-                    </div>
-                  ))}
-                  {activeCollection.applications.length > 0 && (
-                    <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 sm:col-span-2">
-                      <div className="text-xs uppercase tracking-[0.18em] text-[#e8720c] font-semibold">Ứng dụng</div>
-                      <div className="mt-1 text-base leading-6 text-white/80">{activeCollection.applications.join(' · ')}</div>
-                    </div>
-                  )}
-                  {selectedProduct.colors?.length ? (
-                    <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 sm:col-span-2">
-                      <div className="text-xs uppercase tracking-[0.18em] text-[#e8720c] font-semibold">Sắc độ gợi ý</div>
-                      <div className="mt-2 flex flex-wrap gap-2">
-                        {selectedProduct.colors.map((c) => (
-                          <span key={c} className="rounded-full border border-white/10 bg-white/10 px-3 py-1 text-sm text-white/70 font-medium">{c}</span>
-                        ))}
-                      </div>
-                    </div>
-                  ) : null}
-                </div>
-              </>
-            ) : (
-              <div className="flex h-full items-center justify-center text-base text-white/40">
-                Chọn sản phẩm để xem thông số kỹ thuật
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
+      <ValueSpecsSection collection={activeCollection} selectedProduct={selectedProduct} />
 
       {/* ── PRODUCTS GRID & CATALOGUE ── */}
       <section className="w-full bg-[#1a1a1a] py-16 border-b border-white/5">
@@ -565,70 +232,10 @@ function PublicApp() {
       </section>
 
       {/* ── BROCHURES & DOCUMENTS ── */}
-      <section id="tai-lieu" className="w-full bg-[#fafaf8] py-16 border-b border-black/5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-[30px] border border-black/8 bg-white shadow-[0_8px_30px_rgba(0,0,0,0.02)] p-5 lg:p-7 space-y-5">
-            <div className="flex items-center gap-2 text-base uppercase tracking-[0.22em] text-[#e8720c] font-semibold">
-              <FileText size={16} />
-              Brochure · Spec · Hướng dẫn
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {activeCollection.resources.map((resource) => (
-                <a
-                  key={resource.url}
-                  href={resource.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex items-center justify-between gap-3 rounded-2xl border border-black/8 bg-[#f5f3f0] p-4 shadow-sm transition-all duration-200 hover:border-[#e8720c]/40 hover:shadow-md hover:bg-white"
-                >
-                  <div>
-                    <div className="text-base font-medium text-[#1a1a1a]">{resource.label}</div>
-                    <div className="mt-1 text-sm uppercase tracking-[0.18em] text-[#e8720c] font-semibold">{resourceLabels[resource.type]}</div>
-                  </div>
-                  <span className="rounded-full bg-[#e8720c] p-2 text-white shadow-[0_6px_16px_rgba(232,114,12,0.22)]">
-                    <Download size={15} />
-                  </span>
-                </a>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+      <ResourcesSection collection={activeCollection} />
 
       {/* ── GALLERY & ALL IMAGES ── */}
-      <section className="w-full bg-[#1a1a1a] py-16 border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-          
-          {/* Photos Grid */}
-          <div className="rounded-[30px] border border-white/10 bg-[#262626] p-5 md:p-6 space-y-5 shadow-[0_8px_30px_rgba(0,0,0,0.2)]">
-            <div className="flex items-center gap-2 text-base uppercase tracking-[0.22em] text-[#e8720c] font-semibold">
-              <Sparkles size={16} />
-              Toàn bộ hình ảnh trong bộ sưu tập
-            </div>
-            <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-              {collectionGallery.map((image, index) => (
-                <button
-                  key={`${image}-${index}`}
-                  type="button"
-                  onClick={() => {
-                    setSelectedImage(image)
-                  }}
-                  className="group overflow-hidden rounded-[22px] border border-white/10 bg-white/5 text-left shadow-sm animate-fade-in transition duration-300 hover:border-white/30"
-                >
-                  <div className="h-44 w-full overflow-hidden sm:h-48 border-b border-white/10 bg-black/20">
-                    <img src={image} alt={`${activeCollection.name} ${index + 1}`} className="h-full w-full object-cover transition duration-300 group-hover:scale-105 opacity-90 group-hover:opacity-100" />
-                  </div>
-                  <div className="px-4 py-3 text-base text-white/80 font-medium">Hình ảnh bộ sưu tập #{index + 1}</div>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          
-</div>
-
-
-      </section>
+      <GallerySection collection={activeCollection} productShowcase={productShowcase} setSelectedImage={setSelectedImage} />
 
       {/* ── PORTFOLIO RESOURCES ── */}
       <section className="w-full bg-[#fafaf8] py-16 border-b border-black/5">

@@ -22,6 +22,71 @@ export interface CollectionRecord {
   updatedAt: string
 }
 
+export interface UiHeroSectionRecord {
+  id: string
+  collection_id: string
+  image_url: string
+  title: string | null
+  subtitle: string | null
+  order_index: number
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface CollectionValuePointRecord {
+  id: string
+  collection_id: string
+  point_text: string
+  created_at: string
+  updated_at: string
+}
+
+export interface CollectionGalleryRecord {
+  id: string
+  collection_id: string
+  image_url: string
+  caption: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface CollectionResourceRecord {
+  id: string
+  collection_id: string
+  label: string
+  resource_type: string
+  file_url: string
+  created_at: string
+  updated_at: string
+}
+
+export interface ProductRecord {
+  id: string
+  collection_id: string
+  code: string
+  name: string
+  image: string
+  highlights: string[]
+  colors: string[]
+  spec: Record<string, unknown>
+  sort_order: number
+  created_at: string
+  updated_at: string
+}
+
+export interface ProductSpecRecord {
+  id: string
+  product_id: string
+  pile_type: string | null
+  construction: string | null
+  backing: string | null
+  size: string | null
+  installation: string | null
+  created_at: string
+  updated_at: string
+}
+
 export interface BlogPostRecord {
   id: string
   title: string

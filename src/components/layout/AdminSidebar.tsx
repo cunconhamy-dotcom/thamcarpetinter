@@ -11,7 +11,9 @@ import {
   Settings,
   LogOut,
   ChevronRight,
-  Bot
+  Bot,
+  Users2,
+  Mail
 } from 'lucide-react'
 
 interface NavSection {
@@ -30,14 +32,40 @@ const NAV_SECTIONS: NavSection[] = [
     title: 'Tổng quan',
     items: [
       { label: 'Bảng điều khiển', href: '/admin', icon: LayoutDashboard, permission: 'dashboard.view' },
-      { label: 'Trang chủ', href: '/admin/homepage', icon: Layout, permission: 'homepage.view' },
     ],
   },
   {
-    title: 'Nội dung',
+    title: 'Trang chủ',
     items: [
-      { label: 'Bộ sưu tập', href: '/admin/collections', icon: FolderOpen, permission: 'collections.view' },
-      { label: 'Sản phẩm', href: '/admin/products', icon: LayoutDashboard, permission: 'collections.view' },
+      { label: 'Slider Trang Chủ', href: '/admin/ui-hero-sections', icon: Image, permission: 'homepage.view' },
+    ],
+  },
+  {
+    title: 'Bộ Sưu Tập & Nội Dung',
+    items: [
+      { label: 'Bộ Sưu Tập Core', href: '/admin/collections', icon: FolderOpen, permission: 'collections.view' },
+      { label: 'Đặc Điểm Nổi Bật', href: '/admin/collection-value-points', icon: FileText, permission: 'collections.view' },
+      { label: 'Thư Viện Ảnh', href: '/admin/collection-galleries', icon: Image, permission: 'collections.view' },
+      { label: 'Tài Liệu', href: '/admin/collection-resources', icon: FileText, permission: 'collections.view' },
+    ],
+  },
+  {
+    title: 'Sản Phẩm',
+    items: [
+      { label: 'Sản Phẩm', href: '/admin/products', icon: LayoutDashboard, permission: 'collections.view' },
+      { label: 'Thông Số Sản Phẩm', href: '/admin/product-specs', icon: Layout, permission: 'collections.view' },
+    ]
+  },
+  {
+    title: 'Khách hàng & CRM',
+    items: [
+      { label: 'Đăng ký tư vấn', href: '/admin/leads', icon: Users2, permission: 'collections.view' },
+      { label: 'Email Marketing', href: '/admin/emails', icon: Mail, permission: 'collections.view' },
+    ]
+  },
+  {
+    title: 'Nội dung khác',
+    items: [
       { label: 'Bài viết', href: '/admin/blog', icon: FileText, permission: 'blog.view' },
       { label: 'Thư viện media', href: '/admin/media', icon: Image, permission: 'media.view' },
     ],

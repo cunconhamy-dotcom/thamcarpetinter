@@ -13,11 +13,8 @@ interface UserItem {
   avatarUrl: string | null
   role: UserRole
   createdAt: string
+  isInvite?: boolean
 }
-
-const DEMO_USERS: UserItem[] = [
-  { id: 'demo-admin-001', email: 'admin@carpetsinter.vn', fullName: 'Admin Demo', avatarUrl: null, role: 'admin', createdAt: new Date().toISOString() },
-]
 
 const ROLE_CONFIG: Record<UserRole, { label: string; color: string; bg: string; icon: typeof Shield }> = {
   admin: { label: 'Quản trị viên', color: '#8b5cf6', bg: '#f0e8fe', icon: ShieldCheck },
@@ -25,12 +22,38 @@ const ROLE_CONFIG: Record<UserRole, { label: string; color: string; bg: string; 
   viewer: { label: 'Người xem', color: '#6b7280', bg: '#f3f4f6', icon: Eye },
 }
 
+const DEMO_USERS: UserItem[] = [
+  {
+    id: 'demo-admin-1',
+    email: 'admin@carpetsinter.vn',
+    fullName: 'Admin Demo',
+    avatarUrl: null,
+    role: 'admin',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'demo-writer-1',
+    email: 'writer@carpetsinter.vn',
+    fullName: 'Writer Demo',
+    avatarUrl: null,
+    role: 'writer',
+    createdAt: new Date().toISOString(),
+  },
+]
+
 export function UsersManager() {
   const { user, isDemoMode, hasPermission } = useAuth()
   const [users, setUsers] = useState<UserItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [changingRole, setChangingRole] = useState<string | null>(null)
   const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
+
+  // Invite state
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
+  const [inviteEmail, setInviteEmail] = useState('')
+  const [inviteRole, setInviteRole] = useState<UserRole>('writer')
+  const [isInviting, setIsInviting] = useState(false)
+  const [inviteLink, setInviteLink] = useState<string | null>(null)
 
   const showNotification = (type: 'success' | 'error', message: string) => {
     setNotification({ type, message })
@@ -65,15 +88,32 @@ export function UsersManager() {
     if (error) {
       console.error('Error fetching users:', error)
       showNotification('error', 'Không thể tải danh sách người dùng')
-    } else if (data) {
-      setUsers(data.map((u: Record<string, unknown>) => ({
+    } else {
+      const formattedUsers: UserItem[] = data.map((u: Record<string, unknown>) => ({
         id: u.id as string,
         email: (u.email as string) || '',
         fullName: (u.full_name as string) || null,
         avatarUrl: (u.avatar_url as string) || null,
         role: ((u.role as string) || 'viewer') as UserRole,
         createdAt: (u.created_at as string) || new Date().toISOString(),
-      })))
+      }))
+
+      // Fetch pending invites
+      const { data: invites } = await supabase.from('user_invites').select('*').order('created_at', { ascending: false })
+      if (invites && invites.length > 0) {
+        const pendingInvites: UserItem[] = invites.map((inv: any) => ({
+          id: `invite-${inv.id}`,
+          email: inv.email,
+          fullName: 'Đang chờ đăng ký...',
+          avatarUrl: null,
+          role: inv.role as UserRole,
+          createdAt: inv.created_at,
+          isInvite: true
+        }))
+        setUsers([...pendingInvites, ...formattedUsers])
+      } else {
+        setUsers(formattedUsers)
+      }
     }
     setIsLoading(false)
   }, [isDemoMode])
@@ -143,7 +183,36 @@ export function UsersManager() {
 
   const AVATAR_COLORS = ['#f29d38', '#3b82f6', '#22c55e', '#8b5cf6', '#ef4444', '#06b6d4']
 
+  const handleCreateInvite = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!inviteEmail) return
+    setIsInviting(true)
 
+    // Check if email already in use
+    const exists = users.find(u => u.email === inviteEmail)
+    if (exists && !exists.isInvite) {
+      showNotification('error', 'Email này đã có tài khoản.')
+      setIsInviting(false)
+      return
+    }
+
+    const { data, error } = await supabase
+      .from('user_invites')
+      .insert({ email: inviteEmail, role: inviteRole, created_by: user?.id })
+      .select()
+      .single()
+
+    if (error) {
+      showNotification('error', `Lỗi tạo lời mời: ${error.message}`)
+    } else {
+      // Generate invite link (mock frontend signup route)
+      const link = `${window.location.origin}/register?email=${encodeURIComponent(inviteEmail)}`
+      setInviteLink(link)
+      showNotification('success', 'Đã tạo lời mời thành công!')
+      fetchUsers()
+    }
+    setIsInviting(false)
+  }
   return (
     <AdminLayout title="Quản lý Người dùng" breadcrumb={['Quản trị', 'Hệ thống', 'Người dùng']}>
       {/* Notification */}
@@ -182,6 +251,19 @@ export function UsersManager() {
             </div>
           )
         })}
+        
+        {/* Nút Thêm User */}
+        {canEditUsers && (
+          <div style={{ display: 'flex', alignItems: 'center', marginLeft: 'auto' }}>
+            <button 
+              className="admin-btn admin-btn-primary" 
+              onClick={() => setIsInviteModalOpen(true)}
+              style={{ padding: '12px 20px', borderRadius: 12, height: '100%', minHeight: 74 }}
+            >
+              + Tạo lời mời (Thêm Admin)
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Users Table */}
@@ -234,10 +316,17 @@ export function UsersManager() {
                         display: 'inline-flex', alignItems: 'center', gap: 6,
                         padding: '4px 12px', borderRadius: 999, fontSize: 12, fontWeight: 500,
                         background: roleCfg.bg, color: roleCfg.color,
+                        opacity: u.isInvite ? 0.6 : 1
                       }}>
                         <RoleIcon size={12} />
                         {roleCfg.label}
                       </span>
+                      {u.isInvite && (
+                        <span style={{
+                          display: 'inline-flex', padding: '2px 8px', borderRadius: 999, fontSize: 11, fontWeight: 600,
+                          background: '#fef3c7', color: '#d97706', marginLeft: 8
+                        }}>Chờ đăng ký</span>
+                      )}
                       {u.role === 'writer' && (
                         <span style={{
                           display: 'inline-flex', alignItems: 'center',
@@ -352,6 +441,77 @@ export function UsersManager() {
                 </div>
               )
             })}
+          </div>
+        </div>
+      )}
+
+      {/* Modal Lời mời */}
+      {isInviteModalOpen && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }} onClick={() => !isInviting && setIsInviteModalOpen(false)} />
+          <div style={{ position: 'relative', background: 'white', borderRadius: 20, width: '100%', maxWidth: 440, padding: 32, animation: 'admin-fadeIn 0.2s ease' }}>
+            <button
+              onClick={() => setIsInviteModalOpen(false)}
+              style={{ position: 'absolute', top: 16, right: 16, background: 'none', border: 'none', cursor: 'pointer', padding: 8 }}
+            >
+              <X size={18} color="#64748b" />
+            </button>
+            <h3 style={{ margin: '0 0 20px', fontSize: 20, color: '#1e293b' }}>Thêm tài khoản mới</h3>
+            
+            {inviteLink ? (
+              <div style={{ background: '#f0fdf4', padding: 20, borderRadius: 12, border: '1px solid #bbf7d0' }}>
+                <div style={{ color: '#166534', fontWeight: 600, marginBottom: 8 }}>Lời mời đã tạo!</div>
+                <div style={{ fontSize: 13, color: '#166534', marginBottom: 12 }}>Hãy gửi đường link này cho người dùng để họ tự tạo mật khẩu:</div>
+                <div style={{ background: '#fff', padding: '10px 14px', borderRadius: 8, border: '1px solid #bbf7d0', fontSize: 13, wordBreak: 'break-all', userSelect: 'all' }}>
+                  {inviteLink}
+                </div>
+                <button 
+                  className="admin-btn admin-btn-primary" 
+                  onClick={() => {
+                    navigator.clipboard.writeText(inviteLink)
+                    showNotification('success', 'Đã copy link!')
+                  }}
+                  style={{ width: '100%', marginTop: 16 }}
+                >
+                  Copy Link Đăng Ký
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleCreateInvite} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#64748b', marginBottom: 6 }}>Email người dùng mới</label>
+                  <input 
+                    type="email" 
+                    required
+                    value={inviteEmail} 
+                    onChange={e => setInviteEmail(e.target.value)}
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: 10, border: '1.5px solid #e2e8f0', fontSize: 14, outline: 'none' }}
+                    placeholder="vd: nhanvien@carpetsinter.vn"
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#64748b', marginBottom: 6 }}>Vai trò cấp phép</label>
+                  <select 
+                    value={inviteRole} 
+                    onChange={e => setInviteRole(e.target.value as UserRole)}
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: 10, border: '1.5px solid #e2e8f0', fontSize: 14, outline: 'none' }}
+                  >
+                    <option value="admin">Quản trị viên (Admin)</option>
+                    <option value="writer">Biên tập viên (Writer)</option>
+                    <option value="viewer">Người xem (Viewer)</option>
+                  </select>
+                </div>
+                <div style={{ fontSize: 13, color: '#64748b', lineHeight: 1.5, background: '#f8fafc', padding: 12, borderRadius: 8 }}>
+                  Khi bạn bấm tạo, hệ thống sẽ sinh ra một đường dẫn (link) đăng ký riêng biệt chứa quyền hạn này. Bạn chỉ cần gửi link cho họ.
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 8 }}>
+                  <button type="button" className="admin-btn" onClick={() => setIsInviteModalOpen(false)}>Hủy</button>
+                  <button type="submit" className="admin-btn admin-btn-primary" disabled={isInviting}>
+                    {isInviting ? 'Đang tạo...' : 'Tạo lời mời'}
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       )}
