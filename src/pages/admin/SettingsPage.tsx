@@ -3,12 +3,14 @@ import { useState, useEffect, type FormEvent } from 'react'
 import { AdminLayout } from '@/components/layout/AdminLayout'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase'
-import { Save, Globe, Phone, Share2, Check, X } from 'lucide-react'
+import { Save, Globe, Phone, Share2 } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface SiteInfo {
   name: string
   description: string
   url: string
+  logo_url?: string
 }
 
 interface ContactInfo {
@@ -23,7 +25,7 @@ interface SocialLinks {
   linkedin: string
 }
 
-const DEFAULT_SITE: SiteInfo = { name: 'Carpets Inter Vietnam', description: 'Thảm sàn cao cấp cho không gian hiện đại', url: 'https://carpetsinter.vn' }
+const DEFAULT_SITE: SiteInfo = { name: 'Carpets Inter Vietnam', description: 'Thảm sàn cao cấp cho không gian hiện đại', url: 'https://carpetsinter.vn', logo_url: '' }
 const DEFAULT_CONTACT: ContactInfo = { phone: '028 1234 5678', email: 'info@carpetsinter.vn', address: 'Tầng 5, Tòa nhà AB Tower, 76A Lê Lai, Quận 1, TP.HCM' }
 const DEFAULT_SOCIAL: SocialLinks = { facebook: '', zalo: '', linkedin: '' }
 
@@ -37,11 +39,10 @@ export function SettingsPage() {
   const [socialLinks, setSocialLinks] = useState<SocialLinks>(DEFAULT_SOCIAL)
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
-  const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
 
   const showNotification = (type: 'success' | 'error', message: string) => {
-    setNotification({ type, message })
-    setTimeout(() => setNotification(null), 3500)
+    if (type === 'success') toast.success(message)
+    else toast.error(message)
   }
 
   // Load settings
@@ -70,7 +71,7 @@ export function SettingsPage() {
             const val = row.value as Record<string, string>
             switch (row.key) {
               case 'site_info':
-                setSiteInfo({ name: val.name || '', description: val.description || '', url: val.url || '' })
+                setSiteInfo({ name: val.name || '', description: val.description || '', url: val.url || '', logo_url: val.logo_url || '' })
                 break
               case 'contact_info':
                 setContactInfo({ phone: val.phone || '', email: val.email || '', address: val.address || '' })
@@ -144,26 +145,42 @@ export function SettingsPage() {
     )
   }
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (file.size > 2 * 1024 * 1024) {
+      showNotification('error', 'File quá lớn (tối đa 2MB)')
+      return
+    }
+
+    if (isDemoMode) {
+      const reader = new FileReader()
+      reader.onload = (ev) => {
+        setSiteInfo({ ...siteInfo, logo_url: ev.target?.result as string })
+      }
+      reader.readAsDataURL(file)
+      return
+    }
+
+    const ext = file.name.split('.').pop() || 'png'
+    const path = `settings/logo_${Date.now()}.${ext}`
+
+    const { error: uploadErr } = await supabase.storage.from('media').upload(path, file)
+    if (uploadErr) {
+      showNotification('error', `Upload lỗi: ${uploadErr.message}`)
+      return
+    }
+
+    const { data: publicUrlData } = supabase.storage.from('media').getPublicUrl(path)
+    setSiteInfo({ ...siteInfo, logo_url: publicUrlData.publicUrl })
+  }
+
   const cardStyle = { background: 'white', borderRadius: 16, padding: 24, border: '1px solid #f0f0f5' }
   const sectionTitleStyle = { margin: '0 0 20px 0', fontSize: 16, fontWeight: 600 as const, color: '#1a1a2e', display: 'flex', alignItems: 'center', gap: 10 }
 
   return (
     <AdminLayout title="Cài đặt Website" breadcrumb={['Quản trị', 'Hệ thống', 'Cài đặt']}>
-      {/* Notification */}
-      {notification && (
-        <div style={{
-          position: 'fixed', bottom: 24, right: 24, zIndex: 100,
-          background: 'white', borderRadius: 14, padding: '16px 20px',
-          boxShadow: '0 10px 40px rgba(0,0,0,0.12)',
-          borderLeft: `4px solid ${notification.type === 'success' ? '#22c55e' : '#ef4444'}`,
-          display: 'flex', alignItems: 'center', gap: 12,
-          animation: 'admin-fadeIn 0.3s ease', maxWidth: 400,
-        }}>
-          {notification.type === 'success' ? <Check size={18} style={{ color: '#22c55e' }} /> : <X size={18} style={{ color: '#ef4444' }} />}
-          <div style={{ fontSize: 14, fontWeight: 500, color: '#1a1a2e' }}>{notification.message}</div>
-        </div>
-      )}
-
       <form onSubmit={handleSave}>
         <div className="admin-action-bar" style={{ justifyContent: 'flex-end' }}>
           {canEdit && (
@@ -198,6 +215,30 @@ export function SettingsPage() {
                 <input className="admin-input" value={siteInfo.url} disabled={!canEdit}
                   onChange={e => setSiteInfo({ ...siteInfo, url: e.target.value })}
                   placeholder="https://example.com" />
+              </div>
+              <div className="admin-input-group">
+                <label className="admin-input-label">Logo công ty</label>
+                <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                  {siteInfo.logo_url ? (
+                    <img src={siteInfo.logo_url} alt="Logo" style={{ height: 40, width: 'auto', objectFit: 'contain', borderRadius: 4, background: '#f8fafc', padding: 4, border: '1px solid #e2e8f0' }} />
+                  ) : (
+                    <div style={{ width: 40, height: 40, background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8', fontSize: 12 }}>Trống</div>
+                  )}
+                  <div style={{ flex: 1, display: 'flex', gap: 8 }}>
+                    <input 
+                      className="admin-input" 
+                      style={{ flex: 1 }}
+                      value={siteInfo.logo_url}
+                      disabled={!canEdit}
+                      onChange={e => setSiteInfo({ ...siteInfo, logo_url: e.target.value })}
+                      placeholder="Nhập URL logo hoặc tải lên..."
+                    />
+                    <label className={`admin-btn ${canEdit ? 'admin-btn-secondary' : 'admin-btn-ghost'}`} style={{ cursor: canEdit ? 'pointer' : 'not-allowed', whiteSpace: 'nowrap' }}>
+                      Tải lên
+                      <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handleImageUpload} disabled={!canEdit} />
+                    </label>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { AdminLayout } from '@/components/layout/AdminLayout'
 import { supabase } from '@/lib/supabase'
 import { Plus, Edit2, Trash2, X } from 'lucide-react'
+import { toast } from 'sonner'
 import type { UiHeroSectionRecord } from '@/types/admin'
 
 type UiHeroSectionWithCollection = UiHeroSectionRecord & {
@@ -25,10 +26,6 @@ export function UiHeroSectionsManager() {
     is_active: true
   })
 
-  useEffect(() => {
-    loadData()
-  }, [])
-
   const loadData = async () => {
     setIsLoading(true)
     const [sectionsRes, collectionsRes] = await Promise.all([
@@ -39,6 +36,10 @@ export function UiHeroSectionsManager() {
     if (collectionsRes.data) setCollections(collectionsRes.data)
     setIsLoading(false)
   }
+
+  useEffect(() => {
+    loadData()
+  }, [])
 
   const openModal = (item?: UiHeroSectionWithCollection) => {
     if (item) {
@@ -70,7 +71,7 @@ export function UiHeroSectionsManager() {
     if (!file) return
 
     if (file.size > 2 * 1024 * 1024) {
-      alert('File quá lớn (tối đa 2MB)')
+      toast.error('File quá lớn (tối đa 2MB)')
       return
     }
 
@@ -80,7 +81,7 @@ export function UiHeroSectionsManager() {
 
     const { error: uploadErr } = await supabase.storage.from('media').upload(path, file)
     if (uploadErr) {
-      alert(`Upload lỗi: ${uploadErr.message}`)
+      toast.error(`Upload lỗi: ${uploadErr.message}`)
       setIsUploading(false)
       return
     }
@@ -93,21 +94,23 @@ export function UiHeroSectionsManager() {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!formData.collection_id || !formData.image_url) {
-      alert('Vui lòng nhập Bộ sưu tập và URL hình ảnh')
+      toast.error('Vui lòng nhập Bộ sưu tập và URL hình ảnh')
       return
     }
 
     if (editingId) {
       const { error } = await supabase.from('ui_hero_sections').update(formData).eq('id', editingId)
-      if (error) alert('Lỗi cập nhật: ' + error.message)
+      if (error) toast.error('Lỗi cập nhật: ' + error.message)
       else {
+        toast.success('Cập nhật thành công')
         setIsModalOpen(false)
         loadData()
       }
     } else {
       const { error } = await supabase.from('ui_hero_sections').insert([formData])
-      if (error) alert('Lỗi thêm mới: ' + error.message)
+      if (error) toast.error('Lỗi thêm mới: ' + error.message)
       else {
+        toast.success('Thêm thành công')
         setIsModalOpen(false)
         loadData()
       }
@@ -117,8 +120,11 @@ export function UiHeroSectionsManager() {
   const handleDelete = async (id: string) => {
     if (!confirm('Bạn có chắc muốn xóa slider này?')) return
     const { error } = await supabase.from('ui_hero_sections').delete().eq('id', id)
-    if (error) alert('Lỗi khi xóa: ' + error.message)
-    else loadData()
+    if (error) toast.error('Lỗi khi xóa: ' + error.message)
+    else {
+      toast.success('Đã xóa thành công')
+      loadData()
+    }
   }
 
   return (

@@ -1,5 +1,7 @@
 /** AdminSidebar — Main navigation sidebar for admin panel */
+import { useEffect, useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
+import { supabase } from '@/lib/supabase'
 
 import {
   LayoutDashboard,
@@ -87,7 +89,30 @@ interface AdminSidebarProps {
 }
 
 export function AdminSidebar({ currentPath, isOpen, onClose }: AdminSidebarProps) {
-  const { user, signOut, hasPermission } = useAuth()
+  const { user, signOut, hasPermission, isDemoMode } = useAuth()
+  const [siteInfo, setSiteInfo] = useState<{ name?: string, logo_url?: string }>({})
+
+  useEffect(() => {
+    async function fetchSiteInfo() {
+      if (isDemoMode) {
+        try {
+          const saved = localStorage.getItem('ci_admin_settings')
+          if (saved) {
+            const parsed = JSON.parse(saved)
+            if (parsed.site_info) setSiteInfo(parsed.site_info)
+          }
+        } catch {}
+        return
+      }
+      try {
+        const { data } = await supabase.from('site_config').select('value').eq('key', 'site_info').maybeSingle()
+        if (data?.value) setSiteInfo(data.value as any)
+      } catch (err) {
+        console.error('Failed to load site config in sidebar:', err)
+      }
+    }
+    fetchSiteInfo()
+  }, [isDemoMode])
 
   if (!user) return null
 
@@ -122,9 +147,13 @@ export function AdminSidebar({ currentPath, isOpen, onClose }: AdminSidebarProps
       <aside className={`admin-sidebar ${isOpen ? 'open' : ''}`}>
         {/* Brand */}
         <div className="admin-sidebar-brand">
-          <div className="admin-sidebar-brand-logo">CI</div>
+          {siteInfo.logo_url ? (
+            <img src={siteInfo.logo_url} alt="Logo" style={{ width: 40, height: 40, objectFit: 'contain', borderRadius: 8, background: 'white', padding: 4 }} />
+          ) : (
+            <div className="admin-sidebar-brand-logo">CI</div>
+          )}
           <div className="admin-sidebar-brand-text">
-            <div className="admin-sidebar-brand-name">Carpets Inter</div>
+            <div className="admin-sidebar-brand-name">{siteInfo.name || 'Carpets Inter'}</div>
             <div className="admin-sidebar-brand-label">Quản trị</div>
           </div>
         </div>

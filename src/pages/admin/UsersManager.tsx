@@ -69,13 +69,17 @@ export function UsersManager() {
 
   // Sync state if context changes
   useEffect(() => {
-    setWriterPerms(permissions.writer ?? DEFAULT_ROLE_PERMISSIONS.writer)
+    setTimeout(() => {
+      setWriterPerms(permissions.writer ?? DEFAULT_ROLE_PERMISSIONS.writer)
+    }, 0)
   }, [permissions.writer])
 
   const fetchUsers = useCallback(async () => {
     if (isDemoMode) {
-      setUsers(DEMO_USERS)
-      setIsLoading(false)
+      setTimeout(() => {
+        setUsers(DEMO_USERS)
+        setIsLoading(false)
+      }, 0)
       return
     }
 
@@ -101,7 +105,7 @@ export function UsersManager() {
       // Fetch pending invites
       const { data: invites } = await supabase.from('user_invites').select('*').order('created_at', { ascending: false })
       if (invites && invites.length > 0) {
-        const pendingInvites: UserItem[] = invites.map((inv: any) => ({
+        const pendingInvites: UserItem[] = invites.map((inv: Record<string, unknown>) => ({
           id: `invite-${inv.id}`,
           email: inv.email,
           fullName: 'Đang chờ đăng ký...',
@@ -391,14 +395,14 @@ export function UsersManager() {
           </div>
           
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 20 }}>
-            {PERMISSION_GROUPS.map(group => {
-              const groupPerms = group.permissions.map(p => p.key)
-              const selectedCount = groupPerms.filter(p => writerPerms.includes(p)).length
+            {PERMISSION_GROUPS.map((group: Record<string, any>, idx: number) => {
+              const groupPerms = group.permissions.map((p: any) => p.key)
+              const selectedCount = groupPerms.filter((p: string) => writerPerms.includes(p)).length
               const allSelected = selectedCount === groupPerms.length && groupPerms.length > 0
               
               const handleToggleAll = () => {
                 if (allSelected) {
-                  setWriterPerms(prev => prev.filter(p => !groupPerms.includes(p as any)))
+                  setWriterPerms(prev => prev.filter(p => !groupPerms.includes(p)))
                 } else {
                   setWriterPerms(prev => Array.from(new Set([...prev, ...groupPerms])))
                 }

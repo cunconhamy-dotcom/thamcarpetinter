@@ -3,6 +3,7 @@ import { AdminLayout } from '@/components/layout/AdminLayout'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
 import { Plus, Edit2, Trash2, Search, Filter, Image as ImageIcon } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface ProductRecord {
   id: string
@@ -87,14 +88,15 @@ export function ProductsManager() {
   const getCollectionName = (id: string) => collections.find(c => c.id === id)?.name || 'Unknown'
 
   const handleDelete = async (id: string, name: string) => {
-    if (isDemoMode) return alert('Demo Mode: Chức năng bị khóa')
+    if (isDemoMode) return toast.error('Demo Mode: Chức năng bị khóa')
     if (!confirm(`Bạn có chắc muốn xóa sản phẩm ${name}?`)) return
 
     const { error } = await supabase.from('products').delete().eq('id', id)
     if (!error) {
       setProducts(products.filter(p => p.id !== id))
+      toast.success('Xóa sản phẩm thành công')
     } else {
-      alert('Lỗi: ' + error.message)
+      toast.error('Lỗi: ' + error.message)
     }
   }
 
@@ -113,7 +115,7 @@ export function ProductsManager() {
           detail: item.spec?.detail || ''
         }
       })
-      setHighlightsText(item.highlights?.join('\n') || '')
+      setHighlightsText(Array.isArray(item.highlights) ? item.highlights.join('\n') : (typeof item.highlights === 'string' ? item.highlights : ''))
     } else {
       setEditingId(null)
       setFormData({
@@ -144,16 +146,12 @@ export function ProductsManager() {
     if (!file) return
 
     if (file.size > 2 * 1024 * 1024) {
-      alert('File quá lớn (tối đa 2MB)')
+      toast.error('File quá lớn (tối đa 2MB)')
       return
     }
 
     if (isDemoMode) {
-      const reader = new FileReader()
-      reader.onload = (ev) => {
-        setFormData({ ...formData, image: ev.target?.result as string })
-      }
-      reader.readAsDataURL(file)
+      toast.error('Demo Mode: Chức năng bị khóa')
       return
     }
 
@@ -163,7 +161,7 @@ export function ProductsManager() {
 
     const { error: uploadErr } = await supabase.storage.from('media').upload(path, file)
     if (uploadErr) {
-      alert(`Upload lỗi: ${uploadErr.message}`)
+      toast.error(`Upload lỗi: ${uploadErr.message}`)
       setIsUploading(false)
       return
     }
@@ -171,17 +169,21 @@ export function ProductsManager() {
     const { data: publicUrlData } = supabase.storage.from('media').getPublicUrl(path)
     setFormData({ ...formData, image: publicUrlData.publicUrl })
     setIsUploading(false)
+    toast.success('Upload ảnh thành công')
   }
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (isDemoMode) return alert('Demo Mode: Chức năng bị khóa')
+  const handleSave = async () => {
+    if (isDemoMode) return toast.error('Demo Mode: Chức năng bị khóa')
 
-    const cleanHighlights = highlightsText
-      .split('\n')
-      .map(h => h.trim())
-      .filter(h => h !== '')
+    // Explicit Validation
+    if (!formData.name || !formData.code || !formData.collection_id || !formData.image) {
+      toast.error('Vui lòng điền đầy đủ các trường bắt buộc (Bộ sưu tập, Mã SP, Tên SP, Hình ảnh)!')
+      return
+    }
 
+    // Convert highlightsText back to array
+    const cleanHighlights = highlightsText.split('\n').map(s => s.trim()).filter(Boolean)
+    
     const payload = {
       collection_id: formData.collection_id,
       code: formData.code,
@@ -201,30 +203,34 @@ export function ProductsManager() {
       sort_order: Number(formData.sort_order) || 0
     }
     
-    if (editingId) {
-      const { data, error } = await supabase.from('products').update(payload).eq('id', editingId).select()
-      if (error) {
-        alert('Lỗi khi cập nhật: ' + error.message)
-      } else if (!data || data.length === 0) {
-        alert('Cập nhật thất bại. Vui lòng kiểm tra lại quyền truy cập (RLS) hoặc ID sản phẩm.')
+    try {
+      if (editingId) {
+        const { data, error } = await supabase.from('products').update(payload).eq('id', editingId).select()
+        if (error) {
+          toast.error('Lỗi khi cập nhật DB: ' + error.message)
+        } else if (!data || data.length === 0) {
+          toast.error('Cập nhật thất bại. Không tìm thấy ID sản phẩm hoặc bị chặn bởi quyền RLS.')
+        } else {
+          toast.success('Lưu thay đổi thành công!')
+          setFilterCollection(formData.collection_id || 'all')
+          setIsModalOpen(false)
+          loadData()
+        }
       } else {
-        alert('Lưu thay đổi thành công!')
-        setFilterCollection(formData.collection_id || 'all')
-        setIsModalOpen(false)
-        loadData()
+        const { data, error } = await supabase.from('products').insert([payload]).select()
+        if (error) {
+          toast.error('Lỗi khi thêm mới DB: ' + error.message)
+        } else if (!data || data.length === 0) {
+          toast.error('Thêm mới thất bại. Xin vui lòng thử lại.')
+        } else {
+          toast.success('Thêm sản phẩm mới thành công!')
+          setFilterCollection(formData.collection_id || 'all')
+          setIsModalOpen(false)
+          loadData()
+        }
       }
-    } else {
-      const { data, error } = await supabase.from('products').insert([payload]).select()
-      if (error) {
-        alert('Lỗi khi thêm mới: ' + error.message)
-      } else if (!data || data.length === 0) {
-        alert('Thêm mới thất bại. Vui lòng thử lại.')
-      } else {
-        alert('Thêm sản phẩm mới thành công!')
-        setFilterCollection(formData.collection_id || 'all')
-        setIsModalOpen(false)
-        loadData()
-      }
+    } catch (err: any) {
+      toast.error('Lỗi hệ thống khi lưu: ' + (err?.message || String(err)))
     }
   }
 
@@ -303,7 +309,9 @@ export function ProductsManager() {
                           const newOrder = parseInt(e.target.value) || 0;
                           setProducts(products.map(prod => prod.id === p.id ? { ...prod, sort_order: newOrder } : prod));
                           if (!isDemoMode) {
-                            await supabase.from('products').update({ sort_order: newOrder }).eq('id', p.id);
+                            const { error } = await supabase.from('products').update({ sort_order: newOrder }).eq('id', p.id);
+                            if (error) toast.error('Lỗi cập nhật thứ tự: ' + error.message)
+                            else toast.success('Đã cập nhật thứ tự')
                           }
                         }}
                         style={{ width: 60, padding: '4px 8px', borderRadius: 6, border: '1px solid #e2e8f0', textAlign: 'center' }}
@@ -331,7 +339,7 @@ export function ProductsManager() {
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: 20 }}>
           <div style={{ background: '#fff', padding: 24, borderRadius: 12, width: '100%', maxWidth: 650, maxHeight: '90vh', overflowY: 'auto' }}>
             <h3 style={{ margin: '0 0 20px', fontSize: 18, fontWeight: 600 }}>{editingId ? 'Sửa Sản Phẩm' : 'Thêm Sản Phẩm Mới'}</h3>
-            <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
               
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                 <div>
@@ -341,7 +349,6 @@ export function ProductsManager() {
                     style={{ width: '100%' }}
                     value={formData.collection_id}
                     onChange={e => setFormData({...formData, collection_id: e.target.value})}
-                    required
                   >
                     <option value="">-- Chọn BST --</option>
                     {collections.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -354,7 +361,6 @@ export function ProductsManager() {
                     style={{ width: '100%' }}
                     value={formData.code}
                     onChange={e => setFormData({...formData, code: e.target.value})}
-                    required
                   />
                 </div>
               </div>
@@ -367,7 +373,6 @@ export function ProductsManager() {
                     style={{ width: '100%' }}
                     value={formData.name}
                     onChange={e => setFormData({...formData, name: e.target.value})}
-                    required
                   />
                 </div>
                 <div>
@@ -487,11 +492,10 @@ export function ProductsManager() {
                 />
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 12, borderTop: '1px solid #e2e8f0', paddingTop: 16 }}>
-                <button type="button" className="admin-btn admin-btn-ghost" onClick={() => setIsModalOpen(false)}>Hủy</button>
-                <button type="submit" className="admin-btn admin-btn-primary">Lưu Sản Phẩm</button>
+              <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 16 }}>
+                <button type="button" onClick={() => handleSave()} className="admin-btn admin-btn-primary" style={{ width: '100%' }}>Lưu Sản Phẩm</button>
               </div>
-            </form>
+            </div>
           </div>
         </div>
       )}

@@ -2,10 +2,13 @@ import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { BookOpen, Newspaper, Phone, Zap } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { useSiteConfig } from '@/hooks/useSiteConfig'
 
 interface HeroSectionProps {}
 
 export function HeroSection({}: HeroSectionProps) {
+  const { config } = useSiteConfig()
+  const hotline = config.contact_info.hotline || config.contact_info.phone || '0908314939'
   const [heroData, setHeroData] = useState<any[]>([])
   const [heroCollectionIndex, setHeroCollectionIndex] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -102,9 +105,9 @@ export function HeroSection({}: HeroSectionProps) {
           <div className="flex items-center gap-4">
             <div className="hidden sm:flex items-center gap-2">
               <Phone size={16} className="text-[#e8720c]" />
-              <span className="text-white font-medium text-base">0908314939</span>
+              <span className="text-white font-medium text-base">{hotline}</span>
             </div>
-            <a href="tel:0908314939" className="bg-[#e8720c] text-white px-6 py-2.5 rounded font-semibold text-base transition hover:bg-[#ff8a24]">
+            <a href={`tel:${hotline}`} className="bg-[#e8720c] text-white px-6 py-2.5 rounded font-semibold text-base transition hover:bg-[#ff8a24]">
               Gọi ngay
             </a>
           </div>

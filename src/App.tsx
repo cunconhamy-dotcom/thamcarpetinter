@@ -127,9 +127,12 @@ function AppRouter() {
   return <PublicApp />
 }
 
+import { Toaster } from 'sonner'
+
 export default function App() {
   return (
     <AuthProvider>
+      <Toaster position="top-center" richColors />
       <AppRouter />
     </AuthProvider>
   )

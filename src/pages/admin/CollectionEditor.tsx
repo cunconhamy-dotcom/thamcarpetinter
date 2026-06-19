@@ -4,6 +4,11 @@ import { AdminLayout } from '@/components/layout/AdminLayout'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { Save, Plus, X, Image as ImageIcon, Trash2, ArrowLeft, UploadCloud, Check } from 'lucide-react'
+import { ImportModal } from '@/components/admin/CollectionEditor/ImportModal'
+import { ProductModal } from '@/components/admin/CollectionEditor/ProductModal'
+import { BasicInfoForm } from '@/components/admin/CollectionEditor/BasicInfoForm'
+import { DynamicListsForm } from '@/components/admin/CollectionEditor/DynamicListsForm'
+import { GalleryManager } from '@/components/admin/CollectionEditor/GalleryManager'
 
 interface ProductItem {
   code: string
@@ -412,109 +417,26 @@ export function CollectionEditor() {
           <div style={{ flex: '1 1 600px', display: 'flex', flexDirection: 'column', gap: 24 }}>
 
             {/* Basic Info */}
-            <div style={{ background: 'white', borderRadius: 16, padding: 24, border: '1px solid #f0f0f5' }}>
-              <h3 style={{ margin: '0 0 20px 0', fontSize: 16, fontWeight: 600, color: '#1a1a2e' }}>Thông tin cơ bản</h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <div className="admin-input-group">
-                  <label className="admin-input-label">Tên bộ sưu tập *</label>
-                  <input required className="admin-input" placeholder="Ví dụ: EcoSoft Series"
-                    value={form.name} onChange={e => updateField('name', e.target.value)} />
-                  {form.name && <span style={{ fontSize: 11, color: '#9ca3af', marginTop: 2 }}>Slug: {toSlug(form.name)}</span>}
-                </div>
-                <div className="admin-input-group">
-                  <label className="admin-input-label">Tagline</label>
-                  <input className="admin-input" placeholder="Slogan ngắn"
-                    value={form.tagline} onChange={e => updateField('tagline', e.target.value)} />
-                </div>
-                <div className="admin-input-group">
-                  <label className="admin-input-label">Mô tả ngắn (Summary)</label>
-                  <textarea className="admin-input" rows={3} placeholder="Mô tả tóm tắt..."
-                    value={form.summary} onChange={e => updateField('summary', e.target.value)} />
-                </div>
-                <div className="admin-input-group">
-                  <label className="admin-input-label">Mô tả chi tiết (Detail)</label>
-                  <textarea className="admin-input" rows={5} placeholder="Nội dung chi tiết..."
-                    value={form.detail} onChange={e => updateField('detail', e.target.value)} />
-                </div>
-              </div>
-            </div>
+            <BasicInfoForm form={form} updateField={updateField} toSlug={toSlug} />
 
             {/* Dynamic Lists */}
-            <div style={{ background: 'white', borderRadius: 16, padding: 24, border: '1px solid #f0f0f5' }}>
-              <h3 style={{ margin: '0 0 20px 0', fontSize: 16, fontWeight: 600, color: '#1a1a2e' }}>Đặc điểm & Giá trị</h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-                {/* Quick Facts */}
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                    <label className="admin-input-label">Đặc điểm nổi bật (Quick Facts)</label>
-                    <button type="button" className="admin-btn admin-btn-ghost admin-btn-sm" onClick={handleAddQuickFact}>
-                      <Plus size={14} /> Thêm
-                    </button>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                    {form.quickFacts.map((fact, i) => (
-                      <div key={i} style={{ display: 'flex', gap: 8 }}>
-                        <input className="admin-input" value={fact} onChange={e => handleUpdateQuickFact(i, e.target.value)} placeholder="Nhập đặc điểm..." />
-                        <button type="button" className="admin-btn admin-btn-danger admin-btn-sm" onClick={() => handleRemoveQuickFact(i)}><Trash2 size={16} /></button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                {/* Value Points */}
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                    <label className="admin-input-label">Giá trị mang lại (Value Points)</label>
-                    <button type="button" className="admin-btn admin-btn-ghost admin-btn-sm" onClick={handleAddValuePoint}>
-                      <Plus size={14} /> Thêm
-                    </button>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                    {form.valuePoints.map((point, i) => (
-                      <div key={i} style={{ display: 'flex', gap: 8 }}>
-                        <input className="admin-input" value={point} onChange={e => handleUpdateValuePoint(i, e.target.value)} placeholder="Nhập giá trị..." />
-                        <button type="button" className="admin-btn admin-btn-danger admin-btn-sm" onClick={() => handleRemoveValuePoint(i)}><Trash2 size={16} /></button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
+            <DynamicListsForm 
+              form={form} 
+              handleAddQuickFact={handleAddQuickFact}
+              handleUpdateQuickFact={handleUpdateQuickFact}
+              handleRemoveQuickFact={handleRemoveQuickFact}
+              handleAddValuePoint={handleAddValuePoint}
+              handleUpdateValuePoint={handleUpdateValuePoint}
+              handleRemoveValuePoint={handleRemoveValuePoint}
+            />
 
             {/* Gallery Management */}
-            <div style={{ background: 'white', borderRadius: 16, padding: 24, border: '1px solid #f0f0f5' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: '#1a1a2e' }}>Hình ảnh Gallery ({form.gallery.length} ảnh)</h3>
-                <button type="button" className="admin-btn admin-btn-secondary admin-btn-sm" onClick={handleAddGalleryImage}>
-                  <Plus size={14} /> Thêm ảnh
-                </button>
-              </div>
-
-              {form.gallery.length > 0 ? (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 16 }}>
-                  {form.gallery.map((url, i) => (
-                    <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 8, background: '#f9fafb', padding: 12, borderRadius: 12, border: '1px solid #f0f0f5' }}>
-                      {url ? (
-                        <div style={{ position: 'relative', width: '100%', aspectRatio: '1/1', borderRadius: 8, overflow: 'hidden' }}>
-                          <img src={url} alt={`Gallery ${i}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        </div>
-                      ) : (
-                        <div style={{ width: '100%', aspectRatio: '1/1', borderRadius: 8, background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9ca3af' }}>
-                          <ImageIcon size={24} />
-                        </div>
-                      )}
-                      <input className="admin-input" style={{ padding: '8px 10px', fontSize: 13 }} placeholder="Nhập URL hình ảnh..." value={url} onChange={e => handleUpdateGalleryImage(i, e.target.value)} />
-                      <button type="button" className="admin-btn admin-btn-danger admin-btn-sm" onClick={() => handleRemoveGalleryImage(i)} style={{ width: '100%', justifyContent: 'center' }}>
-                        <Trash2 size={14} /> Xóa
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div style={{ textAlign: 'center', color: '#9ca3af', padding: 32, background: '#f9fafb', borderRadius: 12 }}>
-                  Chưa có hình ảnh — nhấn "Thêm ảnh" để nhập URL ảnh hiển thị
-                </div>
-              )}
-            </div>
+            <GalleryManager
+              form={form}
+              handleAddGalleryImage={handleAddGalleryImage}
+              handleUpdateGalleryImage={handleUpdateGalleryImage}
+              handleRemoveGalleryImage={handleRemoveGalleryImage}
+            />
 
             {/* Products Management moved */}
             <div style={{ background: 'white', borderRadius: 16, padding: 24, border: '1px solid #f0f0f5', textAlign: 'center' }}>
@@ -604,95 +526,24 @@ export function CollectionEditor() {
       </form>
 
       {/* Import URL Modal */}
-      {isImportModalOpen && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 60, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }} onClick={() => !isImporting && setIsImportModalOpen(false)} />
-          <div style={{ position: 'relative', background: 'white', borderRadius: 20, width: '100%', maxWidth: 500, padding: 32, boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)' }}>
-            <h2 style={{ margin: '0 0 16px 0', fontSize: 20, fontWeight: 600 }}>Nhập dữ liệu tự động từ URL</h2>
-            <p style={{ color: '#6b7280', fontSize: 14, marginBottom: 24 }}>Dán đường link (URL) của bộ sưu tập. Hệ thống sẽ tự động sử dụng AI để đọc nội dung và điền vào form.</p>
-            
-            <div className="admin-input-group">
-              <label className="admin-input-label">Đường dẫn URL</label>
-              <input className="admin-input" placeholder="https://carpetsinter.com/..."
-                value={importUrl} onChange={e => setImportUrl(e.target.value)} disabled={isImporting} />
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 32 }}>
-              <button type="button" className="admin-btn admin-btn-secondary" onClick={() => setIsImportModalOpen(false)} disabled={isImporting}>Hủy</button>
-              <button type="button" className="admin-btn admin-btn-primary" onClick={handleImport} disabled={isImporting || !importUrl}>
-                {isImporting ? <div style={{ width: 16, height: 16, border: '2px solid white', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} /> : <Check size={16} />}
-                {isImporting ? 'Đang trích xuất...' : 'Bắt đầu trích xuất'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ImportModal 
+        isOpen={isImportModalOpen}
+        isImporting={isImporting}
+        importUrl={importUrl}
+        setImportUrl={setImportUrl}
+        onClose={() => setIsImportModalOpen(false)}
+        onImport={handleImport}
+      />
 
       {/* Product Modal */}
-      {isProductModalOpen && editingProduct && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }} onClick={() => setIsProductModalOpen(false)} />
-          <div style={{ position: 'relative', background: 'white', borderRadius: 20, width: '100%', maxWidth: 700, maxHeight: '90vh', overflowY: 'auto', padding: 32, boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-              <h2 style={{ margin: 0, fontSize: 20, fontWeight: 600 }}>
-                {editingProductIdx >= 0 ? 'Sửa sản phẩm' : 'Thêm mã sản phẩm'}
-              </h2>
-              <button type="button" className="admin-btn admin-btn-ghost admin-btn-sm" onClick={() => setIsProductModalOpen(false)} style={{ padding: 8 }}>
-                <X size={20} />
-              </button>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-              <div className="admin-input-group">
-                <label className="admin-input-label">Mã SP (Code) *</label>
-                <input className="admin-input" placeholder="Ví dụ: CI123"
-                  value={editingProduct.code} onChange={e => setEditingProduct({ ...editingProduct, code: e.target.value })} />
-              </div>
-              <div className="admin-input-group">
-                <label className="admin-input-label">Tên gọi (Name)</label>
-                <input className="admin-input" placeholder="Ví dụ: Ocean Blue"
-                  value={editingProduct.name} onChange={e => setEditingProduct({ ...editingProduct, name: e.target.value })} />
-              </div>
-              <div className="admin-input-group" style={{ gridColumn: 'span 2' }}>
-                <label className="admin-input-label">URL Hình ảnh</label>
-                <input className="admin-input" placeholder="https://..."
-                  value={editingProduct.image} onChange={e => setEditingProduct({ ...editingProduct, image: e.target.value })} />
-              </div>
-
-              <div style={{ gridColumn: 'span 2', marginTop: 12 }}>
-                <h4 style={{ margin: '0 0 16px 0', fontSize: 14, fontWeight: 600, color: '#4b5563' }}>Thông số kỹ thuật</h4>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                  {[
-                    { key: 'construction', label: 'Cấu trúc (Construction)', ph: 'Tufted Textured Loop' },
-                    { key: 'pile', label: 'Chất liệu sợi (Pile)', ph: '100% Nylon' },
-                    { key: 'backing', label: 'Đế thảm (Backing)', ph: 'EcoSoft' },
-                    { key: 'size', label: 'Kích thước (Size)', ph: '25x100 cm' },
-                    { key: 'warranty', label: 'Bảo hành (Warranty)', ph: '15 years' },
-                    { key: 'installation', label: 'Cách lắp đặt', ph: 'Ashlar, Herringbone' },
-                  ].map(({ key, label, ph }) => (
-                    <div key={key} className="admin-input-group">
-                      <label className="admin-input-label">{label}</label>
-                      <input className="admin-input" placeholder={ph}
-                        value={(editingProduct.spec as Record<string, string>)[key] || ''}
-                        onChange={e => setEditingProduct({
-                          ...editingProduct,
-                          spec: { ...editingProduct.spec, [key]: e.target.value }
-                        })} />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 32, paddingTop: 20, borderTop: '1px solid #f0f0f5' }}>
-              <button type="button" className="admin-btn admin-btn-secondary" onClick={() => setIsProductModalOpen(false)}>Hủy</button>
-              <button type="button" className="admin-btn admin-btn-primary" onClick={saveProduct}>
-                <Check size={16} /> {editingProductIdx >= 0 ? 'Cập nhật' : 'Thêm sản phẩm'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ProductModal
+        isOpen={isProductModalOpen}
+        editingProduct={editingProduct}
+        editingProductIdx={editingProductIdx}
+        setEditingProduct={setEditingProduct}
+        onClose={() => setIsProductModalOpen(false)}
+        onSave={saveProduct}
+      />
 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
