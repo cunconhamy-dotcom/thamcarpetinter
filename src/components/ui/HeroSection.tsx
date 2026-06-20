@@ -41,9 +41,9 @@ export function HeroSection({}: HeroSectionProps) {
     if (heroData.length === 0) return
     const timer = window.setInterval(() => {
       setHeroCollectionIndex((prev) => (prev + 1) % heroData.length)
-    }, 6000)
+    }, (config.hero_slider_settings.slide_interval || 6) * 1000)
     return () => window.clearInterval(timer)
-  }, [heroData.length])
+  }, [heroData.length, config.hero_slider_settings.slide_interval])
 
   if (loading || heroData.length === 0) {
     // Return a fallback or empty placeholder matching the height
@@ -58,8 +58,18 @@ export function HeroSection({}: HeroSectionProps) {
 
   const currentHero = heroData[heroCollectionIndex] || {}
   const image = currentHero.image_url || currentHero.collections?.hero_image || ''
-  const collectionName = currentHero.collections?.name || ''
-  const accent = currentHero.collections?.accent || '#e8720c'
+  
+  const heroSettings = config.hero_slider_settings
+  let finalTitle = currentHero.title
+  let finalSubtitle = currentHero.subtitle
+
+  if (heroSettings.display_mode === 'fixed') {
+    finalTitle = heroSettings.fixed_title
+    finalSubtitle = heroSettings.fixed_subtitle
+  } else if (heroSettings.display_mode === 'mixed') {
+    if (!finalTitle) finalTitle = heroSettings.fixed_title
+    if (!finalSubtitle) finalSubtitle = heroSettings.fixed_subtitle
+  }
 
   return (
     <header className="relative w-full h-[90vh] min-h-[650px] flex flex-col overflow-hidden">
@@ -84,11 +94,19 @@ export function HeroSection({}: HeroSectionProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           {/* Left Logo block */}
           <div className="flex items-center gap-3">
-            <div className="bg-[#e8720c] h-10 w-10 text-white font-bold flex items-center justify-center text-lg rounded">
-              C
-            </div>
+            {config.site_info.logo_url ? (
+              <img
+                src={config.site_info.logo_url}
+                alt={config.site_info.name}
+                className="h-10 w-10 object-contain rounded bg-white p-1"
+              />
+            ) : (
+              <div className="bg-[#e8720c] h-10 w-10 text-white font-bold flex items-center justify-center text-lg rounded">
+                {(config.site_info.name || 'C')[0]}
+              </div>
+            )}
             <div className="flex flex-col">
-              <span className="text-white font-semibold leading-tight">Carpets Inter</span>
+              <span className="text-white font-semibold leading-tight">{config.site_info.name || 'Carpets Inter'}</span>
               <span className="uppercase text-white/70 text-xs leading-tight mt-0.5">THẢM TRẢI SÀN CAO CẤP</span>
             </div>
           </div>
@@ -119,20 +137,20 @@ export function HeroSection({}: HeroSectionProps) {
         <div className="max-w-3xl space-y-7">
           <div className="inline-flex items-center gap-2.5 rounded-full border border-[#e8720c]/30 bg-black/40 px-5 py-2.5 text-sm text-white backdrop-blur-md">
             <Zap size={16} className="text-[#e8720c]" />
-            Giao hàng và thi công nhanh chóng trên toàn quốc.
+            {config.brand_info.badge_text}
           </div>
 
           <div className="h-[260px] sm:h-[280px] flex flex-col justify-end gap-6 mb-4">
             <h1 className="text-[2.5rem] sm:text-5xl lg:text-[4.5rem] font-bold text-white leading-[1.1] tracking-tight uppercase">
-              {currentHero.title ? (
-                <span dangerouslySetInnerHTML={{ __html: currentHero.title.replace('\\n', '<br/>') }} />
+              {finalTitle ? (
+                <span dangerouslySetInnerHTML={{ __html: finalTitle.replace(/\\n/g, '<br/>') }} />
               ) : (
-                <>HƠN CẢ THẨM MỸ<br />ĐÓ LÀ <span className="text-[#e8720c]">SỰ BỀN VỮNG</span></>
+                <span dangerouslySetInnerHTML={{ __html: heroSettings.fixed_title.replace(/\\n/g, '<br/>') }} />
               )}
             </h1>
 
             <p className="max-w-2xl text-lg sm:text-lg text-white/80 leading-relaxed font-light line-clamp-2 min-h-[56px]">
-              {currentHero.subtitle || 'Nội thất công cộng Minh Đức đồng hành cùng đối tác quốc tế Carpets Inter, mang giải pháp thảm sàn sinh thái đẳng cấp toàn cầu đến mọi công trình bằng sự chân thành và cam kết chất lượng trọn vẹn.'}
+              {finalSubtitle || heroSettings.fixed_subtitle}
             </p>
           </div>
 

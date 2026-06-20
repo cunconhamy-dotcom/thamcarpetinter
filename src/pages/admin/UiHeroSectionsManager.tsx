@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { AdminLayout } from '@/components/layout/AdminLayout'
 import { supabase } from '@/lib/supabase'
-import { Plus, Edit2, Trash2, X } from 'lucide-react'
+import { Plus, Edit2, Trash2, X, Settings, Save } from 'lucide-react'
 import { toast } from 'sonner'
 import type { UiHeroSectionRecord } from '@/types/admin'
 
@@ -26,14 +26,31 @@ export function UiHeroSectionsManager() {
     is_active: true
   })
 
+  const [heroSettings, setHeroSettings] = useState({
+    display_mode: 'mixed',
+    slide_interval: 6,
+    fixed_title: 'HƠN CẢ THẨM MỸ<br/>ĐÓ LÀ <span class="text-[#e8720c]">SỰ BỀN VỮNG</span>',
+    fixed_subtitle: 'Nội thất công cộng Minh Đức đồng hành cùng đối tác quốc tế Carpets Inter, mang giải pháp thảm sàn sinh thái đẳng cấp toàn cầu đến mọi công trình bằng sự chân thành và cam kết chất lượng trọn vẹn.'
+  })
+  const [isSavingSettings, setIsSavingSettings] = useState(false)
+
   const loadData = async () => {
     setIsLoading(true)
-    const [sectionsRes, collectionsRes] = await Promise.all([
+    const [sectionsRes, collectionsRes, configRes] = await Promise.all([
       supabase.from('ui_hero_sections').select('*, collections(name)').order('order_index'),
-      supabase.from('collections').select('id, name').order('name')
+      supabase.from('collections').select('id, name').order('name'),
+      supabase.from('site_config').select('value').eq('key', 'hero_slider_settings').single()
     ])
     if (sectionsRes.data) setSections(sectionsRes.data)
     if (collectionsRes.data) setCollections(collectionsRes.data)
+    if (configRes.data?.value) {
+      setHeroSettings({
+        display_mode: configRes.data.value.display_mode || 'mixed',
+        slide_interval: configRes.data.value.slide_interval || 6,
+        fixed_title: configRes.data.value.fixed_title || '',
+        fixed_subtitle: configRes.data.value.fixed_subtitle || ''
+      })
+    }
     setIsLoading(false)
   }
 
@@ -127,8 +144,81 @@ export function UiHeroSectionsManager() {
     }
   }
 
+  const handleSaveSettings = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSavingSettings(true)
+    const { error } = await supabase.from('site_config').upsert(
+      { key: 'hero_slider_settings', value: heroSettings },
+      { onConflict: 'key' }
+    )
+    if (error) toast.error('Lỗi lưu cài đặt: ' + error.message)
+    else toast.success('Đã lưu cài đặt chung')
+    setIsSavingSettings(false)
+  }
+
   return (
     <AdminLayout title="Quản lý Slider Trang Chủ">
+      <form className="admin-card" style={{ marginBottom: 24 }} onSubmit={handleSaveSettings}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20, borderBottom: '1px solid #e2e8f0', paddingBottom: 12 }}>
+          <Settings size={20} style={{ color: '#e8720c' }} />
+          <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600 }}>Cài đặt chung cho Hero Slider</h3>
+        </div>
+        
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+          <div>
+            <label style={{ display: 'block', marginBottom: 8, fontSize: 14, fontWeight: 500 }}>Chế độ hiển thị chữ</label>
+            <select 
+              className="admin-input" 
+              style={{ width: '100%' }}
+              value={heroSettings.display_mode}
+              onChange={e => setHeroSettings({...heroSettings, display_mode: e.target.value as 'fixed' | 'dynamic' | 'mixed'})}
+            >
+              <option value="fixed">1. Luôn dùng chữ cố định toàn cục</option>
+              <option value="dynamic">2. Chữ thay đổi theo từng Slide</option>
+              <option value="mixed">3. Hỗn hợp (Ưu tiên theo Slide, nếu trống dùng chữ cố định)</option>
+            </select>
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: 8, fontSize: 14, fontWeight: 500 }}>Thời gian chuyển slide (giây)</label>
+            <input 
+              type="number" 
+              className="admin-input" 
+              style={{ width: '100%' }}
+              value={heroSettings.slide_interval}
+              onChange={e => setHeroSettings({...heroSettings, slide_interval: parseInt(e.target.value) || 6})}
+              min={1}
+            />
+          </div>
+          <div style={{ gridColumn: '1 / -1' }}>
+            <label style={{ display: 'block', marginBottom: 8, fontSize: 14, fontWeight: 500 }}>Tiêu đề cố định toàn cục (Hỗ trợ HTML)</label>
+            <input 
+              type="text" 
+              className="admin-input" 
+              style={{ width: '100%' }}
+              value={heroSettings.fixed_title}
+              onChange={e => setHeroSettings({...heroSettings, fixed_title: e.target.value})}
+              placeholder='VD: HƠN CẢ THẨM MỸ<br />ĐÓ LÀ <span class="text-[#e8720c]">SỰ BỀN VỮNG</span>'
+            />
+          </div>
+          <div style={{ gridColumn: '1 / -1' }}>
+            <label style={{ display: 'block', marginBottom: 8, fontSize: 14, fontWeight: 500 }}>Phụ đề cố định toàn cục</label>
+            <textarea 
+              className="admin-input" 
+              rows={3}
+              style={{ width: '100%' }}
+              value={heroSettings.fixed_subtitle}
+              onChange={e => setHeroSettings({...heroSettings, fixed_subtitle: e.target.value})}
+            />
+          </div>
+        </div>
+        
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}>
+          <button type="submit" className="admin-btn admin-btn-primary" disabled={isSavingSettings}>
+            <Save size={16} /> {isSavingSettings ? 'Đang lưu...' : 'Lưu cài đặt chung'}
+          </button>
+        </div>
+      </form>
+
       <div className="admin-card">
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 24 }}>
           <button className="admin-btn admin-btn-primary" onClick={() => openModal()}>

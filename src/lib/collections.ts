@@ -68,18 +68,16 @@ export async function fetchCollections(): Promise<CollectionItem[]> {
 
     if (data && data.length > 0) {
       console.log('[fetchCollections] Found collections:', data.length)
-      // Map DB schema to frontend CollectionItem interface
       return data.map((item: any) => {
         const metadata = item.metadata || {}
         
-        // Relational products from new table
         const relationalProducts = item.products?.map((p: any) => ({
           id: p.id,
           code: p.code,
           name: p.name,
           image: p.image,
-          highlights: p.highlights || [],
-          colors: p.colors || [],
+          highlights: Array.isArray(p.highlights) ? p.highlights : [],
+          colors: Array.isArray(p.colors) ? p.colors : [],
           spec: p.spec || {},
           sort_order: p.sort_order || 0
         })).sort((a: any, b: any) => {
@@ -98,9 +96,9 @@ export async function fetchCollections(): Promise<CollectionItem[]> {
           gallery: metadata.gallery || [],
           productImages: metadata.productImages || [],
           accent: item.accent || '#f29d38',
-          quickFacts: item.quick_facts || [],
-          applications: item.applications || [],
-          valuePoints: item.value_points || [],
+          quickFacts: Array.isArray(item.quick_facts) ? item.quick_facts : [],
+          applications: Array.isArray(item.applications) ? item.applications : [],
+          valuePoints: Array.isArray(item.value_points) ? item.value_points : [],
           products: relationalProducts,
           resources: metadata.resources || [],
         }
@@ -114,11 +112,37 @@ export async function fetchCollections(): Promise<CollectionItem[]> {
   }
 }
 
-export const featuredResources: ResourceLink[] = [
-  { label: 'Hồ sơ phối hợp bộ sưu tập', type: 'portfolio', url: 'https://carpetsinter.com/wp-content/uploads/2023/04/MixMatchbyCarpetsInterFeb2020LR.pdf' },
-  { label: 'Hồ sơ thiết kế tùy chỉnh', type: 'portfolio', url: 'https://carpetsinter.com/wp-content/uploads/2023/04/CarpetTileCustomDesignPortfolioAug2021lr.pdf' },
-]
+/** Fetch global portfolio resources from collection_resources table (type = portfolio) */
+export async function fetchGlobalResources(): Promise<ResourceLink[]> {
+  try {
+    const { data, error } = await supabase
+      .from('collection_resources')
+      .select('title, resource_type, url')
+      .eq('resource_type', 'portfolio')
+      .order('sort_order', { ascending: true })
 
+    if (error || !data || data.length === 0) {
+      // Fallback to hardcoded
+      return [
+        { label: 'Hồ sơ phối hợp bộ sưu tập', type: 'portfolio', url: 'https://carpetsinter.com/wp-content/uploads/2023/04/MixMatchbyCarpetsInterFeb2020LR.pdf' },
+        { label: 'Hồ sơ thiết kế tùy chỉnh', type: 'portfolio', url: 'https://carpetsinter.com/wp-content/uploads/2023/04/CarpetTileCustomDesignPortfolioAug2021lr.pdf' },
+      ]
+    }
+
+    return data.map((r: any) => ({
+      label: r.title,
+      type: 'portfolio' as const,
+      url: r.url,
+    }))
+  } catch {
+    return [
+      { label: 'Hồ sơ phối hợp bộ sưu tập', type: 'portfolio', url: 'https://carpetsinter.com/wp-content/uploads/2023/04/MixMatchbyCarpetsInterFeb2020LR.pdf' },
+      { label: 'Hồ sơ thiết kế tùy chỉnh', type: 'portfolio', url: 'https://carpetsinter.com/wp-content/uploads/2023/04/CarpetTileCustomDesignPortfolioAug2021lr.pdf' },
+    ]
+  }
+}
+
+/** @deprecated Use useSiteConfig hook instead */
 export const contactInfo: ContactInfo = {
   company: 'Nội Thất Công Cộng Minh Đức',
   hotline: '0908314939',
@@ -126,3 +150,9 @@ export const contactInfo: ContactInfo = {
   address: 'Số 47/153/30, Phú Đô, Nam Từ Liêm, Hà Nội, Việt Nam',
   hours: 'Văn phòng: G04-L04 An Quý Villa - KĐT Mới Dương Nội, P. Dương Nội, Hà Nội.',
 }
+
+/** @deprecated Use fetchGlobalResources() instead */
+export const featuredResources: ResourceLink[] = [
+  { label: 'Hồ sơ phối hợp bộ sưu tập', type: 'portfolio', url: 'https://carpetsinter.com/wp-content/uploads/2023/04/MixMatchbyCarpetsInterFeb2020LR.pdf' },
+  { label: 'Hồ sơ thiết kế tùy chỉnh', type: 'portfolio', url: 'https://carpetsinter.com/wp-content/uploads/2023/04/CarpetTileCustomDesignPortfolioAug2021lr.pdf' },
+]

@@ -3,7 +3,7 @@ import { useState, useEffect, type FormEvent } from 'react'
 import { AdminLayout } from '@/components/layout/AdminLayout'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase'
-import { Save, Globe, Phone, Share2 } from 'lucide-react'
+import { Save, Globe, Phone, Share2, Tag } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface SiteInfo {
@@ -25,9 +25,20 @@ interface SocialLinks {
   linkedin: string
 }
 
+interface BrandInfo {
+  badge_text: string
+  cta_text: string
+  hero_tagline: string
+}
+
 const DEFAULT_SITE: SiteInfo = { name: 'Carpets Inter Vietnam', description: 'Thảm sàn cao cấp cho không gian hiện đại', url: 'https://carpetsinter.vn', logo_url: '' }
 const DEFAULT_CONTACT: ContactInfo = { phone: '028 1234 5678', email: 'info@carpetsinter.vn', address: 'Tầng 5, Tòa nhà AB Tower, 76A Lê Lai, Quận 1, TP.HCM' }
 const DEFAULT_SOCIAL: SocialLinks = { facebook: '', zalo: '', linkedin: '' }
+const DEFAULT_BRAND: BrandInfo = {
+  badge_text: 'Giao hàng và thi công nhanh chóng trên toàn quốc.',
+  cta_text: 'Liên hệ ngay để được tư vấn đúng bộ sưu tập, đúng cấu trúc bề mặt và đúng sắc độ phù hợp với concept công trình của bạn.',
+  hero_tagline: 'Nội thất công cộng Minh Đức đồng hành cùng đối tác quốc tế Carpets Inter, mang giải pháp thảm sàn sinh thái đẳng cấp toàn cầu đến mọi công trình.'
+}
 
 const DEMO_STORAGE_KEY = 'ci_admin_settings'
 
@@ -37,6 +48,7 @@ export function SettingsPage() {
   const [siteInfo, setSiteInfo] = useState<SiteInfo>(DEFAULT_SITE)
   const [contactInfo, setContactInfo] = useState<ContactInfo>(DEFAULT_CONTACT)
   const [socialLinks, setSocialLinks] = useState<SocialLinks>(DEFAULT_SOCIAL)
+  const [brandInfo, setBrandInfo] = useState<BrandInfo>(DEFAULT_BRAND)
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
 
@@ -56,6 +68,7 @@ export function SettingsPage() {
             if (parsed.site_info) setSiteInfo(parsed.site_info)
             if (parsed.contact_info) setContactInfo(parsed.contact_info)
             if (parsed.social_links) setSocialLinks(parsed.social_links)
+            if (parsed.brand_info) setBrandInfo(parsed.brand_info)
           }
         } catch { /* ignore */ }
         setIsLoading(false)
@@ -79,6 +92,13 @@ export function SettingsPage() {
               case 'social_links':
                 setSocialLinks({ facebook: val.facebook || '', zalo: val.zalo || '', linkedin: val.linkedin || '' })
                 break
+              case 'brand_info':
+                setBrandInfo({
+                  badge_text: val.badge_text || DEFAULT_BRAND.badge_text,
+                  cta_text: val.cta_text || DEFAULT_BRAND.cta_text,
+                  hero_tagline: val.hero_tagline || DEFAULT_BRAND.hero_tagline,
+                })
+                break
             }
           }
         }
@@ -101,6 +121,7 @@ export function SettingsPage() {
           site_info: siteInfo,
           contact_info: contactInfo,
           social_links: socialLinks,
+          brand_info: brandInfo,
         }))
         showNotification('success', 'Đã lưu cài đặt (Demo Mode)')
       } catch {
@@ -115,6 +136,7 @@ export function SettingsPage() {
         { key: 'site_info', value: siteInfo },
         { key: 'contact_info', value: contactInfo },
         { key: 'social_links', value: socialLinks },
+        { key: 'brand_info', value: brandInfo },
       ]
 
       for (const cfg of configs) {
@@ -295,6 +317,33 @@ export function SettingsPage() {
                 <input className="admin-input" value={socialLinks.linkedin} disabled={!canEdit}
                   onChange={e => setSocialLinks({ ...socialLinks, linkedin: e.target.value })}
                   placeholder="https://linkedin.com/company/yourcompany" />
+              </div>
+            </div>
+          </div>
+
+          {/* Brand Info */}
+          <div style={cardStyle}>
+            <h3 style={sectionTitleStyle}>
+              <Tag size={20} color="#e8720c" /> Nội dung thương hiệu
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div className="admin-input-group">
+                <label className="admin-input-label">Badge thông báo (thanh trên hero)</label>
+                <input className="admin-input" value={brandInfo.badge_text} disabled={!canEdit}
+                  onChange={e => setBrandInfo({ ...brandInfo, badge_text: e.target.value })}
+                  placeholder="Giao hàng và thi công nhanh chóng trên toàn quốc." />
+              </div>
+              <div className="admin-input-group">
+                <label className="admin-input-label">Tagline Hero (phụ đề bên dưới tiêu đề lớn)</label>
+                <textarea className="admin-input" rows={3} value={brandInfo.hero_tagline} disabled={!canEdit}
+                  onChange={e => setBrandInfo({ ...brandInfo, hero_tagline: e.target.value })}
+                  placeholder="Mô tả thương hiệu ngắn gọn, hiện dưới tiêu đề trang chủ" />
+              </div>
+              <div className="admin-input-group">
+                <label className="admin-input-label">Nội dung CTA tư vấn (phần Giá trị nổi bật)</label>
+                <textarea className="admin-input" rows={3} value={brandInfo.cta_text} disabled={!canEdit}
+                  onChange={e => setBrandInfo({ ...brandInfo, cta_text: e.target.value })}
+                  placeholder="Liên hệ ngay để được tư vấn..." />
               </div>
             </div>
           </div>

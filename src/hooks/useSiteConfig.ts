@@ -26,6 +26,17 @@ export interface SiteConfigData {
     youtube?: string
     linkedin?: string
   }
+  brand_info: {
+    badge_text: string
+    cta_text: string
+    hero_tagline: string
+  }
+  hero_slider_settings: {
+    display_mode: 'fixed' | 'dynamic' | 'mixed'
+    slide_interval: number
+    fixed_title: string
+    fixed_subtitle: string
+  }
 }
 
 const DEFAULTS: SiteConfigData = {
@@ -48,6 +59,17 @@ const DEFAULTS: SiteConfigData = {
     zalo: '0908314939',
     youtube: '',
     linkedin: '',
+  },
+  brand_info: {
+    badge_text: 'Giao hàng và thi công nhanh chóng trên toàn quốc.',
+    cta_text: 'Liên hệ ngay để được tư vấn đúng bộ sưu tập, đúng cấu trúc bề mặt và đúng sắc độ phù hợp với concept công trình của bạn.',
+    hero_tagline: 'Nội thất công cộng Minh Đức đồng hành cùng đối tác quốc tế Carpets Inter, mang giải pháp thảm sàn sinh thái đẳng cấp toàn cầu đến mọi công trình.',
+  },
+  hero_slider_settings: {
+    display_mode: 'mixed',
+    slide_interval: 6,
+    fixed_title: 'HƠN CẢ THẨM MỸ<br/>ĐÓ LÀ <span class="text-[#e8720c]">SỰ BỀN VỮNG</span>',
+    fixed_subtitle: 'Nội thất công cộng Minh Đức đồng hành cùng đối tác quốc tế Carpets Inter, mang giải pháp thảm sàn sinh thái đẳng cấp toàn cầu đến mọi công trình bằng sự chân thành và cam kết chất lượng trọn vẹn.',
   },
 }
 
@@ -82,6 +104,10 @@ export function useSiteConfig() {
             }
           } else if (row.key === 'social_links') {
             merged.social_links = { ...DEFAULTS.social_links, ...(row.value as object) }
+          } else if (row.key === 'brand_info') {
+            merged.brand_info = { ...DEFAULTS.brand_info, ...(row.value as object) }
+          } else if (row.key === 'hero_slider_settings') {
+            merged.hero_slider_settings = { ...DEFAULTS.hero_slider_settings, ...(row.value as object) }
           }
         }
 

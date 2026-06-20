@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Check } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import type { CollectionItem, Product } from '@/lib/collections'
+import { useSiteConfig } from '@/hooks/useSiteConfig'
 
 interface ValueSpecsSectionProps {
   collection: CollectionItem
@@ -9,6 +10,7 @@ interface ValueSpecsSectionProps {
 }
 
 export function ValueSpecsSection({ collection, selectedProduct }: ValueSpecsSectionProps) {
+  const { config } = useSiteConfig()
   const [valuePoints, setValuePoints] = useState<string[]>([])
   const [productSpec, setProductSpec] = useState<any>(null)
   const [loadingPoints, setLoadingPoints] = useState(false)
@@ -113,7 +115,7 @@ export function ValueSpecsSection({ collection, selectedProduct }: ValueSpecsSec
           </div>
           
           <div className="rounded-2xl border border-[#e8720c]/30 bg-[#e8720c]/10 p-4 text-base leading-7 text-[#e8720c] font-medium">
-            Liên hệ ngay để được tư vấn đúng bộ sưu tập, đúng cấu trúc bề mặt và đúng sắc độ phù hợp với concept công trình của bạn.
+            {config.brand_info.cta_text}
           </div>
         </div>
 

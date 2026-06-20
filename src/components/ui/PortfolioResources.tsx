@@ -1,5 +1,6 @@
+import { useEffect, useState } from 'react'
 import { ArrowRight } from 'lucide-react'
-import { featuredResources, type ResourceLink } from '../../lib/collections'
+import { fetchGlobalResources, type ResourceLink } from '../../lib/collections'
 
 const resourceLabels: Record<ResourceLink['type'], string> = {
   brochure: 'Brochure',
@@ -9,6 +10,16 @@ const resourceLabels: Record<ResourceLink['type'], string> = {
 }
 
 export function PortfolioResources() {
+  const [resources, setResources] = useState<ResourceLink[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchGlobalResources().then((data) => {
+      setResources(data)
+      setLoading(false)
+    })
+  }, [])
+
   return (
     <section className="w-full bg-[#fafaf8] py-16 border-b border-black/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid gap-6 lg:grid-cols-[1fr_1.1fr]">
@@ -22,7 +33,12 @@ export function PortfolioResources() {
         </div>
 
         <div className="grid gap-3">
-          {featuredResources.map((resource) => (
+          {loading ? (
+            <>
+              <div className="animate-pulse h-16 rounded-[24px] bg-black/5" />
+              <div className="animate-pulse h-16 rounded-[24px] bg-black/5" />
+            </>
+          ) : resources.map((resource) => (
             <a
               key={resource.url}
               href={resource.url}
