@@ -151,9 +151,20 @@ export function CollectionEditor() {
         .filter(src => src.includes('wp-content') && !src.includes('logo') && !src.includes('icon'))
       const uniqueImgs = [...new Set(imgs)].slice(0, 20)
 
-      showNotification('success', 'Đang dùng AI trích xuất dữ liệu...')
-      const schema = `{ "name": "", "tagline": "", "summary": "", "detail": "", "hero_image": "", "highlights": [], "quick_facts": [], "value_points": [], "applications": [] }`
-      const prompt = `You are a data extractor. Extract collection information from the text and images found on a Carpet product page. URL: ${importUrl}\nTEXT:\n${texts}\nIMAGES FOUND:\n${uniqueImgs.join('\\n')}\nPlease extract the collection details matching exactly this JSON schema. Return ONLY valid JSON: ${schema}. If not found, use empty strings or arrays. For hero_image, pick the most prominent design image.`
+      showNotification('success', 'Đang dùng AI trích xuất và dịch dữ liệu...')
+      const schema = `{ "name": "", "tagline_in_vietnamese": "", "summary_in_vietnamese": "", "detail_in_vietnamese": "", "hero_image": "", "gallery": [], "quick_facts_in_vietnamese": [], "value_points_in_vietnamese": [], "applications_in_vietnamese": [] }`
+      const prompt = `You are an expert data extractor and translator. Extract collection information from the Carpet product page URL: ${importUrl}
+TEXT:
+${texts}
+IMAGES FOUND:
+${uniqueImgs.join('\n')}
+
+INSTRUCTIONS:
+1. Extract the collection details matching exactly this JSON schema: ${schema}
+2. IMPORTANT: For any field ending in '_in_vietnamese', you MUST translate the extracted English text into natural, professional VIETNAMESE. Do NOT output English in these fields. Leave proper nouns (like collection name) in English if appropriate.
+3. For 'hero_image', pick the single most prominent design image URL.
+4. For 'gallery', pick an array of up to 10 relevant image URLs from the IMAGES FOUND list.
+5. Return ONLY valid JSON. If data is not found, use empty strings or empty arrays.`
 
       const payload = {
         contents: [{ role: "user", parts: [{ text: prompt }] }],
@@ -170,8 +181,8 @@ export function CollectionEditor() {
       
       const aiData = await aiRes.json();
       let text = aiData.candidates[0].content.parts[0].text;
-      if (text.startsWith('\`\`\`json')) {
-         text = text.replace(/\`\`\`json/g, '').replace(/\`\`\`/g, '').trim();
+      if (text.startsWith('```json')) {
+         text = text.replace(/```json/g, '').replace(/```/g, '').trim();
       }
       
       const extracted = JSON.parse(text);
@@ -179,14 +190,14 @@ export function CollectionEditor() {
       setForm(prev => ({ 
         ...prev, 
         name: extracted.name || prev.name,
-        tagline: extracted.tagline || prev.tagline,
-        summary: extracted.summary || prev.summary,
-        detail: extracted.detail || prev.detail,
+        tagline: extracted.tagline_in_vietnamese || prev.tagline,
+        summary: extracted.summary_in_vietnamese || prev.summary,
+        detail: extracted.detail_in_vietnamese || prev.detail,
         heroImage: extracted.hero_image || prev.heroImage,
-        applications: (extracted.applications || []).join(', '),
-        quickFacts: extracted.quick_facts?.length ? extracted.quick_facts : prev.quickFacts,
-        valuePoints: extracted.value_points?.length ? extracted.value_points : prev.valuePoints,
-        gallery: extracted.highlights?.length ? extracted.highlights : prev.gallery
+        applications: (extracted.applications_in_vietnamese || []).join(', '),
+        quickFacts: extracted.quick_facts_in_vietnamese?.length ? extracted.quick_facts_in_vietnamese : prev.quickFacts,
+        valuePoints: extracted.value_points_in_vietnamese?.length ? extracted.value_points_in_vietnamese : prev.valuePoints,
+        gallery: extracted.gallery?.length ? extracted.gallery : prev.gallery
       }))
       if (extracted.hero_image) setHeroPreview(extracted.hero_image)
       

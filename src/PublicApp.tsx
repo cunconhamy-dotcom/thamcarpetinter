@@ -68,6 +68,17 @@ export default function PublicApp() {
     })
   }, [])
 
+  // Listen for AI search events
+  useEffect(() => {
+    const handleSearch = (e: any) => {
+      if (e.detail?.q) {
+        setQuery(e.detail.q)
+      }
+    }
+    window.addEventListener('ai-search-collections', handleSearch)
+    return () => window.removeEventListener('ai-search-collections', handleSearch)
+  }, [])
+
   if (collections.length === 0 && !loadError) {
     return (
       <div className="min-h-screen bg-[#1a1a1a] flex items-center justify-center">

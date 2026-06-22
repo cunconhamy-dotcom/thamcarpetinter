@@ -107,11 +107,11 @@ export function UsersManager() {
       if (invites && invites.length > 0) {
         const pendingInvites: UserItem[] = invites.map((inv: Record<string, unknown>) => ({
           id: `invite-${inv.id}`,
-          email: inv.email,
+          email: (inv.email as string) || '',
           fullName: 'Đang chờ đăng ký...',
           avatarUrl: null,
-          role: inv.role as UserRole,
-          createdAt: inv.created_at,
+          role: (inv.role as string) as UserRole,
+          createdAt: (inv.created_at as string) || new Date().toISOString(),
           isInvite: true
         }))
         setUsers([...pendingInvites, ...formattedUsers])
@@ -427,7 +427,7 @@ export function UsersManager() {
                   </div>
                   
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                    {group.permissions.map(perm => {
+                    {group.permissions.map((perm: any) => {
                       const isChecked = writerPerms.includes(perm.key)
                       return (
                         <label key={perm.key} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer' }}>
