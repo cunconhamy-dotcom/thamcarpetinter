@@ -26,6 +26,12 @@ interface ProductItem {
   }
 }
 
+interface ResourceItem {
+  label: string
+  resource_type: string
+  file_url: string
+}
+
 interface CollectionFormData {
   name: string
   tagline: string
@@ -38,13 +44,14 @@ interface CollectionFormData {
   quickFacts: string[]
   valuePoints: string[]
   products: ProductItem[]
+  resources: ResourceItem[]
   gallery: string[]
 }
 
 const EMPTY_FORM: CollectionFormData = {
   name: '', tagline: '', summary: '', detail: '',
   status: 'draft', applications: '', accent: '#f29d38', heroImage: '',
-  quickFacts: [''], valuePoints: [''], products: [], gallery: [],
+  quickFacts: [''], valuePoints: [''], products: [], resources: [], gallery: [],
 }
 
 const toSlug = (s: string) =>
@@ -121,6 +128,7 @@ export function CollectionEditor() {
         quickFacts: quickFacts.length > 0 ? quickFacts : [''],
         valuePoints: valuePoints.length > 0 ? valuePoints : [''],
         products,
+        resources: (meta.resources || []) as ResourceItem[],
         gallery,
       })
       setHeroPreview(data.hero_image || '')
@@ -149,22 +157,41 @@ export function CollectionEditor() {
       const imgs = Array.from(doc.querySelectorAll('img'))
         .map(img => img.src)
         .filter(src => src.includes('wp-content') && !src.includes('logo') && !src.includes('icon'))
-      const uniqueImgs = [...new Set(imgs)].slice(0, 20)
+      const uniqueImgs = [...new Set(imgs)].slice(0, 30)
+
+      const links = Array.from(doc.querySelectorAll('a'))
+        .map(a => ({ text: a.innerText.trim(), href: a.href }))
+        .filter(l => l.text && l.href && (l.href.endsWith('.pdf') || l.href.toLowerCase().includes('download') || l.text.toLowerCase().includes('download') || l.text.toLowerCase().includes('specification') || l.text.toLowerCase().includes('brochure')))
+      const uniqueLinks = [...new Map(links.map(l => [l.href, l])).values()].slice(0, 10).map(l => `${l.text}: ${l.href}`)
 
       showNotification('success', 'Đang dùng AI trích xuất và dịch dữ liệu...')
-      const schema = `{ "name": "", "tagline_in_vietnamese": "", "summary_in_vietnamese": "", "detail_in_vietnamese": "", "hero_image": "", "gallery": [], "quick_facts_in_vietnamese": [], "value_points_in_vietnamese": [], "applications_in_vietnamese": [] }`
+      const schema = `{
+  "name": "", "tagline_in_vietnamese": "", "summary_in_vietnamese": "", "detail_in_vietnamese": "", "hero_image": "", "gallery": [], "quick_facts_in_vietnamese": [], "value_points_in_vietnamese": [], "applications_in_vietnamese": [],
+  "products": [
+    {
+      "code": "", "name": "", "image": "", "highlights_in_vietnamese": [],
+      "spec_in_vietnamese": { "pile_type": "", "construction": "", "backing": "", "size": "", "installation": "" }
+    }
+  ],
+  "resources": [
+    { "label_in_vietnamese": "", "resource_type": "brochure|specification|installation", "file_url": "" }
+  ]
+}`
       const prompt = `You are an expert data extractor and translator. Extract collection information from the Carpet product page URL: ${importUrl}
 TEXT:
 ${texts}
 IMAGES FOUND:
 ${uniqueImgs.join('\n')}
+LINKS FOUND:
+${uniqueLinks.join('\n')}
 
 INSTRUCTIONS:
 1. Extract the collection details matching exactly this JSON schema: ${schema}
-2. IMPORTANT: For any field ending in '_in_vietnamese', you MUST translate the extracted English text into natural, professional VIETNAMESE. Do NOT output English in these fields. Leave proper nouns (like collection name) in English if appropriate.
-3. For 'hero_image', pick the single most prominent design image URL.
-4. For 'gallery', pick an array of up to 10 relevant image URLs from the IMAGES FOUND list.
-5. Return ONLY valid JSON. If data is not found, use empty strings or empty arrays.`
+2. TRANSLATION: For any field ending in '_in_vietnamese', you MUST translate the extracted English text into natural, professional VIETNAMESE. Do NOT output English in these fields. Leave proper nouns (like collection name) in English if appropriate.
+3. PRODUCTS: Extract all distinct product variants/codes found. If an image from IMAGES FOUND belongs to a specific product variant, assign it to that product's 'image' field.
+4. GALLERY RULES: The 'gallery' array MUST NOT contain any images that are already used as a product 'image'. Gallery is only for general lifestyle/room scenes.
+5. RESOURCES: Map relevant download links from LINKS FOUND to the 'resources' array. Set resource_type to one of: 'brochure', 'specification', 'installation'.
+6. Return ONLY valid JSON. If data is not found, use empty strings or empty arrays.`
 
       const payload = {
         contents: [{ role: "user", parts: [{ text: prompt }] }],
@@ -186,6 +213,27 @@ INSTRUCTIONS:
       }
       
       const extracted = JSON.parse(text);
+
+      const mappedProducts = (extracted.products || []).map((p: any) => ({
+        code: p.code || '',
+        name: p.name || '',
+        image: p.image || '',
+        highlights: p.highlights_in_vietnamese || [],
+        colors: [],
+        spec: {
+          pile: p.spec_in_vietnamese?.pile_type || '',
+          construction: p.spec_in_vietnamese?.construction || '',
+          backing: p.spec_in_vietnamese?.backing || '',
+          size: p.spec_in_vietnamese?.size || '',
+          installation: p.spec_in_vietnamese?.installation || ''
+        }
+      }))
+
+      const mappedResources = (extracted.resources || []).map((r: any) => ({
+        label: r.label_in_vietnamese || r.label || '',
+        resource_type: r.resource_type || 'brochure',
+        file_url: r.file_url || ''
+      }))
       
       setForm(prev => ({ 
         ...prev, 
@@ -197,6 +245,8 @@ INSTRUCTIONS:
         applications: (extracted.applications_in_vietnamese || []).join(', '),
         quickFacts: extracted.quick_facts_in_vietnamese?.length ? extracted.quick_facts_in_vietnamese : prev.quickFacts,
         valuePoints: extracted.value_points_in_vietnamese?.length ? extracted.value_points_in_vietnamese : prev.valuePoints,
+        products: mappedProducts.length ? mappedProducts : prev.products,
+        resources: mappedResources.length ? mappedResources : prev.resources,
         gallery: extracted.gallery?.length ? extracted.gallery : prev.gallery
       }))
       if (extracted.hero_image) setHeroPreview(extracted.hero_image)
@@ -349,20 +399,102 @@ INSTRUCTIONS:
 
     try {
       let error
+      let collectionDbId = ''
+
       if (isEditMode) {
         const res = await supabase
           .from('collections')
           .update(dbRecord)
           .or(`id.eq.${collectionId},slug.eq.${collectionId}`)
+          .select('id')
+          .single()
         error = res.error
+        collectionDbId = res.data?.id
       } else {
-        const res = await supabase.from('collections').insert(dbRecord)
+        const res = await supabase.from('collections').insert(dbRecord).select('id').single()
         error = res.error
+        collectionDbId = res.data?.id
       }
 
       if (error) {
         showNotification('error', `Lỗi: ${error.message}`)
-      } else {
+      } else if (collectionDbId) {
+        try {
+          // Sync Value Points
+          const validVp = form.valuePoints.filter(v => v.trim())
+          if (validVp.length > 0) {
+            await supabase.from('collection_value_points').delete().eq('collection_id', collectionDbId)
+            await supabase.from('collection_value_points').insert(validVp.map(vp => ({ collection_id: collectionDbId, point_text: vp.trim() })))
+          }
+
+          // Sync Galleries
+          const validGallery = form.gallery.filter(g => g.trim())
+          if (validGallery.length > 0) {
+            await supabase.from('collection_galleries').delete().eq('collection_id', collectionDbId)
+            await supabase.from('collection_galleries').insert(validGallery.map(g => ({ collection_id: collectionDbId, image_url: g.trim() })))
+          }
+
+          // Sync Resources
+          if (form.resources && form.resources.length > 0) {
+            const validRes = form.resources.filter(r => r.file_url.trim())
+            if (validRes.length > 0) {
+              await supabase.from('collection_resources').delete().eq('collection_id', collectionDbId)
+              await supabase.from('collection_resources').insert(validRes.map(r => ({
+                collection_id: collectionDbId,
+                label: r.label,
+                resource_type: r.resource_type,
+                file_url: r.file_url
+              })))
+            }
+          }
+
+          // Sync Products and Specs
+          if (form.products && form.products.length > 0) {
+            for (const prod of form.products) {
+              let productId = ''
+              const { data: existingProd } = await supabase.from('products').select('id').eq('collection_id', collectionDbId).eq('code', prod.code).maybeSingle()
+              
+              const prodData = {
+                collection_id: collectionDbId,
+                code: prod.code,
+                name: prod.name,
+                image: prod.image,
+                highlights: prod.highlights || [],
+                colors: prod.colors || [],
+                spec: prod.spec || {}
+              }
+
+              if (existingProd) {
+                productId = existingProd.id
+                await supabase.from('products').update(prodData).eq('id', productId)
+              } else {
+                const { data: newProd } = await supabase.from('products').insert(prodData).select('id').single()
+                productId = newProd?.id
+              }
+
+              if (productId && prod.spec) {
+                const specData = {
+                  product_id: productId,
+                  pile_type: prod.spec.pile || '',
+                  construction: prod.spec.construction || '',
+                  backing: prod.spec.backing || '',
+                  size: prod.spec.size || '',
+                  installation: prod.spec.installation || ''
+                }
+                const { data: existingSpec } = await supabase.from('product_specs').select('id').eq('product_id', productId).maybeSingle()
+                if (existingSpec) {
+                  await supabase.from('product_specs').update(specData).eq('id', existingSpec.id)
+                } else {
+                  await supabase.from('product_specs').insert(specData)
+                }
+              }
+            }
+          }
+        } catch (syncErr) {
+          console.error("Relational Sync Error:", syncErr)
+          // Don't throw, just let it show success for main collection
+        }
+
         showNotification('success', isEditMode ? 'Cập nhật thành công!' : 'Tạo bộ sưu tập thành công!')
         setTimeout(() => navTo('/admin/collections'), 800)
       }
